@@ -39,7 +39,7 @@ const menuItems = [
 
 const Sidebar = () => {
   return (
-    <div className="sticky top-10 bg-bg-secondary">
+    <div className="sticky rounded p-4 divide-y-2 divide-bg-tertiary top-10 bg-bg-secondary border border-bg-tertiary">
       <div className="flex items-center gap-5 mb-5 mx-2">
         <Image
           className="object-cover rounded-full"
@@ -53,7 +53,7 @@ const Sidebar = () => {
           <span className="text-text-secondary text-sm">Trainer</span>
         </div>
       </div>
-      <ul className="list-none flex flex-col h-full">
+      <ul className="list-none flex flex-col h-full pt-6">
         {menuItems.map((cat) => (
           <li key={cat.title} className="last-of-type:justify-self-end">
             <span className="text-text-secondary font-bold text-sm my-2 mx-0">
