@@ -13,8 +13,8 @@ const MenuLink = ({ item }: MenuLinkProps) => {
   return (
     <Link
       href={item.path}
-      className={`flex p-4 items-center gap-2 mx-0 my-1 rounded-md hover:bg-bg-tertiary ${
-        pathname === item.path && "bg-bg-tertiary"
+      className={`flex p-4 items-center gap-2 mx-0 my-1 rounded-md hover:bg-muted ${
+        pathname === item.path && "bg-muted"
       }`}
     >
       {item.icon}
