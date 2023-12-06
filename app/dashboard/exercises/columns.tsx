@@ -3,15 +3,47 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MdDelete } from "react-icons/md";
-import { FaEdit } from "react-icons/fa";
 import { SortableHeader } from "@/components/ui/sortableHeader";
 
-export type Exercise = {
+import { EditDialog } from "@/components/ui/edit-dialog";
+import { ExerciseForm } from "./exerciseForm";
+
+type MuscleGroup =
+  | "chest"
+  | "back"
+  | "biceps"
+  | "triceps"
+  | "abs"
+  | "quadriceps"
+  | "hamstrings"
+  | "calves"
+  | "shoulders"
+  | "glutes"
+  | "forearms";
+
+export const MUSCLE_GROUPS: MuscleGroup[] = [
+  "chest",
+  "back",
+  "biceps",
+  "triceps",
+  "abs",
+  "quadriceps",
+  "hamstrings",
+  "calves",
+  "shoulders",
+  "glutes",
+  "forearms",
+];
+
+export type ExercisePartial = {
+  name: string;
+  muscleGroups: MuscleGroup[];
+  demoLink: string;
+};
+
+export type Exercise = ExercisePartial & {
   id: string;
   number: number;
-  name: string;
-  muscleGroups: string;
-  demoLink: string;
   usedBy: number;
   created: string;
   modified: string;
@@ -82,11 +114,11 @@ export const columns: ColumnDef<Exercise>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-4 items-center justify-center">
+          <EditDialog title={"Edit exercise"}>
+            <ExerciseForm data={row.original} />
+          </EditDialog>
           <button>
             <MdDelete />
-          </button>
-          <button>
-            <FaEdit />
           </button>
         </div>
       );
