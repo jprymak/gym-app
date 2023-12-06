@@ -8,6 +8,8 @@ import { SortableHeader } from "@/components/ui/sortableHeader";
 import { CommonDialog } from "@/app/components/dialog/dialog";
 import { ExerciseForm } from "./exerciseForm";
 import { FaEdit } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 type MuscleGroup =
   | "chest"
@@ -121,9 +123,24 @@ export const columns: ColumnDef<Exercise>[] = [
           >
             <ExerciseForm data={row.original} />
           </CommonDialog>
-          <button>
-            <MdDelete />
-          </button>
+          <CommonDialog
+            title={"Delete exercise"}
+            dialogTriggerContent={<MdDelete />}
+          >
+            <p>
+              Are you sure you want to delete{" "}
+              <strong>{row.original.name}</strong> ? This action cannot be
+              undone.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <DialogClose>
+                <Button variant="destructive">Delete</Button>
+              </DialogClose>
+              <DialogClose>
+                <Button>Cancel</Button>
+              </DialogClose>
+            </div>
+          </CommonDialog>
         </div>
       );
     },
