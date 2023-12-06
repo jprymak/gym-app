@@ -5,8 +5,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { MdDelete } from "react-icons/md";
 import { SortableHeader } from "@/components/ui/sortableHeader";
 
-import { EditDialog } from "@/components/ui/edit-dialog";
+import { CommonDialog } from "@/app/components/dialog/dialog";
 import { ExerciseForm } from "./exerciseForm";
+import { FaEdit } from "react-icons/fa";
 
 type MuscleGroup =
   | "chest"
@@ -114,9 +115,12 @@ export const columns: ColumnDef<Exercise>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-4 items-center justify-center">
-          <EditDialog title={"Edit exercise"}>
+          <CommonDialog
+            title={"Edit exercise"}
+            dialogTriggerContent={<FaEdit />}
+          >
             <ExerciseForm data={row.original} />
-          </EditDialog>
+          </CommonDialog>
           <button>
             <MdDelete />
           </button>
