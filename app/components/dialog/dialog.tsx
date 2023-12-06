@@ -8,24 +8,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FaEdit } from "react-icons/fa";
 
 interface EditDialogProps {
   children: React.ReactNode;
   title: string;
   description?: string;
+  dialogTriggerContent: React.ReactNode;
 }
 
-export const EditDialog = ({
+export const CommonDialog = ({
   children,
   title,
   description,
+  dialogTriggerContent,
 }: EditDialogProps) => {
   return (
     <Dialog>
-      <DialogTrigger>
-        <FaEdit />
-      </DialogTrigger>
+      <DialogTrigger>{dialogTriggerContent}</DialogTrigger>
       <DialogContent
         onInteractOutside={(e) => {
           e.preventDefault();
