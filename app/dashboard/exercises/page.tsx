@@ -1,5 +1,5 @@
 import { Exercise, columns } from "./columns";
-import { DataTable } from "./data-table";
+import { DataTable } from "../../../components/ui/data-table";
 
 const exercisesMock: Exercise[] = [
   {

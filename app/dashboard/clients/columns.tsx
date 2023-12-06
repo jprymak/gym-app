@@ -6,18 +6,16 @@ import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import { SortableHeader } from "@/components/ui/sortableHeader";
 
-export type Exercise = {
+export type Trainee = {
   id: string;
-  number: number;
   name: string;
-  muscleGroups: string;
-  demoLink: string;
-  usedBy: number;
-  created: string;
-  modified: string;
+  surname: string;
+  email: string;
+  added: string;
+  status: string;
 };
 
-export const columns: ColumnDef<Exercise>[] = [
+export const columns: ColumnDef<Trainee>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -41,39 +39,33 @@ export const columns: ColumnDef<Exercise>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "number",
-    header: "Number",
-  },
-  {
     accessorKey: "name",
     header: ({ column }) => {
       return <SortableHeader header="Name" column={column} />;
     },
   },
   {
-    accessorKey: "muscleGroups",
-    header: "Muscle groups",
-  },
-  {
-    accessorKey: "demoLink",
-    header: "Demo link",
-  },
-  {
-    accessorKey: "usedBy",
+    accessorKey: "surname",
     header: ({ column }) => {
-      return <SortableHeader header="Used By" column={column} />;
+      return <SortableHeader header="Surname" column={column} />;
     },
   },
   {
-    accessorKey: "created",
+    accessorKey: "email",
     header: ({ column }) => {
-      return <SortableHeader header="Created" column={column} />;
+      return <SortableHeader header="Email" column={column} />;
     },
   },
   {
-    accessorKey: "modified",
+    accessorKey: "added",
     header: ({ column }) => {
-      return <SortableHeader header="Modified" column={column} />;
+      return <SortableHeader header="Added" column={column} />;
+    },
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => {
+      return <SortableHeader header="Status" column={column} />;
     },
   },
   {
