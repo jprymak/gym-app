@@ -1,7 +1,7 @@
 import { DataTable } from "@/components/ui/data-table";
-import { Trainee, columns } from "./columns";
+import { Client, columns } from "./columns";
 
-const clientsMock: Trainee[] = [
+const clientsMock: Client[] = [
   {
     id: "1",
     name: "Andrzej",
@@ -11,7 +11,7 @@ const clientsMock: Trainee[] = [
     status: "active",
   },
   {
-    id: "1",
+    id: "2",
     name: "Monika",
     surname: "Uiop",
     email: "auiop@example.com",
@@ -19,7 +19,7 @@ const clientsMock: Trainee[] = [
     status: "active",
   },
   {
-    id: "1",
+    id: "3",
     name: "Roman",
     surname: "Ipsum",
     email: "aipsum@example.com",
@@ -27,7 +27,7 @@ const clientsMock: Trainee[] = [
     status: "injuried",
   },
   {
-    id: "1",
+    id: "4",
     name: "Martyna",
     surname: "Qwerty",
     email: "aqwerty@example.com",

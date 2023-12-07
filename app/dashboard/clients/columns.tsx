@@ -5,17 +5,22 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import { SortableHeader } from "@/components/ui/sortableHeader";
+import { CommonDialog } from "@/app/components/dialog/dialog";
+import { ClientForm } from "./clientForm";
 
-export type Trainee = {
-  id: string;
+export type ClientPartial = {
   name: string;
   surname: string;
   email: string;
-  added: string;
   status: string;
 };
 
-export const columns: ColumnDef<Trainee>[] = [
+export type Client = {
+  id: string;
+  added: string;
+} & ClientPartial;
+
+export const columns: ColumnDef<Client>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -77,9 +82,12 @@ export const columns: ColumnDef<Trainee>[] = [
           <button>
             <MdDelete />
           </button>
-          <button>
-            <FaEdit />
-          </button>
+          <CommonDialog
+            title={"Edit exercise"}
+            dialogTriggerContent={<FaEdit />}
+          >
+            <ClientForm data={row.original} />
+          </CommonDialog>
         </div>
       );
     },
