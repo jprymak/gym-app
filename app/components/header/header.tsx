@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 function Header() {
   const pathname = usePathname();
   const { setTheme, theme } = useTheme();
-  const isDark = theme === "dark";
+  const isDark = !theme || theme === "dark";
 
   return (
     <header className="border px-4 py-6 rounded-md capitalize flex items-center">
