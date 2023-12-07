@@ -7,6 +7,8 @@ import { FaEdit } from "react-icons/fa";
 import { SortableHeader } from "@/components/ui/sortableHeader";
 import { CommonDialog } from "@/app/components/dialog/dialog";
 import { ClientForm } from "./clientForm";
+import { Button } from "@/components/ui/button";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 export type ClientPartial = {
   name: string;
@@ -79,9 +81,24 @@ export const columns: ColumnDef<Client>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-4 items-center justify-center">
-          <button>
-            <MdDelete />
-          </button>
+          <CommonDialog
+            title={"Delete client"}
+            dialogTriggerContent={<MdDelete />}
+          >
+            <p>
+              Are you sure you want to delete{" "}
+              <strong>{row.original.email}</strong> ? This action cannot be
+              undone.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <DialogClose>
+                <Button variant="destructive">Delete</Button>
+              </DialogClose>
+              <DialogClose>
+                <Button>Cancel</Button>
+              </DialogClose>
+            </div>
+          </CommonDialog>
           <CommonDialog
             title={"Edit exercise"}
             dialogTriggerContent={<FaEdit />}
