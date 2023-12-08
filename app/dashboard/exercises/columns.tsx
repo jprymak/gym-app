@@ -46,7 +46,6 @@ export type ExercisePartial = {
 
 export type Exercise = ExercisePartial & {
   id: string;
-  number: number;
   usedBy: number;
   created: string;
   modified: string;
@@ -74,10 +73,6 @@ export const columns: ColumnDef<Exercise>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
-  },
-  {
-    accessorKey: "number",
-    header: "Number",
   },
   {
     accessorKey: "name",

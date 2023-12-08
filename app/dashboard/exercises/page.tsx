@@ -1,10 +1,10 @@
 import { Exercise, columns } from "./columns";
 import { DataTable } from "../../../components/ui/data-table";
+import { fetchExercises } from "@/lib/data";
 
 const exercisesMock: Exercise[] = [
   {
     id: "1",
-    number: 1,
     name: "Bench press",
     muscleGroups: ["chest", "triceps"],
     demoLink: "#",
@@ -14,7 +14,6 @@ const exercisesMock: Exercise[] = [
   },
   {
     id: "2",
-    number: 2,
     name: "Barbell backsquat",
     muscleGroups: ["quadriceps", "hamstrings", "glutes"],
     demoLink: "#",
@@ -24,7 +23,6 @@ const exercisesMock: Exercise[] = [
   },
   {
     id: "3",
-    number: 3,
     name: "Deadlift",
     muscleGroups: ["hamstrings", "glutes", "back"],
     demoLink: "#",
@@ -34,7 +32,6 @@ const exercisesMock: Exercise[] = [
   },
   {
     id: "4",
-    number: 4,
     name: "Sumo deadlift",
     muscleGroups: ["hamstrings", "glutes", "back"],
     demoLink: "#",
@@ -44,7 +41,6 @@ const exercisesMock: Exercise[] = [
   },
   {
     id: "345",
-    number: 5,
     name: "Overhead press",
     muscleGroups: ["shoulders"],
     demoLink: "#",
@@ -55,11 +51,18 @@ const exercisesMock: Exercise[] = [
 ];
 
 export default async function DemoPage() {
-  const data = exercisesMock;
+  const data = await fetchExercises();
+  const parsedData = data.map((item) => {
+    return {
+      ...item,
+      created: item.created.toLocaleDateString(),
+      modified: item.modified.toLocaleDateString(),
+    };
+  });
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={parsedData} />
     </div>
   );
 }

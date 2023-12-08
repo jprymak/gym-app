@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum MuscleGroup {
+  chest
+  back
+  biceps
+  triceps
+  abs
+  quadriceps
+  hamstrings
+  calves
+  shoulders
+  glutes
+  forearms
+}
+
+model Exercise {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  muscleGroups MuscleGroup[]
+  demoLink     String
+  usedBy       Int
+  created      DateTime      @default(now())
+  modified     DateTime      @updatedAt
+}
