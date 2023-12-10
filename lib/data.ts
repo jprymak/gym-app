@@ -1,16 +1,11 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { db } from "./db";
 
 export async function fetchExercises() {
-
-try{
-    const exercises = await prisma.exercise.findMany()
-   return exercises
-
-}catch(error){
+  try {
+    const exercises = await db.exercise.findMany();
+    return exercises;
+  } catch (error) {
     console.error(error);
     throw new Error("Failed to fetch exercises!");
+  }
 }
-}
-
