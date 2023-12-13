@@ -10,21 +10,9 @@ import { ExerciseForm } from "./exerciseForm";
 import { FaEdit } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { EditExerciseDialog } from "./editExerciseDialog";
 
-type MuscleGroup =
-  | "chest"
-  | "back"
-  | "biceps"
-  | "triceps"
-  | "abs"
-  | "quadriceps"
-  | "hamstrings"
-  | "calves"
-  | "shoulders"
-  | "glutes"
-  | "forearms";
-
-export const MUSCLE_GROUPS: MuscleGroup[] = [
+export const MUSCLE_GROUPS = [
   "chest",
   "back",
   "biceps",
@@ -40,13 +28,12 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
 
 export type ExercisePartial = {
   name: string;
-  muscleGroups: MuscleGroup[];
+  muscleGroups: string[];
   demoLink: string;
 };
 
 export type Exercise = ExercisePartial & {
   id: string;
-  usedBy: number;
   created: string;
   modified: string;
 };
@@ -88,12 +75,12 @@ export const columns: ColumnDef<Exercise>[] = [
     accessorKey: "demoLink",
     header: "Demo link",
   },
-  {
-    accessorKey: "usedBy",
-    header: ({ column }) => {
-      return <SortableHeader header="Used By" column={column} />;
-    },
-  },
+  // { TO DO: add once realtions are ready
+  //   accessorKey: "usedBy",
+  //   header: ({ column }) => {
+  //     return <SortableHeader header="Used By" column={column} />;
+  //   },
+  // },
   {
     accessorKey: "created",
     header: ({ column }) => {
@@ -112,12 +99,7 @@ export const columns: ColumnDef<Exercise>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-4 items-center justify-center">
-          <CommonDialog
-            title={"Edit exercise"}
-            dialogTriggerContent={<FaEdit />}
-          >
-            <ExerciseForm data={row.original} />
-          </CommonDialog>
+          <EditExerciseDialog data={row.original} />
           <CommonDialog
             title={"Delete exercise"}
             dialogTriggerContent={<MdDelete />}

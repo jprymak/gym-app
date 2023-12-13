@@ -19,6 +19,8 @@ import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Command as CommandPrimitive } from "cmdk";
 
 import { ExercisePartial, MUSCLE_GROUPS } from "./columns";
+import { createExercise } from "@/lib/data";
+import { toast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -31,22 +33,39 @@ const formSchema = z.object({
 });
 
 interface ExerciseFormProps {
-  data: ExercisePartial;
+  data?: ExercisePartial;
+  closeDialog: () => void;
 }
 
-export function ExerciseForm({ data }: ExerciseFormProps) {
+export function ExerciseForm({ data, closeDialog }: ExerciseFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: data.name,
-      muscleGroups: data.muscleGroups,
-      demoLink: data.demoLink,
-    },
+    defaultValues: data
+      ? {
+          name: data.name,
+          muscleGroups: data.muscleGroups,
+          demoLink: data.demoLink,
+        }
+      : {
+          name: "",
+          muscleGroups: [],
+          demoLink: "",
+        },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    //TO DO: Send values to backend
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const result = await createExercise(values);
+    if ("error" in result) {
+      toast({
+        variant: "destructive",
+        title: result.error,
+      });
+    } else {
+      toast({
+        title: "Exercise was created",
+      });
+      closeDialog();
+    }
   }
 
   return (

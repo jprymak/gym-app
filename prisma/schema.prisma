@@ -10,26 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum MuscleGroup {
-  chest
-  back
-  biceps
-  triceps
-  abs
-  quadriceps
-  hamstrings
-  calves
-  shoulders
-  glutes
-  forearms
-}
-
 model Exercise {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  muscleGroups MuscleGroup[]
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String   @unique
+  muscleGroups String[]
   demoLink     String
-  usedBy       Int
-  created      DateTime      @default(now())
-  modified     DateTime      @updatedAt
+  created      DateTime @default(now())
+  modified     DateTime @updatedAt
 }

@@ -28,11 +28,13 @@ import { Input } from "@/components/ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData & { id: string }, TValue>[];
   data: Array<TData & { id: string }>;
+  children: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  children,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [searchString, setSearchString] = React.useState("");
@@ -63,8 +65,9 @@ export function DataTable<TData, TValue>({
           placeholder="Filter rows..."
           value={searchString}
           onChange={(event) => setSearchString(event.target.value)}
-          className="max-w-sm"
+          className="max-w-sm mr-auto"
         />
+        {children}
       </div>
       <div className="rounded-md border">
         <Table>
