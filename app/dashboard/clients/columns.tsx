@@ -2,13 +2,12 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MdDelete } from "react-icons/md";
-import { FaEdit } from "react-icons/fa";
 import { SortableHeader } from "@/components/ui/sortableHeader";
 import { CommonDialog } from "@/app/components/dialog/dialog";
 import { ClientForm } from "./clientForm";
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { FileEdit, XCircle } from "lucide-react";
 
 export type ClientPartial = {
   name: string;
@@ -83,7 +82,7 @@ export const columns: ColumnDef<Client>[] = [
         <div className="flex gap-4 items-center justify-center">
           <CommonDialog
             title={"Delete client"}
-            dialogTriggerContent={<MdDelete />}
+            dialogTriggerContent={<XCircle />}
           >
             <p>
               Are you sure you want to delete{" "}
@@ -101,7 +100,7 @@ export const columns: ColumnDef<Client>[] = [
           </CommonDialog>
           <CommonDialog
             title={"Edit exercise"}
-            dialogTriggerContent={<FaEdit />}
+            dialogTriggerContent={<FileEdit />}
           >
             <ClientForm data={row.original} />
           </CommonDialog>

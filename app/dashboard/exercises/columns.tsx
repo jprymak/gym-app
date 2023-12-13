@@ -2,15 +2,13 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MdDelete } from "react-icons/md";
 import { SortableHeader } from "@/components/ui/sortableHeader";
 
 import { CommonDialog } from "@/app/components/dialog/dialog";
-import { ExerciseForm } from "./exerciseForm";
-import { FaEdit } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { EditExerciseDialog } from "./editExerciseDialog";
+import { XCircle } from "lucide-react";
 
 export const MUSCLE_GROUPS = [
   "chest",
@@ -102,7 +100,7 @@ export const columns: ColumnDef<Exercise>[] = [
           <EditExerciseDialog data={row.original} />
           <CommonDialog
             title={"Delete exercise"}
-            dialogTriggerContent={<MdDelete />}
+            dialogTriggerContent={<XCircle />}
           >
             <p>
               Are you sure you want to delete{" "}

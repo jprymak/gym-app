@@ -1,8 +1,6 @@
 import Image from "next/image";
 import MenuLink from "../menuLink/menuLink";
-import { MdDashboard, MdOutlineSettings } from "react-icons/md";
-import { FaUsers } from "react-icons/fa";
-import { CgGym } from "react-icons/cg";
+import { Users, Dumbbell, Settings, LayoutDashboard } from "lucide-react";
 
 const menuItems = [
   {
@@ -11,17 +9,17 @@ const menuItems = [
       {
         title: "Dashboard",
         path: "/dashboard",
-        icon: <MdDashboard />,
+        icon: <LayoutDashboard />,
       },
       {
         title: "Clients",
         path: "/dashboard/clients",
-        icon: <FaUsers />,
+        icon: <Users />,
       },
       {
         title: "Exercises",
         path: "/dashboard/exercises",
-        icon: <CgGym />,
+        icon: <Dumbbell />,
       },
     ],
   },
@@ -31,7 +29,7 @@ const menuItems = [
       {
         title: "Settings",
         path: "/dashboard/settings",
-        icon: <MdOutlineSettings />,
+        icon: <Settings />,
       },
     ],
   },

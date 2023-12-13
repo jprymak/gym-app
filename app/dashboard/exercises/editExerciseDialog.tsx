@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { FaEdit } from "react-icons/fa";
 
 import {
   Dialog,
@@ -8,8 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
-
+import { FileEdit, Plus } from "lucide-react";
 import { ExerciseForm } from "./exerciseForm";
 import { Exercise } from "./columns";
 import { Button } from "@/components/ui/button";
@@ -32,7 +30,7 @@ export const EditExerciseDialog = ({ data }: EditExerciseDialogProps) => {
       <DialogTrigger asChild>
         <Button>
           {editMode ? (
-            <FaEdit />
+            <FileEdit />
           ) : (
             <>
               <Plus className="mr-2" />
