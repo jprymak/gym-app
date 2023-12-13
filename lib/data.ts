@@ -36,3 +36,28 @@ export async function createExercise(formData: ExercisePartial) {
     return result;
   }
 }
+
+export async function updateExercise(formData: ExercisePartial, id: string) {
+  try {
+    const result = await db.exercise.update({
+      where: {
+        id,
+      },
+      data: {
+        ...formData,
+      },
+    });
+    revalidatePath("/dashboard/exercises");
+    return result;
+  } catch (e) {
+    const result = {
+      error: "Something went wrong!",
+    };
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        result.error = "Exercise name is already taken";
+      }
+    }
+    return result;
+  }
+}

@@ -18,8 +18,8 @@ import { Badge } from "@/components/ui/badge";
 import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Command as CommandPrimitive } from "cmdk";
 
-import { ExercisePartial, MUSCLE_GROUPS } from "./columns";
-import { createExercise } from "@/lib/data";
+import { Exercise, MUSCLE_GROUPS } from "./columns";
+import { createExercise, updateExercise } from "@/lib/data";
 import { toast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
@@ -30,10 +30,11 @@ const formSchema = z.object({
     message: "At least one muscle group must be selected",
   }),
   demoLink: z.string(),
+  id: z.string().optional(),
 });
 
 interface ExerciseFormProps {
-  data?: ExercisePartial;
+  data?: Exercise;
   closeDialog: () => void;
 }
 
@@ -54,7 +55,10 @@ export function ExerciseForm({ data, closeDialog }: ExerciseFormProps) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const result = await createExercise(values);
+    const result = data
+      ? await updateExercise(values, data.id)
+      : await createExercise(values);
+
     if ("error" in result) {
       toast({
         variant: "destructive",
@@ -62,7 +66,7 @@ export function ExerciseForm({ data, closeDialog }: ExerciseFormProps) {
       });
     } else {
       toast({
-        title: "Exercise was created",
+        title: data ? "Exercise was updated." : "Exercise was created.",
       });
       closeDialog();
     }

@@ -11,11 +11,11 @@ import {
 import { Plus } from "lucide-react";
 
 import { ExerciseForm } from "./exerciseForm";
-import { ExercisePartial } from "./columns";
+import { Exercise } from "./columns";
 import { Button } from "@/components/ui/button";
 
 interface EditExerciseDialogProps {
-  data?: ExercisePartial;
+  data?: Exercise;
 }
 
 export const EditExerciseDialog = ({ data }: EditExerciseDialogProps) => {
