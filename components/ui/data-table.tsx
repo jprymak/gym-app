@@ -28,7 +28,7 @@ import { Input } from "@/components/ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData & { id: string }, TValue>[];
   data: Array<TData & { id: string }>;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
