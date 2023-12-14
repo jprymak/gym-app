@@ -10,7 +10,6 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
-  ColumnFiltersState,
   getFilteredRowModel,
 } from "@tanstack/react-table";
 
@@ -28,14 +27,13 @@ import { Input } from "@/components/ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData & { id: string }, TValue>[];
   data: Array<TData & { id: string }>;
-  children?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   children,
-}: DataTableProps<TData, TValue>) {
+}: React.PropsWithChildren<DataTableProps<TData, TValue>>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [searchString, setSearchString] = React.useState("");
   const [rowSelection, setRowSelection] = React.useState({});
@@ -58,6 +56,17 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  const renderChildren = () => {
+    return React.Children.map(children, (child: React.ReactNode) => {
+      if (React.isValidElement(child)) {
+        return React.cloneElement(child, {
+          // @ts-ignore
+          selectedRows: rowSelection,
+        });
+      }
+    });
+  };
+
   return (
     <div>
       <div className="flex items-center py-4">
@@ -67,7 +76,8 @@ export function DataTable<TData, TValue>({
           onChange={(event) => setSearchString(event.target.value)}
           className="max-w-sm mr-auto"
         />
-        {children}
+
+        {renderChildren()}
       </div>
       <div className="rounded-md border">
         <Table>

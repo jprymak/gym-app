@@ -61,3 +61,38 @@ export async function updateExercise(formData: ExercisePartial, id: string) {
     return result;
   }
 }
+
+export async function deleteExercise(id: string) {
+  try {
+    const result = await db.exercise.delete({
+      where: {
+        id,
+      },
+    });
+    revalidatePath("/dashboard/exercises");
+    return result;
+  } catch (e) {
+    const result = {
+      error: "Failed to delete exercise.",
+    };
+    return result;
+  }
+}
+
+export async function bulkDeleteExercise(idsToDelete: string[]) {
+  try {
+    const result = await db.exercise.deleteMany({
+      where: {
+        id: {
+          in: idsToDelete,
+        },
+      },
+    });
+    revalidatePath("/dashboard/exercises");
+    return result;
+  } catch (e) {
+    return {
+      error: "Failed to delete exercises.",
+    };
+  }
+}

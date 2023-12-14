@@ -4,11 +4,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SortableHeader } from "@/components/ui/sortableHeader";
 
-import { CommonDialog } from "@/app/components/dialog/dialog";
-import { Button } from "@/components/ui/button";
-import { DialogClose } from "@radix-ui/react-dialog";
 import { EditExerciseDialog } from "./editExerciseDialog";
-import { XCircle } from "lucide-react";
+import { DeleteExerciseDialog } from "./deleteExerciseDialog";
 
 export const MUSCLE_GROUPS = [
   "chest",
@@ -98,24 +95,7 @@ export const columns: ColumnDef<Exercise>[] = [
       return (
         <div className="flex gap-4 items-center justify-center">
           <EditExerciseDialog data={row.original} />
-          <CommonDialog
-            title={"Delete exercise"}
-            dialogTriggerContent={<XCircle />}
-          >
-            <p>
-              Are you sure you want to delete{" "}
-              <strong>{row.original.name}</strong> ? This action cannot be
-              undone.
-            </p>
-            <div className="flex gap-2 justify-end">
-              <DialogClose>
-                <Button variant="destructive">Delete</Button>
-              </DialogClose>
-              <DialogClose>
-                <Button>Cancel</Button>
-              </DialogClose>
-            </div>
-          </CommonDialog>
+          <DeleteExerciseDialog data={row.original} />
         </div>
       );
     },
