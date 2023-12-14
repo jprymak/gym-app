@@ -3,11 +3,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SortableHeader } from "@/components/ui/sortableHeader";
-import { CommonDialog } from "@/app/components/dialog/dialog";
-import { Button } from "@/components/ui/button";
-import { DialogClose } from "@radix-ui/react-dialog";
-import { XCircle } from "lucide-react";
 import { EditClientDialog } from "./editClientDialog";
+import { DeleteClientDialog } from "./deleteClientDialog";
 
 export type ClientPartial = {
   name: string;
@@ -81,25 +78,8 @@ export const columns: ColumnDef<Client>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-4 items-center justify-center">
-          <CommonDialog
-            title={"Delete client"}
-            dialogTriggerContent={<XCircle />}
-          >
-            <p>
-              Are you sure you want to delete{" "}
-              <strong>{row.original.email}</strong> ? This action cannot be
-              undone.
-            </p>
-            <div className="flex gap-2 justify-end">
-              <DialogClose>
-                <Button variant="destructive">Delete</Button>
-              </DialogClose>
-              <DialogClose>
-                <Button>Cancel</Button>
-              </DialogClose>
-            </div>
-          </CommonDialog>
           <EditClientDialog data={row.original} />
+          <DeleteClientDialog data={row.original} />
         </div>
       );
     },

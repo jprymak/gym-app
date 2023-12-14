@@ -156,3 +156,21 @@ export async function updateClient(formData: ClientPartial, id: string) {
     return result;
   }
 }
+
+export async function deleteClient(id: string) {
+  try {
+    const result = await db.client.delete({
+      where: {
+        id,
+      },
+    });
+    revalidatePath("/dashboard/clients");
+    return result;
+  } catch (e) {
+    console.error(e);
+    const result = {
+      error: "Client could not be deleted.",
+    };
+    return result;
+  }
+}
