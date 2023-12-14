@@ -4,6 +4,7 @@ import { ExercisePartial } from "@/app/dashboard/exercises/columns";
 import { db } from "./db";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
+import { ClientPartial } from "@/app/dashboard/clients/columns";
 
 export async function fetchExercises() {
   try {
@@ -94,5 +95,64 @@ export async function bulkDeleteExercise(idsToDelete: string[]) {
     return {
       error: "Failed to delete exercises.",
     };
+  }
+}
+
+export async function fetchClients() {
+  try {
+    const clients = await db.client.findMany();
+    return clients;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to fetch clients!");
+  }
+}
+
+export async function addClient(formData: ClientPartial) {
+  try {
+    const result = await db.client.create({
+      data: {
+        ...formData,
+      },
+    });
+    revalidatePath("/dashboard/clients");
+    return result;
+  } catch (e) {
+    const result = {
+      error: "Something went wrong!",
+    };
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        result.error =
+          "This email address is already taken. Please try another.";
+      }
+    }
+    return result;
+  }
+}
+
+export async function updateClient(formData: ClientPartial, id: string) {
+  try {
+    const result = await db.client.update({
+      where: {
+        id,
+      },
+      data: {
+        ...formData,
+      },
+    });
+    revalidatePath("/dashboard/clients");
+    return result;
+  } catch (e) {
+    const result = {
+      error: "Something went wrong!",
+    };
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        result.error =
+          "This email address is already taken. Please try another.";
+      }
+    }
+    return result;
   }
 }

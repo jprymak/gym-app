@@ -4,10 +4,10 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SortableHeader } from "@/components/ui/sortableHeader";
 import { CommonDialog } from "@/app/components/dialog/dialog";
-import { ClientForm } from "./clientForm";
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { FileEdit, XCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
+import { EditClientDialog } from "./editClientDialog";
 
 export type ClientPartial = {
   name: string;
@@ -18,7 +18,8 @@ export type ClientPartial = {
 
 export type Client = {
   id: string;
-  added: string;
+  created: string;
+  modified: string;
 } & ClientPartial;
 
 export const columns: ColumnDef<Client>[] = [
@@ -98,12 +99,7 @@ export const columns: ColumnDef<Client>[] = [
               </DialogClose>
             </div>
           </CommonDialog>
-          <CommonDialog
-            title={"Edit exercise"}
-            dialogTriggerContent={<FileEdit />}
-          >
-            <ClientForm data={row.original} />
-          </CommonDialog>
+          <EditClientDialog data={row.original} />
         </div>
       );
     },
