@@ -1,5 +1,6 @@
-import { DataTable } from "@/components/ui/data-table";
-import { Client, columns } from "./columns";
+import { Client } from "./columns";
+import { fetchClients } from "@/lib/data";
+import { ClientDataTable } from "./clientsDataTable";
 
 const clientsMock: Client[] = [
   {
@@ -7,7 +8,8 @@ const clientsMock: Client[] = [
     name: "Andrzej",
     surname: "Asdf",
     email: "aasdf@example.com",
-    added: "10.11.2023",
+    created: "10.11.2023",
+    modified: "11.11.2023",
     status: "active",
   },
   {
@@ -15,7 +17,8 @@ const clientsMock: Client[] = [
     name: "Monika",
     surname: "Uiop",
     email: "auiop@example.com",
-    added: "10.11.2023",
+    created: "10.11.2023",
+    modified: "11.11.2023",
     status: "active",
   },
   {
@@ -23,25 +26,35 @@ const clientsMock: Client[] = [
     name: "Roman",
     surname: "Ipsum",
     email: "aipsum@example.com",
-    added: "10.11.2023",
-    status: "injuried",
+    created: "10.11.2023",
+    modified: "11.11.2023",
+    status: "active",
   },
   {
     id: "4",
     name: "Martyna",
     surname: "Qwerty",
     email: "aqwerty@example.com",
-    added: "10.11.2023",
+    created: "10.11.2023",
+    modified: "11.11.2023",
     status: "injuried",
   },
 ];
 
 export default async function Clients() {
-  const data = clientsMock;
+  const data = await fetchClients();
+
+  const parsedData = data.map((item) => {
+    return {
+      ...item,
+      created: item.created.toLocaleDateString(),
+      modified: item.modified.toLocaleDateString(),
+    };
+  });
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
+      <ClientDataTable data={parsedData} />
     </div>
   );
 }

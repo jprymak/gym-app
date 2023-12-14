@@ -22,7 +22,9 @@ import {
 
 import { Input } from "@/components/ui/input";
 
-import { ClientPartial } from "./columns";
+import { Client } from "./columns";
+import { toast } from "@/components/ui/use-toast";
+import { addClient, updateClient } from "@/lib/data";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -37,27 +39,47 @@ const formSchema = z.object({
   status: z.string().min(2, {
     message: "Status must be at least 2 characters.",
   }),
-  demoLink: z.string(),
 });
 
 interface ClientFormProps {
-  data: ClientPartial;
+  data?: Client;
+  closeDialog: () => void;
 }
 
-export function ClientForm({ data }: ClientFormProps) {
+export function ClientForm({ data, closeDialog }: ClientFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: data.name,
-      surname: data.surname,
-      email: data.email,
-      status: data.status,
-    },
+    defaultValues: data
+      ? {
+          name: data.name,
+          surname: data.surname,
+          email: data.email,
+          status: data.status,
+        }
+      : {
+          name: "",
+          surname: "",
+          email: "",
+          status: "",
+        },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    //TO DO: Send values to backend
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const result = data
+      ? await updateClient(values, data.id)
+      : await addClient(values);
+
+    if ("error" in result) {
+      toast({
+        variant: "destructive",
+        title: result.error,
+      });
+    } else {
+      toast({
+        title: data ? "Client was updated." : "Client was created.",
+      });
+      closeDialog();
+    }
   }
 
   return (
