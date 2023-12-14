@@ -61,9 +61,9 @@ export const columns: ColumnDef<Client>[] = [
     },
   },
   {
-    accessorKey: "added",
+    accessorKey: "created",
     header: ({ column }) => {
-      return <SortableHeader header="Added" column={column} />;
+      return <SortableHeader header="created" column={column} />;
     },
   },
   {
