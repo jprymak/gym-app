@@ -18,3 +18,13 @@ model Exercise {
   created      DateTime @default(now())
   modified     DateTime @updatedAt
 }
+
+model Client {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  surname  String
+  email    String   @unique
+  status   String
+  created  DateTime @default(now())
+  modified DateTime @updatedAt
+}
