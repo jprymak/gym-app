@@ -6,7 +6,7 @@ import Header from "../components/header/header";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex">
-      <div className="border p-4 min-h-screen">
+      <div className="border-r-2 p-4 min-h-screen">
         <Sidebar />
       </div>
       <div className="flex-1 p-4">

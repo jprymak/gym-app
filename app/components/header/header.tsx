@@ -42,8 +42,10 @@ function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="border px-4 py-6 rounded-md capitalize flex items-center">
-      <h1 className="text-lg mr-auto">{pathname.split("/").pop()}</h1>
+    <header className="border-2 px-4 py-3 rounded-md capitalize flex items-center">
+      <h1 className=" text-2xl font-bold mr-auto">
+        {pathname.split("/").pop()}
+      </h1>
       <ModeToggle />
     </header>
   );
