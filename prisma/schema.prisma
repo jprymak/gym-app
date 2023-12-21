@@ -11,20 +11,54 @@ datasource db {
 }
 
 model Exercise {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  name         String   @unique
-  muscleGroups String[]
-  demoLink     String
-  created      DateTime @default(now())
-  modified     DateTime @updatedAt
+  id                String              @id @default(auto()) @map("_id") @db.ObjectId
+  name              String              @unique
+  muscleGroups      String[]
+  demoLink          String
+  created           DateTime            @default(now())
+  modified          DateTime            @updatedAt
+  ScheduledExercise ScheduledExercise[]
 }
 
 model Client {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
   name     String
   surname  String
-  email    String   @unique
+  email    String    @unique
   status   String
-  created  DateTime @default(now())
-  modified DateTime @updatedAt
+  created  DateTime  @default(now())
+  modified DateTime  @updatedAt
+  schedule Schedule?
+}
+
+model ScheduledExercise {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  exercise       Exercise?     @relation(fields: [exerciseId], references: [id])
+  sets           String
+  reps           String
+  rpe            String
+  comment        String
+  created        DateTime?     @default(now())
+  modified       DateTime?     @updatedAt
+  exerciseId     String?       @db.ObjectId
+  scheduledDay   ScheduledDay? @relation(fields: [scheduledDayId], references: [id])
+  scheduledDayId String?       @db.ObjectId
+}
+
+model ScheduledDay {
+  id         String              @id @default(auto()) @map("_id") @db.ObjectId
+  exercises  ScheduledExercise[]
+  created    DateTime?           @default(now())
+  modified   DateTime?           @updatedAt
+  schedule   Schedule            @relation(fields: [scheduleId], references: [id])
+  scheduleId String              @db.ObjectId
+}
+
+model Schedule {
+  id       String         @id @default(auto()) @map("_id") @db.ObjectId
+  client   Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId String         @unique @db.ObjectId
+  created  DateTime       @default(now())
+  modified DateTime       @updatedAt
+  days     ScheduledDay[]
 }

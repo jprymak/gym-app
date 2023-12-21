@@ -11,6 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { getHeaderString } from "@/lib/stringHelpers";
+
 function ModeToggle() {
   const { setTheme } = useTheme();
 
@@ -44,7 +46,7 @@ function Header() {
   return (
     <header className="border-2 px-4 py-3 rounded-md capitalize flex items-center">
       <h1 className=" text-2xl font-bold mr-auto">
-        {pathname.split("/").pop()}
+        {getHeaderString(pathname)}
       </h1>
       <ModeToggle />
     </header>

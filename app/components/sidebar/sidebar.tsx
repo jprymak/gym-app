@@ -1,6 +1,12 @@
 import Image from "next/image";
 import MenuLink from "../menuLink/menuLink";
-import { Users, Dumbbell, Settings, LayoutDashboard } from "lucide-react";
+import {
+  Users,
+  Dumbbell,
+  Settings,
+  LayoutDashboard,
+  CalendarCheck,
+} from "lucide-react";
 
 const menuItems = [
   {
@@ -20,6 +26,11 @@ const menuItems = [
         title: "Exercises",
         path: "/dashboard/exercises",
         icon: <Dumbbell />,
+      },
+      {
+        title: "Schedule",
+        path: "/dashboard/schedule",
+        icon: <CalendarCheck />,
       },
     ],
   },
