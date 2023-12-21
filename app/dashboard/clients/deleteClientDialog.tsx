@@ -54,7 +54,7 @@ export const DeleteClientDialog = ({ data }: DeleteClientDialogProps) => {
         }}
       >
         <DialogHeader>
-          <DialogTitle>Delete exercise</DialogTitle>
+          <DialogTitle>Delete client</DialogTitle>
         </DialogHeader>
         <p>
           Are you sure you want to delete <strong>{data.name}</strong> ? This
