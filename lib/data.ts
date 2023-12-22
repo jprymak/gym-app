@@ -232,6 +232,7 @@ export async function fetchSchedule(clientId: string) {
                 rpe: true,
                 exerciseId: true,
                 comment: true,
+                scheduledDayId: true,
               },
             },
           },

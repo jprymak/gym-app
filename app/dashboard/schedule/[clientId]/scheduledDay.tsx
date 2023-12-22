@@ -178,14 +178,11 @@ export function ScheduledDay<TData extends PreparedRow, TValue>({
                 strategy={verticalListSortingStrategy}
               >
                 {hasRowsToRender ? (
-                  table.getRowModel().rows.map((row) => {
-                    if (row.original.taggedForDelete) {
-                      return null;
-                    }
-                    return (
+                  table
+                    .getRowModel()
+                    .rows.map((row) => (
                       <DraggableTableRow key={row.original.id} row={row} />
-                    );
-                  })
+                    ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center">

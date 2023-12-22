@@ -29,16 +29,21 @@ export interface PreparedRow {
 const prepareRows = (
   scheduledExercises: (ScheduledExercise & { taggedForDelete?: boolean })[]
 ): PreparedRow[] => {
-  return scheduledExercises.map((exercise) => ({
-    id: exercise.id,
-    sets: exercise.sets,
-    reps: exercise.reps,
-    rpe: exercise.rpe,
-    comment: exercise.comment,
-    exerciseId: exercise.exerciseId,
-    taggedForDelete: exercise.taggedForDelete,
-    scheduledDayId: exercise.scheduledDayId,
-  }));
+  return scheduledExercises.reduce<PreparedRow[]>((result, currentExercise) => {
+    if (!currentExercise.taggedForDelete) {
+      result.push({
+        id: currentExercise.id,
+        sets: currentExercise.sets,
+        reps: currentExercise.reps,
+        rpe: currentExercise.rpe,
+        comment: currentExercise.comment,
+        exerciseId: currentExercise.exerciseId,
+        taggedForDelete: currentExercise.taggedForDelete,
+        scheduledDayId: currentExercise.scheduledDayId,
+      });
+    }
+    return result;
+  }, []);
 };
 
 export const Schedule = ({
@@ -107,13 +112,10 @@ export const Schedule = ({
       ...dayToUpdate,
       exercises: dayToUpdate.exercises.reduce<PreparedRow[]>(
         (result, current) => {
-          if (
-            current.id == rowToDeleteId &&
-            current?.scheduledDayId?.startsWith("temp")
-          ) {
-            result.push({ ...current, taggedForDelete: true });
+          if (current.id === rowToDeleteId && current.id.startsWith("temp")) {
             return result;
           } else if (current.id === rowToDeleteId) {
+            result.push({ ...current, taggedForDelete: true });
             return result;
           } else {
             result.push(current);
