@@ -13,7 +13,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { ChevronsUpDown, Check } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CellContext } from "@tanstack/react-table";
 
 export function ExerciseCombobox({
@@ -23,7 +23,10 @@ export function ExerciseCombobox({
   table,
 }: CellContext<any, unknown>) {
   const [open, setOpen] = useState(false);
-  const exercises = table.options.meta?.getExercises() || [];
+  const exercises = useMemo(() => {
+    return table.options.meta?.getExercises() || [];
+  }, [table.options.meta]);
+
   const [value, setValue] = useState(
     () => exercises.find((exercise) => exercise.id === getValue())?.name || ""
   );

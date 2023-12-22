@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { ScheduledDay } from "./scheduledDay";
 import { Button } from "@/components/ui/button";
-import { Exercise, Schedule as ScheduleType } from "@prisma/client";
+import { Exercise } from "@prisma/client";
 import { ScheduledExercise } from "@/lib/data";
 import { ScheduleWithDaysAndExercises, updateSchedule } from "@/lib/data";
 import { columns } from "./columns";
@@ -170,6 +170,29 @@ export const Schedule = ({
     setScheduleData((prev) => ({ ...prev, days: newDays }));
   };
 
+  const moveExercises = (scheduledDayId: string, array: PreparedRow[]) => {
+    const dayToUpdate = scheduleData.days.find(
+      (day) => day.id === scheduledDayId
+    );
+    if (!dayToUpdate) {
+      return;
+    }
+
+    const updatedDay = {
+      ...dayToUpdate,
+      exercises: array,
+    };
+
+    const indexOfDayToUpdate = scheduleData.days.findIndex(
+      (day) => day.id === scheduledDayId
+    );
+
+    const newDays = [...scheduleData.days];
+
+    newDays.splice(indexOfDayToUpdate, 1, updatedDay);
+
+    setScheduleData((prev) => ({ ...prev, days: newDays }));
+  };
   return (
     <div>
       <div className="flex w-full justify-end gap-2 mb-5">
@@ -192,6 +215,7 @@ export const Schedule = ({
               addRow={addRow}
               deleteRow={deleteRow}
               updateRow={updateRow}
+              moveExercises={moveExercises}
             />
           );
         })}

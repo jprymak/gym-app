@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
-import { XCircle } from "lucide-react";
+import { GripVertical, XCircle } from "lucide-react";
 import { ExerciseCombobox } from "../exerciseCombobox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { PreparedRow } from "./schedule";
+import { DraggableAttributes } from "@dnd-kit/core";
+import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
 const TableCellWithTextArea = ({
   getValue,
