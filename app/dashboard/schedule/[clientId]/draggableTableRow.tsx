@@ -26,17 +26,20 @@ export const DraggableTableRow = ({ row }: { row: Row<PreparedRow> }) => {
       ref={setNodeRef}
       style={style}
       data-state={row.getIsSelected() && "selected"}
+      className="h-full"
     >
       {isDragging ? (
-        <TableCell colSpan={6} className="h-[73px]">
+        <TableCell colSpan={6} className="h-[69px]">
           &nbsp;
         </TableCell>
       ) : (
         row.getVisibleCells().map((cell, index) => {
           return index === 0 ? (
-            <TableCell key={cell.id} className=" flex gap-3 items-center">
-              <DragHandle {...attributes} {...listeners} />
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            <TableCell key={cell.id} className="py-1">
+              <div className="flex gap-2 items-center">
+                <DragHandle {...attributes} {...listeners} />
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </div>
             </TableCell>
           ) : (
             <TableCell key={cell.id} className="py-1">

@@ -18,7 +18,6 @@ import { ChevronsUpDown, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Client } from "@prisma/client";
 import { usePathname, useRouter } from "next/navigation";
-import { table } from "console";
 
 interface ClientComboboxProps {
   clients: Client[];

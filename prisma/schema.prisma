@@ -43,6 +43,7 @@ model ScheduledExercise {
   exerciseId     String?       @db.ObjectId
   scheduledDay   ScheduledDay? @relation(fields: [scheduledDayId], references: [id])
   scheduledDayId String?       @db.ObjectId
+  ordinalNum     Int
 }
 
 model ScheduledDay {

@@ -19,6 +19,7 @@ export type ScheduleWithDaysAndExercises = Prisma.ScheduleGetPayload<{
             exerciseId: true;
             comment: true;
             scheduledDayId: true;
+            ordinalNum: true;
           };
         };
       };
@@ -35,6 +36,7 @@ export type ScheduledExercise = Prisma.ScheduledExerciseGetPayload<{
     exerciseId: true;
     comment: true;
     scheduledDayId: true;
+    ordinalNum: true;
   };
 }>;
 
@@ -233,7 +235,13 @@ export async function fetchSchedule(clientId: string) {
                 exerciseId: true,
                 comment: true,
                 scheduledDayId: true,
+                ordinalNum: true,
               },
+              orderBy: [
+                {
+                  ordinalNum: "asc",
+                },
+              ],
             },
           },
         },
@@ -287,6 +295,7 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
       scheduledExercisesToUpdate.push(ex);
     }
   });
+
   try {
     const transaction = await db.$transaction([
       ...daysToAdd.map(() =>
@@ -302,6 +311,7 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
                   reps: ex.reps,
                   rpe: ex.rpe,
                   comment: ex.comment,
+                  ordinalNum: ex.ordinalNum,
                   ...(ex.exerciseId && {
                     exercise: {
                       connect: {
@@ -328,6 +338,7 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
             reps: ex.reps,
             rpe: ex.rpe,
             comment: ex.comment,
+            ordinalNum: ex.ordinalNum,
             ...(ex.exerciseId && {
               exercise: {
                 connect: {
@@ -345,6 +356,7 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
             reps: ex.reps,
             rpe: ex.rpe,
             comment: ex.comment,
+            ordinalNum: ex.ordinalNum,
             ...(ex.scheduledDayId && {
               scheduledDay: {
                 connect: {
