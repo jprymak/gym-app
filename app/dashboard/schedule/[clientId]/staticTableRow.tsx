@@ -14,8 +14,10 @@ export const StaticTableRow = ({
         if (i === 0) {
           return (
             <TableCell key={cell.id} className="flex gap-3 items-center">
-              <DragHandle isDragging />
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              <div className="flex gap-2 items-center">
+                <DragHandle isDragging />
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </div>
             </TableCell>
           );
         }

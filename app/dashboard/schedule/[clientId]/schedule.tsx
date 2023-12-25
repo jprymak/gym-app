@@ -24,6 +24,7 @@ export interface PreparedRow {
   exerciseId: string | null;
   taggedForDelete?: boolean;
   scheduledDayId: string | null;
+  ordinalNum: number;
 }
 
 const prepareRows = (
@@ -40,10 +41,26 @@ const prepareRows = (
         exerciseId: currentExercise.exerciseId,
         taggedForDelete: currentExercise.taggedForDelete,
         scheduledDayId: currentExercise.scheduledDayId,
+        ordinalNum: currentExercise.ordinalNum,
       });
     }
     return result;
   }, []);
+};
+
+const applyOrdinalNumbers = (
+  exercises: (ScheduledExercise & { taggedForDelete?: boolean })[]
+) => {
+  let counter = 1;
+  return exercises.map((ex, i) => {
+    if (!ex.taggedForDelete) {
+      const exerciseWithNum = { ...ex, ordinalNum: counter };
+      counter++;
+      return exerciseWithNum;
+    } else {
+      return ex;
+    }
+  });
 };
 
 export const Schedule = ({
@@ -56,9 +73,16 @@ export const Schedule = ({
 
   const addDay = () => {
     const newDay = createInitialDay();
+    const exercisesWithOridinals = newDay.exercises.map((ex, index) => ({
+      ...ex,
+      ordinalNum: index + 1,
+    }));
     const updatedSchedule = {
       ...scheduleData,
-      days: [...scheduleData.days, newDay],
+      days: [
+        ...scheduleData.days,
+        { ...newDay, exercises: exercisesWithOridinals },
+      ],
     };
     setScheduleData(updatedSchedule);
   };
@@ -86,7 +110,7 @@ export const Schedule = ({
 
     const updatedDay = {
       ...dayToUpdate,
-      exercises: [...dayToUpdate.exercises, newRow],
+      exercises: applyOrdinalNumbers([...dayToUpdate.exercises, newRow]),
     };
 
     const indexOfDayToUpdate = scheduleData.days.findIndex(
@@ -108,23 +132,29 @@ export const Schedule = ({
       return;
     }
 
+    const newExercises = dayToUpdate.exercises.reduce<PreparedRow[]>(
+      (result, current) => {
+        if (current.id === rowToDeleteId && current.id.startsWith("temp")) {
+          current.ordinalNum = -1;
+          result.push({ ...current, taggedForDelete: true });
+          return result;
+        } else if (current.id === rowToDeleteId) {
+          current.ordinalNum = -1;
+          result.push({ ...current, taggedForDelete: true });
+          return result;
+        } else {
+          current.ordinalNum = result.length + 1;
+          result.push(current);
+
+          return result;
+        }
+      },
+      []
+    );
+
     const updatedDay = {
       ...dayToUpdate,
-      exercises: dayToUpdate.exercises.reduce<PreparedRow[]>(
-        (result, current) => {
-          if (current.id === rowToDeleteId && current.id.startsWith("temp")) {
-            return result;
-          } else if (current.id === rowToDeleteId) {
-            result.push({ ...current, taggedForDelete: true });
-            return result;
-          } else {
-            result.push(current);
-
-            return result;
-          }
-        },
-        []
-      ),
+      exercises: applyOrdinalNumbers(newExercises),
     };
 
     const indexOfDayToUpdate = scheduleData.days.findIndex(
@@ -147,18 +177,23 @@ export const Schedule = ({
     const dayToUpdate = scheduleData.days.find(
       (day) => day.id === scheduledDayId
     );
+
     if (!dayToUpdate) {
       return;
     }
 
+    const updatedExercises = dayToUpdate.exercises.map((scheduledExercise) => {
+      if (columnId && scheduledExercise.id === rowId) {
+        // @ts-ignore
+        scheduledExercise[columnId] = value;
+      }
+
+      return scheduledExercise;
+    });
+
     const updatedDay = {
       ...dayToUpdate,
-      exercises: dayToUpdate.exercises.map((scheduledExercise) => {
-        if (scheduledExercise.id === rowId) {
-          scheduledExercise[columnId as keyof ScheduledExercise] = value;
-        }
-        return scheduledExercise;
-      }),
+      exercises: updatedExercises,
     };
 
     const indexOfDayToUpdate = scheduleData.days.findIndex(
@@ -182,7 +217,7 @@ export const Schedule = ({
 
     const updatedDay = {
       ...dayToUpdate,
-      exercises: array,
+      exercises: applyOrdinalNumbers(array),
     };
 
     const indexOfDayToUpdate = scheduleData.days.findIndex(

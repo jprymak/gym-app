@@ -1,13 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
-import { GripVertical, XCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
 import { ExerciseCombobox } from "../exerciseCombobox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { PreparedRow } from "./schedule";
-import { DraggableAttributes } from "@dnd-kit/core";
-import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
 const TableCellWithTextArea = ({
   getValue,
@@ -56,7 +54,7 @@ const TableCellWithNumInput = ({
 
   return (
     <Input
-      className=" w-14"
+      className="w-14"
       value={value as string}
       type="number"
       onChange={(e) => setValue(e.target.value)}
@@ -74,6 +72,13 @@ export const columns: ColumnDef<PreparedRow>[] = [
       </h2>
     ),
     columns: [
+      {
+        header: "Num",
+        accessorKey: "ordinalNum",
+        cell: ({ row }) => {
+          return row.original.ordinalNum;
+        },
+      },
       {
         header: "Exercise",
         accessorKey: "exerciseId",

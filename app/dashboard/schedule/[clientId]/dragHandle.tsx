@@ -11,9 +11,7 @@ interface DragHandleProps {
 export const DragHandle = (props: DragHandleProps) => {
   return (
     <div
-      className={`h-2 mr-1 flex items-center ${
-        props.isDragging ? "cursor-grabbing" : "cursor-grab"
-      }`}
+      className={`${props.isDragging ? "cursor-grabbing" : "cursor-grab"}`}
       {...props}
     >
       <GripVertical />
