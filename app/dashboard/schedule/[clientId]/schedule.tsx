@@ -3,12 +3,12 @@ import { useState } from "react";
 
 import { ScheduledDay } from "./scheduledDay";
 import { Button } from "@/components/ui/button";
-import { Exercise } from "@prisma/client";
-import { ScheduledExercise } from "@/lib/data";
+import { Exercise, ScheduledDay as ScheduledDayType } from "@prisma/client";
+import { ScheduledDayWithExercises, ScheduledExercise } from "@/lib/data";
 import { ScheduleWithDaysAndExercises, updateSchedule } from "@/lib/data";
 import { columns } from "./columns";
 import { createInitialDay, createInitialExerciseRow } from "@/lib/initials";
-import { SCHEDULE_DAY_LIMIT } from "@/lib/constants";
+import { Direction, SCHEDULE_DAY_LIMIT } from "@/lib/constants";
 
 interface ScheduleProps {
   scheduleData: ScheduleWithDaysAndExercises;
@@ -48,17 +48,23 @@ const prepareRows = (
   }, []);
 };
 
-const applyOrdinalNumbers = (
-  exercises: (ScheduledExercise & { taggedForDelete?: boolean })[]
-) => {
+type OrdinalItem<T> = T extends ScheduledDayWithExercises
+  ? ScheduledDayWithExercises & {
+      taggedForDelete?: boolean;
+    }
+  : ScheduledExercise & {
+      taggedForDelete?: boolean;
+    };
+
+const applyOrdinalNumbers = <T,>(items: OrdinalItem<T>[]) => {
   let counter = 1;
-  return exercises.map((ex, i) => {
-    if (!ex.taggedForDelete) {
-      const exerciseWithNum = { ...ex, ordinalNum: counter };
+  return items.map((item, i) => {
+    if (!item.taggedForDelete) {
+      const itemWithNum = { ...item, ordinalNum: counter };
       counter++;
-      return exerciseWithNum;
+      return itemWithNum;
     } else {
-      return ex;
+      return item;
     }
   });
 };
@@ -79,10 +85,10 @@ export const Schedule = ({
     }));
     const updatedSchedule = {
       ...scheduleData,
-      days: [
+      days: applyOrdinalNumbers<ScheduledDayWithExercises>([
         ...scheduleData.days,
         { ...newDay, exercises: exercisesWithOridinals },
-      ],
+      ]),
     };
     setScheduleData(updatedSchedule);
   };
@@ -110,7 +116,10 @@ export const Schedule = ({
 
     const updatedDay = {
       ...dayToUpdate,
-      exercises: applyOrdinalNumbers([...dayToUpdate.exercises, newRow]),
+      exercises: applyOrdinalNumbers<ScheduledExercise>([
+        ...dayToUpdate.exercises,
+        newRow,
+      ]),
     };
 
     const indexOfDayToUpdate = scheduleData.days.findIndex(
@@ -207,7 +216,7 @@ export const Schedule = ({
     setScheduleData((prev) => ({ ...prev, days: newDays }));
   };
 
-  const moveExercises = (scheduledDayId: string, array: PreparedRow[]) => {
+  const reorderExercises = (scheduledDayId: string, array: PreparedRow[]) => {
     const dayToUpdate = scheduleData.days.find(
       (day) => day.id === scheduledDayId
     );
@@ -217,7 +226,7 @@ export const Schedule = ({
 
     const updatedDay = {
       ...dayToUpdate,
-      exercises: applyOrdinalNumbers(array),
+      exercises: applyOrdinalNumbers<ScheduledExercise>(array),
     };
 
     const indexOfDayToUpdate = scheduleData.days.findIndex(
@@ -230,6 +239,24 @@ export const Schedule = ({
 
     setScheduleData((prev) => ({ ...prev, days: newDays }));
   };
+
+  const moveDay = (scheduledDayId: string, direction: Direction) => {
+    const updatedDays = [...scheduleData.days];
+
+    const oldIndex = updatedDays.findIndex((day) => day.id === scheduledDayId);
+
+    const newIndex = direction === Direction.Down ? oldIndex + 1 : oldIndex - 1;
+
+    const temp = updatedDays[newIndex];
+    updatedDays[newIndex] = updatedDays[oldIndex];
+    updatedDays[oldIndex] = temp;
+
+    setScheduleData((prev) => ({
+      ...prev,
+      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
+    }));
+  };
+
   return (
     <div>
       <div className="flex w-full justify-end gap-2 mb-5">
@@ -252,11 +279,15 @@ export const Schedule = ({
               addRow={addRow}
               deleteRow={deleteRow}
               updateRow={updateRow}
-              moveExercises={moveExercises}
+              reorderExercises={reorderExercises}
+              moveDay={moveDay}
+              isFirst={index === 0}
+              isLast={index === scheduleData.days.length - 1}
             />
           );
         })}
       </div>
+      {/* <pre>{JSON.stringify(scheduleData.days, null, 2)}</pre> */}
     </div>
   );
 };

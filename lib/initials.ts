@@ -8,7 +8,7 @@ export const createInitialExerciseRow = () => ({
   comment: "",
   exerciseId: null,
   scheduledDayId: "",
-  ordinalNumber: -1,
+  ordinalNum: -1,
 });
 
 export const createInitialDay = () => ({
@@ -17,4 +17,5 @@ export const createInitialDay = () => ({
   created: null,
   modified: null,
   scheduleId: "",
+  ordinalNum: -1,
 });

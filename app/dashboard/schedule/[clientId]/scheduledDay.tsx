@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { Ref, forwardRef, useMemo, useState } from "react";
+
 import { Button } from "@/components/ui/button";
 
 import {
@@ -20,8 +21,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Exercise } from "@prisma/client";
-import { PreparedRow } from "./schedule";
-import { SCHEDULED_EXERCISE_DAY_LIMIT } from "@/lib/constants";
+import { PreparedRow, Schedule } from "./schedule";
+import { Direction, SCHEDULED_EXERCISE_DAY_LIMIT } from "@/lib/constants";
 import {
   SortableContext,
   arrayMove,
@@ -41,6 +42,9 @@ import {
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { DraggableTableRow } from "./draggableTableRow";
 import { StaticTableRow } from "./staticTableRow";
+import { MoveDown, MoveUp } from "lucide-react";
+import { title } from "process";
+import { columns } from "./columns";
 
 interface DataTableProps<TData extends PreparedRow, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -57,7 +61,10 @@ interface DataTableProps<TData extends PreparedRow, TValue> {
     value: any,
     rowId: string
   ) => void;
-  moveExercises: (scheduledDayId: string, array: PreparedRow[]) => void;
+  reorderExercises: (scheduledDayId: string, array: PreparedRow[]) => void;
+  moveDay: (scheduledDayId: string, direction: Direction) => void;
+  isFirst: boolean;
+  isLast: boolean;
 }
 
 declare module "@tanstack/react-table" {
@@ -79,7 +86,10 @@ export function ScheduledDay<TData extends PreparedRow, TValue>({
   addRow,
   deleteRow,
   updateRow,
-  moveExercises,
+  reorderExercises,
+  moveDay,
+  isFirst,
+  isLast,
 }: DataTableProps<TData, TValue>) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const items = useMemo(() => data?.map(({ id }) => id), [data]);
@@ -122,7 +132,7 @@ export function ScheduledDay<TData extends PreparedRow, TValue>({
       const oldIndex = items.indexOf(active.id);
       const newIndex = items.indexOf(over.id);
       const movedArray = arrayMove(data, oldIndex, newIndex);
-      moveExercises(scheduledDayId, movedArray);
+      reorderExercises(scheduledDayId, movedArray);
     }
 
     setActiveId(null);
@@ -144,6 +154,22 @@ export function ScheduledDay<TData extends PreparedRow, TValue>({
 
   return (
     <div className="flex">
+      <div className="flex flex-col gap-1 mr-2">
+        <Button
+          disabled={isFirst}
+          onClick={() => moveDay(scheduledDayId, Direction.Up)}
+          variant="outline"
+        >
+          <MoveUp />
+        </Button>
+        <Button
+          disabled={isLast}
+          onClick={() => moveDay(scheduledDayId, Direction.Down)}
+          variant="outline"
+        >
+          <MoveDown />
+        </Button>
+      </div>
       <div className="rounded-md border">
         <DndContext
           sensors={sensors}

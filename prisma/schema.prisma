@@ -53,6 +53,7 @@ model ScheduledDay {
   modified   DateTime?           @updatedAt
   schedule   Schedule            @relation(fields: [scheduleId], references: [id])
   scheduleId String              @db.ObjectId
+  ordinalNum Int
 }
 
 model Schedule {
