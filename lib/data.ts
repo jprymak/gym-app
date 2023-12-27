@@ -27,6 +27,23 @@ export type ScheduleWithDaysAndExercises = Prisma.ScheduleGetPayload<{
   };
 }>;
 
+export type ScheduledDayWithExercises = Prisma.ScheduledDayGetPayload<{
+  include: {
+    exercises: {
+      select: {
+        id: true;
+        sets: true;
+        reps: true;
+        rpe: true;
+        comment: true;
+        exerciseId: true;
+        scheduledDayId: true;
+        ordinalNum: true;
+      };
+    };
+  };
+}>;
+
 export type ScheduledExercise = Prisma.ScheduledExerciseGetPayload<{
   select: {
     id: true;
@@ -225,6 +242,11 @@ export async function fetchSchedule(clientId: string) {
       },
       include: {
         days: {
+          orderBy: [
+            {
+              ordinalNum: "asc",
+            },
+          ],
           include: {
             exercises: {
               select: {
@@ -257,6 +279,7 @@ export async function fetchSchedule(clientId: string) {
 
 export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
   const daysToAdd: ScheduledDay[] = [];
+  const daysToUpdate: ScheduledDay[] = [];
 
   const scheduledExercisesToCreate: ScheduledExercise[] = [];
   const scheduledExercisesToUpdate: ScheduledExercise[] = [];
@@ -266,6 +289,8 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
   schedule.days.forEach((day) => {
     if (day.id.startsWith("temp")) {
       daysToAdd.push(day);
+    } else {
+      daysToUpdate.push(day);
     }
   });
 
@@ -298,9 +323,10 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
 
   try {
     const transaction = await db.$transaction([
-      ...daysToAdd.map(() =>
+      ...daysToAdd.map((day) =>
         db.scheduledDay.create({
           data: {
+            ordinalNum: day.ordinalNum,
             schedule: {
               connect: { id: schedule.id },
             },
@@ -325,6 +351,16 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
           },
           include: {
             exercises: true,
+          },
+        })
+      ),
+      ...daysToUpdate.map((day) =>
+        db.scheduledDay.update({
+          where: {
+            id: day.id,
+          },
+          data: {
+            ordinalNum: day.ordinalNum,
           },
         })
       ),
