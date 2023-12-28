@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 import { ScheduledDay } from "./scheduledDay";
 import { Button } from "@/components/ui/button";
@@ -74,7 +75,7 @@ export const Schedule = ({
   exercises,
 }: ScheduleProps) => {
   const [scheduleData, setScheduleData] = useState(initialData);
-
+  const [animationParent] = useAutoAnimate();
   const reachedLimit = scheduleData.days.length >= SCHEDULE_DAY_LIMIT;
 
   const addDay = () => {
@@ -265,7 +266,7 @@ export const Schedule = ({
           Add day
         </Button>
       </div>
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5" ref={animationParent}>
         {scheduleData.days.map((day, index) => {
           return (
             <ScheduledDay
@@ -287,7 +288,6 @@ export const Schedule = ({
           );
         })}
       </div>
-      {/* <pre>{JSON.stringify(scheduleData.days, null, 2)}</pre> */}
     </div>
   );
 };
