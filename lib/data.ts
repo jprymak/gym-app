@@ -3,21 +3,32 @@
 import { ExercisePartial } from "@/app/dashboard/exercises/columns";
 import { db } from "./db";
 import { revalidatePath } from "next/cache";
-import { Prisma, ScheduledDay } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { ClientPartial } from "@/app/dashboard/clients/columns";
+
+export type ScheduledDay = Prisma.ScheduledDayGetPayload<{
+  select: {
+    id: true;
+    scheduleId: true;
+    ordinalNum: true;
+  };
+}>;
 
 export type ScheduleWithDaysAndExercises = Prisma.ScheduleGetPayload<{
   include: {
     days: {
-      include: {
+      select: {
+        id: true;
+        ordinalNum: true;
+        scheduleId: true;
         exercises: {
           select: {
             id: true;
             sets: true;
             reps: true;
             rpe: true;
-            exerciseId: true;
             comment: true;
+            exerciseId: true;
             scheduledDayId: true;
             ordinalNum: true;
           };
@@ -28,7 +39,10 @@ export type ScheduleWithDaysAndExercises = Prisma.ScheduleGetPayload<{
 }>;
 
 export type ScheduledDayWithExercises = Prisma.ScheduledDayGetPayload<{
-  include: {
+  select: {
+    id: true;
+    ordinalNum: true;
+    scheduleId: true;
     exercises: {
       select: {
         id: true;
@@ -242,12 +256,10 @@ export async function fetchSchedule(clientId: string) {
       },
       include: {
         days: {
-          orderBy: [
-            {
-              ordinalNum: "asc",
-            },
-          ],
-          include: {
+          select: {
+            id: true,
+            scheduleId: true,
+            ordinalNum: true,
             exercises: {
               select: {
                 id: true,
@@ -266,6 +278,11 @@ export async function fetchSchedule(clientId: string) {
               ],
             },
           },
+          orderBy: [
+            {
+              ordinalNum: "asc",
+            },
+          ],
         },
       },
     });
@@ -278,17 +295,21 @@ export async function fetchSchedule(clientId: string) {
 }
 
 export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
-  const daysToAdd: ScheduledDay[] = [];
+  const daysToAdd: ScheduledDayWithExercises[] = [];
   const daysToUpdate: ScheduledDay[] = [];
+  const daysToDelete: string[] = [];
 
   const scheduledExercisesToCreate: ScheduledExercise[] = [];
   const scheduledExercisesToUpdate: ScheduledExercise[] = [];
-  const scheduledExercisesToCreateInScheduledDay: ScheduledExercise[] = [];
+  const scheduledExercisesToCreateInExistingScheduledDay: ScheduledExercise[] =
+    [];
   const scheduledExercisesToDelete: string[] = [];
 
   schedule.days.forEach((day) => {
     if (day.id.startsWith("temp")) {
       daysToAdd.push(day);
+    } else if ("taggedForDelete" in day) {
+      daysToDelete.push(day.id);
     } else {
       daysToUpdate.push(day);
     }
@@ -313,7 +334,7 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
       ex.id.startsWith("temp") &&
       !ex.scheduledDayId?.startsWith("temp")
     ) {
-      scheduledExercisesToCreateInScheduledDay.push(ex);
+      scheduledExercisesToCreateInExistingScheduledDay.push(ex);
     } else if (ex.id.startsWith("temp")) {
       scheduledExercisesToCreate.push(ex);
     } else {
@@ -332,7 +353,7 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
             },
             exercises: {
               create: [
-                ...scheduledExercisesToCreate.map((ex) => ({
+                ...day.exercises.map((ex) => ({
                   sets: ex.sets,
                   reps: ex.reps,
                   rpe: ex.rpe,
@@ -385,7 +406,7 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
           },
         })
       ),
-      ...scheduledExercisesToCreateInScheduledDay.map((ex) =>
+      ...scheduledExercisesToCreateInExistingScheduledDay.map((ex) =>
         db.scheduledExercise.create({
           data: {
             sets: ex.sets,
@@ -414,6 +435,13 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
         where: {
           id: {
             in: scheduledExercisesToDelete,
+          },
+        },
+      }),
+      db.scheduledDay.deleteMany({
+        where: {
+          id: {
+            in: daysToDelete,
           },
         },
       }),

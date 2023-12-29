@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Ref, forwardRef, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -21,12 +21,11 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Exercise } from "@prisma/client";
-import { PreparedRow, Schedule } from "./schedule";
+import { PreparedScheduledExercise } from "./schedule";
 import { Direction, SCHEDULED_EXERCISE_DAY_LIMIT } from "@/lib/constants";
 import {
   SortableContext,
   arrayMove,
-  useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import {
@@ -43,10 +42,8 @@ import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { DraggableTableRow } from "./draggableTableRow";
 import { StaticTableRow } from "./staticTableRow";
 import { MoveDown, MoveUp } from "lucide-react";
-import { title } from "process";
-import { columns } from "./columns";
 
-interface DataTableProps<TData extends PreparedRow, TValue> {
+interface DataTableProps<TData extends PreparedScheduledExercise, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: Array<TData>;
   exercises: Exercise[];
@@ -61,7 +58,10 @@ interface DataTableProps<TData extends PreparedRow, TValue> {
     value: any,
     rowId: string
   ) => void;
-  reorderExercises: (scheduledDayId: string, array: PreparedRow[]) => void;
+  reorderExercises: (
+    scheduledDayId: string,
+    array: PreparedScheduledExercise[]
+  ) => void;
   moveDay: (scheduledDayId: string, direction: Direction) => void;
   isFirst: boolean;
   isLast: boolean;
@@ -76,7 +76,7 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export function ScheduledDay<TData extends PreparedRow, TValue>({
+export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
   columns,
   data,
   exercises,

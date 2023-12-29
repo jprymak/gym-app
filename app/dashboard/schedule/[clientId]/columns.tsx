@@ -5,7 +5,7 @@ import { ExerciseCombobox } from "../exerciseCombobox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
-import { PreparedRow } from "./schedule";
+import { PreparedScheduledExercise } from "./schedule";
 
 const TableCellWithTextArea = ({
   getValue,
@@ -63,7 +63,7 @@ const TableCellWithNumInput = ({
   );
 };
 
-export const columns: ColumnDef<PreparedRow>[] = [
+export const columns: ColumnDef<PreparedScheduledExercise>[] = [
   {
     id: "bottom-row",
     header: ({ table }) => (

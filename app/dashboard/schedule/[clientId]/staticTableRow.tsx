@@ -1,12 +1,12 @@
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Row, flexRender } from "@tanstack/react-table";
-import { PreparedRow } from "./schedule";
+import { PreparedScheduledExercise } from "./schedule";
 import { DragHandle } from "./dragHandle";
 
 export const StaticTableRow = ({
   row,
 }: {
-  row: Row<PreparedRow> | undefined | null;
+  row: Row<PreparedScheduledExercise> | undefined | null;
 }) => {
   return (
     <TableRow {...row} className="shadow-sm">

@@ -8,7 +8,7 @@ import { Exercise, ScheduledDay as ScheduledDayType } from "@prisma/client";
 import { ScheduledDayWithExercises, ScheduledExercise } from "@/lib/data";
 import { ScheduleWithDaysAndExercises, updateSchedule } from "@/lib/data";
 import { columns } from "./columns";
-import { createInitialDay, createInitialExerciseRow } from "@/lib/initials";
+import { createInitialDay, createInitialExerciseRow } from "@/lib/initialData";
 import { Direction, SCHEDULE_DAY_LIMIT } from "@/lib/constants";
 
 interface ScheduleProps {
@@ -16,48 +16,23 @@ interface ScheduleProps {
   exercises: Exercise[];
 }
 
-export interface PreparedRow {
-  id: string;
-  sets: string;
-  reps: string;
-  rpe: string;
-  comment: string;
-  exerciseId: string | null;
+interface PreparedScheduledDay extends ScheduledDayWithExercises {
   taggedForDelete?: boolean;
-  scheduledDayId: string | null;
-  ordinalNum: number;
 }
 
-const prepareRows = (
-  scheduledExercises: (ScheduledExercise & { taggedForDelete?: boolean })[]
-): PreparedRow[] => {
-  return scheduledExercises.reduce<PreparedRow[]>((result, currentExercise) => {
-    if (!currentExercise.taggedForDelete) {
-      result.push({
-        id: currentExercise.id,
-        sets: currentExercise.sets,
-        reps: currentExercise.reps,
-        rpe: currentExercise.rpe,
-        comment: currentExercise.comment,
-        exerciseId: currentExercise.exerciseId,
-        taggedForDelete: currentExercise.taggedForDelete,
-        scheduledDayId: currentExercise.scheduledDayId,
-        ordinalNum: currentExercise.ordinalNum,
-      });
-    }
-    return result;
-  }, []);
+export interface PreparedScheduledExercise extends ScheduledExercise {
+  taggedForDelete?: boolean;
+}
+
+type ScheduleItems<T> = T extends PreparedScheduledDay
+  ? PreparedScheduledDay
+  : PreparedScheduledExercise;
+
+const filterDeletedItems = <T,>(items: ScheduleItems<T>[]) => {
+  return items.filter((currentItem) => !currentItem.taggedForDelete);
 };
 
-type OrdinalItem<T> = T extends ScheduledDayWithExercises
-  ? ScheduledDayWithExercises & {
-      taggedForDelete?: boolean;
-    }
-  : ScheduledExercise & {
-      taggedForDelete?: boolean;
-    };
-
-const applyOrdinalNumbers = <T,>(items: OrdinalItem<T>[]) => {
+const applyOrdinalNumbers = <T,>(items: ScheduleItems<T>[]) => {
   let counter = 1;
   return items.map((item, i) => {
     if (!item.taggedForDelete) {
@@ -95,9 +70,29 @@ export const Schedule = ({
   };
 
   const deleteDay = (idToDelete: string) => {
+    const updatedDays = scheduleData.days.reduce<PreparedScheduledDay[]>(
+      (result, current) => {
+        if (current.id === idToDelete && current.id.startsWith("temp")) {
+          current.ordinalNum = -1;
+          result.push({ ...current, taggedForDelete: true });
+          return result;
+        } else if (current.id === idToDelete) {
+          current.ordinalNum = -1;
+          result.push({ ...current, taggedForDelete: true });
+          return result;
+        } else {
+          current.ordinalNum = result.length + 1;
+          result.push(current);
+
+          return result;
+        }
+      },
+      []
+    );
+
     const updatedSchedule = {
       ...scheduleData,
-      days: scheduleData.days.filter((day) => day.id !== idToDelete),
+      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
     };
     setScheduleData(updatedSchedule);
   };
@@ -142,25 +137,24 @@ export const Schedule = ({
       return;
     }
 
-    const newExercises = dayToUpdate.exercises.reduce<PreparedRow[]>(
-      (result, current) => {
-        if (current.id === rowToDeleteId && current.id.startsWith("temp")) {
-          current.ordinalNum = -1;
-          result.push({ ...current, taggedForDelete: true });
-          return result;
-        } else if (current.id === rowToDeleteId) {
-          current.ordinalNum = -1;
-          result.push({ ...current, taggedForDelete: true });
-          return result;
-        } else {
-          current.ordinalNum = result.length + 1;
-          result.push(current);
+    const newExercises = dayToUpdate.exercises.reduce<
+      PreparedScheduledExercise[]
+    >((result, current) => {
+      if (current.id === rowToDeleteId && current.id.startsWith("temp")) {
+        current.ordinalNum = -1;
+        result.push({ ...current, taggedForDelete: true });
+        return result;
+      } else if (current.id === rowToDeleteId) {
+        current.ordinalNum = -1;
+        result.push({ ...current, taggedForDelete: true });
+        return result;
+      } else {
+        current.ordinalNum = result.length + 1;
+        result.push(current);
 
-          return result;
-        }
-      },
-      []
-    );
+        return result;
+      }
+    }, []);
 
     const updatedDay = {
       ...dayToUpdate,
@@ -217,7 +211,10 @@ export const Schedule = ({
     setScheduleData((prev) => ({ ...prev, days: newDays }));
   };
 
-  const reorderExercises = (scheduledDayId: string, array: PreparedRow[]) => {
+  const reorderExercises = (
+    scheduledDayId: string,
+    array: PreparedScheduledExercise[]
+  ) => {
     const dayToUpdate = scheduleData.days.find(
       (day) => day.id === scheduledDayId
     );
@@ -267,26 +264,30 @@ export const Schedule = ({
         </Button>
       </div>
       <div className="flex flex-col gap-5" ref={animationParent}>
-        {scheduleData.days.map((day, index) => {
-          return (
-            <ScheduledDay
-              key={day.id}
-              columns={columns}
-              data={prepareRows(day.exercises)}
-              exercises={exercises}
-              deleteDay={deleteDay}
-              scheduledDayId={day.id}
-              title={(index + 1).toString()}
-              addRow={addRow}
-              deleteRow={deleteRow}
-              updateRow={updateRow}
-              reorderExercises={reorderExercises}
-              moveDay={moveDay}
-              isFirst={index === 0}
-              isLast={index === scheduleData.days.length - 1}
-            />
-          );
-        })}
+        {filterDeletedItems<PreparedScheduledDay>(scheduleData.days).map(
+          (day, index) => {
+            return (
+              <ScheduledDay
+                key={day.id}
+                columns={columns}
+                data={filterDeletedItems<PreparedScheduledExercise>(
+                  day.exercises
+                )}
+                exercises={exercises}
+                deleteDay={deleteDay}
+                scheduledDayId={day.id}
+                title={(index + 1).toString()}
+                addRow={addRow}
+                deleteRow={deleteRow}
+                updateRow={updateRow}
+                reorderExercises={reorderExercises}
+                moveDay={moveDay}
+                isFirst={index === 0}
+                isLast={index === scheduleData.days.length - 1}
+              />
+            );
+          }
+        )}
       </div>
     </div>
   );
