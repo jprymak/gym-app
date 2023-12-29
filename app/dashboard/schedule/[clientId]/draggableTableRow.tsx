@@ -1,11 +1,15 @@
 import { TableRow, TableCell } from "@/components/ui/table";
 import { useSortable } from "@dnd-kit/sortable";
 import { Row, flexRender } from "@tanstack/react-table";
-import { PreparedRow } from "./schedule";
+import { PreparedScheduledExercise } from "./schedule";
 import { CSS } from "@dnd-kit/utilities";
 import { DragHandle } from "./dragHandle";
 
-export const DraggableTableRow = ({ row }: { row: Row<PreparedRow> }) => {
+export const DraggableTableRow = ({
+  row,
+}: {
+  row: Row<PreparedScheduledExercise>;
+}) => {
   const {
     attributes,
     listeners,
