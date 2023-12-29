@@ -8,7 +8,7 @@ import { Exercise, ScheduledDay as ScheduledDayType } from "@prisma/client";
 import { ScheduledDayWithExercises, ScheduledExercise } from "@/lib/data";
 import { ScheduleWithDaysAndExercises, updateSchedule } from "@/lib/data";
 import { columns } from "./columns";
-import { createInitialDay, createInitialExerciseRow } from "@/lib/initials";
+import { createInitialDay, createInitialExerciseRow } from "@/lib/initialData";
 import { Direction, SCHEDULE_DAY_LIMIT } from "@/lib/constants";
 
 interface ScheduleProps {

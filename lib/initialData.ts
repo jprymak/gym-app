@@ -14,8 +14,6 @@ export const createInitialExerciseRow = () => ({
 export const createInitialDay = () => ({
   id: "temp-" + uuidv4(),
   exercises: [createInitialExerciseRow()],
-  created: null,
-  modified: null,
   scheduleId: "",
   ordinalNum: -1,
 });
