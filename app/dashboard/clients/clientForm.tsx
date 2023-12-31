@@ -2,7 +2,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -25,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Client } from "./columns";
 import { toast } from "@/components/ui/use-toast";
 import { addClient, updateClient } from "@/lib/data";
+import { SubmitBtn } from "@/components/submitBtn";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -84,7 +84,7 @@ export function ClientForm({ data, closeDialog }: ClientFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form action={() => onSubmit(form.getValues())} className="space-y-8">
         <FormField
           control={form.control}
           name="name"
@@ -148,8 +148,7 @@ export function ClientForm({ data, closeDialog }: ClientFormProps) {
             </FormItem>
           )}
         />
-
-        <Button type="submit">Submit</Button>
+        <SubmitBtn />
       </form>
     </Form>
   );

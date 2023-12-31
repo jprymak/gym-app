@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import {
   Dialog,
   DialogClose,
@@ -13,6 +13,7 @@ import { Client } from "./columns";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { deleteClient } from "@/lib/data";
+import { DeleteBtnWithStatus } from "@/components/deleteBtnWithStatus";
 
 interface DeleteClientDialogProps {
   data: Client;
@@ -20,25 +21,28 @@ interface DeleteClientDialogProps {
 
 export const DeleteClientDialog = ({ data }: DeleteClientDialogProps) => {
   const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const closeDialog = () => {
     setOpen(false);
   };
 
-  const handleDeleteClient = async (rowId: string) => {
-    const result = await deleteClient(rowId);
+  const handleDeleteClient = async () => {
+    startTransition(async () => {
+      const result = await deleteClient(data.id);
 
-    if ("error" in result) {
-      toast({
-        variant: "destructive",
-        title: result.error,
-      });
-    } else {
-      toast({
-        title: "Client was deleted.",
-      });
-    }
-    closeDialog();
+      if ("error" in result) {
+        toast({
+          variant: "destructive",
+          title: result.error,
+        });
+      } else {
+        toast({
+          title: "Client was deleted.",
+        });
+      }
+      closeDialog();
+    });
   };
 
   return (
@@ -61,12 +65,10 @@ export const DeleteClientDialog = ({ data }: DeleteClientDialogProps) => {
           action cannot be undone.
         </p>
         <div className="flex gap-2 justify-end">
-          <Button
-            onClick={() => handleDeleteClient(data.id)}
-            variant="destructive"
-          >
-            Delete
-          </Button>
+          <DeleteBtnWithStatus
+            onClick={handleDeleteClient}
+            isPending={isPending}
+          />
           <DialogClose asChild>
             <Button>Cancel</Button>
           </DialogClose>

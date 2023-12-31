@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import {
   Dialog,
   DialogClose,
@@ -12,7 +12,8 @@ import { XCircle } from "lucide-react";
 import { Exercise } from "./columns";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import { bulkDeleteExercise, deleteExercise } from "@/lib/data";
+import { bulkDeleteExercise } from "@/lib/data";
+import { DeleteBtnWithStatus } from "@/components/deleteBtnWithStatus";
 
 interface DeleteExerciseDialogProps {
   data: Exercise[];
@@ -24,6 +25,7 @@ export const BulkDeleteExerciseDialog = ({
   selectedRows = {},
 }: DeleteExerciseDialogProps) => {
   const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const exercisesToDelete = data.filter((exercise) => {
     return Object.keys(selectedRows).includes(exercise.id);
@@ -34,19 +36,21 @@ export const BulkDeleteExerciseDialog = ({
   };
 
   const handleDeleteExercise = async () => {
-    const result = await bulkDeleteExercise(Object.keys(selectedRows));
+    startTransition(async () => {
+      const result = await bulkDeleteExercise(Object.keys(selectedRows));
 
-    if ("error" in result) {
-      toast({
-        variant: "destructive",
-        title: result.error,
-      });
-    } else {
-      toast({
-        title: "Exercises were deleted.",
-      });
-    }
-    closeDialog();
+      if ("error" in result) {
+        toast({
+          variant: "destructive",
+          title: result.error,
+        });
+      } else {
+        toast({
+          title: "Exercises were deleted.",
+        });
+      }
+      closeDialog();
+    });
   };
 
   return (
@@ -78,9 +82,10 @@ export const BulkDeleteExerciseDialog = ({
         </ul>
         <p> This action cannot be undone.</p>
         <div className="flex gap-2 justify-end">
-          <Button onClick={handleDeleteExercise} variant="destructive">
-            Delete
-          </Button>
+          <DeleteBtnWithStatus
+            onClick={handleDeleteExercise}
+            isPending={isPending}
+          />
           <DialogClose asChild>
             <Button>Cancel</Button>
           </DialogClose>

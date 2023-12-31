@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 import { ScheduledDay } from "./scheduledDay";
@@ -10,6 +10,7 @@ import { ScheduleWithDaysAndExercises, updateSchedule } from "@/lib/data";
 import { columns } from "./columns";
 import { createInitialDay, createInitialExerciseRow } from "@/lib/initialData";
 import { Direction, SCHEDULE_DAY_LIMIT } from "@/lib/constants";
+import { Loader2 } from "lucide-react";
 
 interface ScheduleProps {
   scheduleData: ScheduleWithDaysAndExercises;
@@ -51,6 +52,8 @@ export const Schedule = ({
 }: ScheduleProps) => {
   const [scheduleData, setScheduleData] = useState(initialData);
   const [animationParent] = useAutoAnimate();
+  const [isPending, startTransition] = useTransition();
+
   const reachedLimit = scheduleData.days.length >= SCHEDULE_DAY_LIMIT;
 
   const addDay = () => {
@@ -98,7 +101,9 @@ export const Schedule = ({
   };
 
   const saveChanges = async () => {
-    const result = await updateSchedule(scheduleData);
+    startTransition(() => {
+      updateSchedule(scheduleData);
+    });
   };
 
   const addRow = (scheduledDayId: string) => {
@@ -258,7 +263,18 @@ export const Schedule = ({
   return (
     <div>
       <div className="flex w-full justify-end gap-2 mb-5">
-        <Button onClick={saveChanges}>Save changes</Button>
+        <Button onClick={saveChanges} disabled={isPending}>
+          {isPending ? (
+            <>
+              <span className="mr-2">
+                <Loader2 className="animate-spin" />
+              </span>
+              Saving...
+            </>
+          ) : (
+            <>Save changes</>
+          )}
+        </Button>
         <Button disabled={reachedLimit} className="" onClick={addDay}>
           Add day
         </Button>

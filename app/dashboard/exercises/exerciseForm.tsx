@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -21,6 +20,7 @@ import { Command as CommandPrimitive } from "cmdk";
 import { Exercise, MUSCLE_GROUPS } from "./columns";
 import { createExercise, updateExercise } from "@/lib/data";
 import { toast } from "@/components/ui/use-toast";
+import { SubmitBtn } from "@/components/submitBtn";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -74,7 +74,7 @@ export function ExerciseForm({ data, closeDialog }: ExerciseFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form action={() => onSubmit(form.getValues())} className="space-y-8">
         <FormField
           control={form.control}
           name="name"
@@ -121,7 +121,7 @@ export function ExerciseForm({ data, closeDialog }: ExerciseFormProps) {
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        <SubmitBtn />
       </form>
     </Form>
   );
