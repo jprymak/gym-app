@@ -10,7 +10,6 @@ export default async function SchedulePage({
   const schedule = await fetchSchedule(params?.clientId);
   return (
     <div>
-      My User: {params?.clientId}
       {schedule && <Schedule scheduleData={schedule} exercises={exercises} />}
     </div>
   );
