@@ -1,5 +1,5 @@
 "use client";
-import { useState, useTransition } from "react";
+import { useContext, useEffect, useState, useTransition } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 import { ScheduledDay } from "./scheduledDay";
@@ -11,6 +11,7 @@ import { columns } from "./columns";
 import { createInitialDay, createInitialExerciseRow } from "@/lib/initialData";
 import { Direction, SCHEDULE_DAY_LIMIT } from "@/lib/constants";
 import { Loader2 } from "lucide-react";
+import { ProxyContext } from "@/lib/providers/ProxyProvider";
 
 interface ScheduleProps {
   scheduleData: ScheduleWithDaysAndExercises;
@@ -51,8 +52,25 @@ export const Schedule = ({
   exercises,
 }: ScheduleProps) => {
   const [scheduleData, setScheduleData] = useState(initialData);
+  const [message, setMessage] = useContext(ProxyContext);
   const [animationParent] = useAutoAnimate();
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    setScheduleData(initialData);
+  }, [initialData]);
+
+  useEffect(() => {
+    if (
+      JSON.stringify(initialData.days) !== JSON.stringify(scheduleData.days)
+    ) {
+      setMessage(
+        "You have unsaved changes. Are your sure you want to leave page?"
+      );
+    } else {
+      setMessage(undefined);
+    }
+  }, [scheduleData, initialData, setMessage]);
 
   const reachedLimit = scheduleData.days.length >= SCHEDULE_DAY_LIMIT;
 
@@ -127,11 +145,16 @@ export const Schedule = ({
       (day) => day.id === scheduledDayId
     );
 
-    const newDays = [...scheduleData.days];
+    const updatedDays = [...scheduleData.days];
 
-    newDays.splice(indexOfDayToUpdate, 1, updatedDay);
+    updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
 
-    setScheduleData((prev) => ({ ...prev, days: newDays }));
+    const updatedSchedule = {
+      ...scheduleData,
+      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
+    };
+
+    setScheduleData(updatedSchedule);
   };
 
   const deleteRow = (scheduledDayId: string, rowToDeleteId: string) => {
@@ -146,8 +169,6 @@ export const Schedule = ({
       PreparedScheduledExercise[]
     >((result, current) => {
       if (current.id === rowToDeleteId && current.id.startsWith("temp")) {
-        current.ordinalNum = -1;
-        result.push({ ...current, taggedForDelete: true });
         return result;
       } else if (current.id === rowToDeleteId) {
         current.ordinalNum = -1;
@@ -170,11 +191,16 @@ export const Schedule = ({
       (day) => day.id === scheduledDayId
     );
 
-    const newDays = [...scheduleData.days];
+    const updatedDays = [...scheduleData.days];
 
-    newDays.splice(indexOfDayToUpdate, 1, updatedDay);
+    updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
 
-    setScheduleData((prev) => ({ ...prev, days: newDays }));
+    const updatedSchedule = {
+      ...scheduleData,
+      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
+    };
+
+    setScheduleData(updatedSchedule);
   };
 
   const updateRow = (
@@ -209,11 +235,16 @@ export const Schedule = ({
       (day) => day.id === scheduledDayId
     );
 
-    const newDays = [...scheduleData.days];
+    const updatedDays = [...scheduleData.days];
 
-    newDays.splice(indexOfDayToUpdate, 1, updatedDay);
+    updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
 
-    setScheduleData((prev) => ({ ...prev, days: newDays }));
+    const updatedSchedule = {
+      ...scheduleData,
+      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
+    };
+
+    setScheduleData(updatedSchedule);
   };
 
   const reorderExercises = (
