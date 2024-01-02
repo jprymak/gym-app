@@ -219,10 +219,8 @@ export const Schedule = ({
 
     const updatedExercises = dayToUpdate.exercises.map((scheduledExercise) => {
       if (columnId && scheduledExercise.id === rowId) {
-        // @ts-ignore
-        scheduledExercise[columnId] = value;
+        return { ...scheduledExercise, [columnId]: value };
       }
-
       return scheduledExercise;
     });
 
