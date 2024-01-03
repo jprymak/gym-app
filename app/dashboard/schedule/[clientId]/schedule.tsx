@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 import { ScheduledDay } from "./scheduledDay";
@@ -10,8 +10,10 @@ import { ScheduleWithDaysAndExercises, updateSchedule } from "@/lib/data";
 import { columns } from "./columns";
 import { createInitialDay, createInitialExerciseRow } from "@/lib/initialData";
 import { Direction, SCHEDULE_DAY_LIMIT } from "@/lib/constants";
-import { Loader2 } from "lucide-react";
-import { ProxyContext } from "@/lib/providers/ProxyProvider";
+import { Loader2, Save } from "lucide-react";
+import { useBeforeunload } from "react-beforeunload";
+import { AvailableStoredDataDialog } from "./availableStoredDataDialog";
+import { toast } from "@/components/ui/use-toast";
 
 interface ScheduleProps {
   scheduleData: ScheduleWithDaysAndExercises;
@@ -52,25 +54,34 @@ export const Schedule = ({
   exercises,
 }: ScheduleProps) => {
   const [scheduleData, setScheduleData] = useState(initialData);
-  const [message, setMessage] = useContext(ProxyContext);
+  const [open, setOpen] = useState(false);
   const [animationParent] = useAutoAnimate();
   const [isPending, startTransition] = useTransition();
+
+  const hasChanges =
+    JSON.stringify(initialData.days) !== JSON.stringify(scheduleData.days);
+
+  const scheduledIdKey = `schedule-${scheduleData.id}`;
+
+  useEffect(() => {
+    const data = localStorage.getItem(scheduledIdKey);
+    if (data) {
+      setOpen(true);
+    }
+  }, [scheduleData.id, scheduledIdKey]);
 
   useEffect(() => {
     setScheduleData(initialData);
   }, [initialData]);
 
   useEffect(() => {
-    if (
-      JSON.stringify(initialData.days) !== JSON.stringify(scheduleData.days)
-    ) {
-      setMessage(
-        "You have unsaved changes. Are your sure you want to leave page?"
-      );
-    } else {
-      setMessage(undefined);
+    if (hasChanges) {
+      const stringifiedData = JSON.stringify(scheduleData);
+      localStorage.setItem(scheduledIdKey, stringifiedData);
     }
-  }, [scheduleData, initialData, setMessage]);
+  }, [scheduleData, hasChanges, scheduledIdKey]);
+
+  useBeforeunload(hasChanges ? (event) => event.preventDefault() : undefined);
 
   const reachedLimit = scheduleData.days.length >= SCHEDULE_DAY_LIMIT;
 
@@ -118,9 +129,22 @@ export const Schedule = ({
     setScheduleData(updatedSchedule);
   };
 
-  const saveChanges = async () => {
-    startTransition(() => {
-      updateSchedule(scheduleData);
+  const saveChanges = () => {
+    startTransition(async () => {
+      const result = await updateSchedule(scheduleData);
+
+      if ("error" in result) {
+        toast({
+          variant: "destructive",
+          title: result.error,
+        });
+      } else {
+        toast({
+          title: "Schedule was saved.",
+        });
+      }
+
+      localStorage.setItem(scheduledIdKey, "");
     });
   };
 
@@ -289,10 +313,26 @@ export const Schedule = ({
     }));
   };
 
+  const handleOpenDialog = () => {
+    setOpen(false);
+  };
+
+  const acceptLoadFromStorage = () => {
+    const data = localStorage.getItem(scheduledIdKey);
+    if (data) {
+      setScheduleData(JSON.parse(data));
+      setOpen(false);
+    }
+  };
+
   return (
     <div>
       <div className="flex w-full justify-end gap-2 mb-5">
-        <Button onClick={saveChanges} disabled={isPending}>
+        <Button
+          onClick={saveChanges}
+          disabled={isPending || !hasChanges}
+          {...(hasChanges && { className: "animate-bounce" })}
+        >
           {isPending ? (
             <>
               <span className="mr-2">
@@ -301,7 +341,7 @@ export const Schedule = ({
               Saving...
             </>
           ) : (
-            <>Save changes</>
+            <Save />
           )}
         </Button>
         <Button disabled={reachedLimit} className="" onClick={addDay}>
@@ -334,6 +374,11 @@ export const Schedule = ({
           }
         )}
       </div>
+      <AvailableStoredDataDialog
+        open={open}
+        setOpen={handleOpenDialog}
+        accept={acceptLoadFromStorage}
+      />
     </div>
   );
 };

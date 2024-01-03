@@ -448,7 +448,12 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
     ]);
 
     revalidatePath(`/dashboard/schedule/${schedule.clientId}`);
+    return { data: transaction };
   } catch (e) {
-    console.error(e);
+    console.log(e);
+    const result = {
+      error: "Schedule could not be updated.",
+    };
+    return result;
   }
 }
