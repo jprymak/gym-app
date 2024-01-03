@@ -1,12 +1,13 @@
 import { Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
-import { useFormStatus } from "react-dom";
+interface SubmitBtnProps {
+  isPending: boolean;
+}
 
-export const SubmitBtn = () => {
-  const { pending } = useFormStatus();
+export const SubmitBtn = ({ isPending }: SubmitBtnProps) => {
   return (
-    <Button disabled={pending} type="submit" className=" flex gap-2">
-      {pending ? (
+    <Button disabled={isPending} type="submit" className=" flex gap-2">
+      {isPending ? (
         <>
           <Loader2 className="animate-spin" />
           Submitting

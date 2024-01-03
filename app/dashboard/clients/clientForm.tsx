@@ -25,6 +25,7 @@ import { Client } from "./columns";
 import { toast } from "@/components/ui/use-toast";
 import { addClient, updateClient } from "@/lib/data";
 import { SubmitBtn } from "@/components/submitBtn";
+import { useTransition } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -47,6 +48,8 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ data, closeDialog }: ClientFormProps) {
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: data
@@ -65,26 +68,28 @@ export function ClientForm({ data, closeDialog }: ClientFormProps) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const result = data
-      ? await updateClient(values, data.id)
-      : await addClient(values);
+    startTransition(async () => {
+      const result = data
+        ? await updateClient(values, data.id)
+        : await addClient(values);
 
-    if ("error" in result) {
-      toast({
-        variant: "destructive",
-        title: result.error,
-      });
-    } else {
-      toast({
-        title: data ? "Client was updated." : "Client was created.",
-      });
-      closeDialog();
-    }
+      if ("error" in result) {
+        toast({
+          variant: "destructive",
+          title: result.error,
+        });
+      } else {
+        toast({
+          title: data ? "Client was updated." : "Client was created.",
+        });
+        closeDialog();
+      }
+    });
   }
 
   return (
     <Form {...form}>
-      <form action={() => onSubmit(form.getValues())} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="name"
@@ -148,7 +153,7 @@ export function ClientForm({ data, closeDialog }: ClientFormProps) {
             </FormItem>
           )}
         />
-        <SubmitBtn />
+        <SubmitBtn isPending={isPending} />
       </form>
     </Form>
   );

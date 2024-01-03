@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -39,6 +39,8 @@ interface ExerciseFormProps {
 }
 
 export function ExerciseForm({ data, closeDialog }: ExerciseFormProps) {
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: data
@@ -55,26 +57,28 @@ export function ExerciseForm({ data, closeDialog }: ExerciseFormProps) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const result = data
-      ? await updateExercise(values, data.id)
-      : await createExercise(values);
+    startTransition(async () => {
+      const result = data
+        ? await updateExercise(values, data.id)
+        : await createExercise(values);
 
-    if ("error" in result) {
-      toast({
-        variant: "destructive",
-        title: result.error,
-      });
-    } else {
-      toast({
-        title: data ? "Exercise was updated." : "Exercise was created.",
-      });
-      closeDialog();
-    }
+      if ("error" in result) {
+        toast({
+          variant: "destructive",
+          title: result.error,
+        });
+      } else {
+        toast({
+          title: data ? "Exercise was updated." : "Exercise was created.",
+        });
+        closeDialog();
+      }
+    });
   }
 
   return (
     <Form {...form}>
-      <form action={() => onSubmit(form.getValues())} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="name"
@@ -121,7 +125,7 @@ export function ExerciseForm({ data, closeDialog }: ExerciseFormProps) {
           )}
         />
 
-        <SubmitBtn />
+        <SubmitBtn isPending={isPending} />
       </form>
     </Form>
   );
