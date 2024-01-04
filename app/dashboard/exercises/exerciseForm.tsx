@@ -23,14 +23,18 @@ import { toast } from "@/components/ui/use-toast";
 import { SubmitBtn } from "@/components/submitBtn";
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
+  name: z
+    .string()
+    .min(2, {
+      message: "Exercise name must be at least 4 characters long.",
+    })
+    .max(25, {
+      message: "Exercise name cannot contain more than 20 characters",
+    }),
   muscleGroups: z.array(z.string()).min(1, {
     message: "At least one muscle group must be selected",
   }),
-  demoLink: z.string(),
-  id: z.string().optional(),
+  demoLink: z.string().url(),
 });
 
 interface ExerciseFormProps {
@@ -118,7 +122,7 @@ export function ExerciseForm({ data, closeDialog }: ExerciseFormProps) {
             <FormItem>
               <FormLabel>Demo link</FormLabel>
               <FormControl>
-                <Input placeholder="Exercise name" {...field} />
+                <Input placeholder="Demo link (optional)" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

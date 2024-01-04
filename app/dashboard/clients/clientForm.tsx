@@ -28,17 +28,29 @@ import { SubmitBtn } from "@/components/submitBtn";
 import { useTransition } from "react";
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  surname: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
+  name: z
+    .string()
+    .min(2, {
+      message: "Name must be at least 2 characters long.",
+    })
+    .max(20, {
+      message: "Name cannot contain more than 20 characters.",
+    }),
+
+  surname: z
+    .string()
+    .min(2, {
+      message: "Surname must be at least 2 characters long.",
+    })
+    .max(20, {
+      message: "Surname cannot contain more than 20 characters",
+    }),
+
   email: z.string().email({
-    message: "Email is not valid.",
+    message: "Email is invalid.",
   }),
   status: z.string().min(2, {
-    message: "Status must be at least 2 characters.",
+    message: "Status must be selected before submitting.",
   }),
 });
 
