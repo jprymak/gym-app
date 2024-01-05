@@ -15,6 +15,8 @@ import { useBeforeunload } from "react-beforeunload";
 import { AvailableStoredDataDialog } from "./availableStoredDataDialog";
 import { toast } from "@/components/ui/use-toast";
 
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+
 interface ScheduleProps {
   scheduleData: ScheduleWithDaysAndExercises;
   exercises: Exercise[];
@@ -58,17 +60,22 @@ export const Schedule = ({
   const [animationParent] = useAutoAnimate();
   const [isPending, startTransition] = useTransition();
 
+  const scheduledIdKey = `schedule-${scheduleData.id}`;
+
+  const { loadFromStorage, removeFromStorage, saveToStorage } = useLocalStorage(
+    scheduledIdKey,
+    scheduleData
+  );
+
   const hasChanges =
     JSON.stringify(initialData.days) !== JSON.stringify(scheduleData.days);
 
-  const scheduledIdKey = `schedule-${scheduleData.id}`;
-
   useEffect(() => {
-    const data = localStorage.getItem(scheduledIdKey);
+    const data = loadFromStorage();
     if (data) {
       setOpen(true);
     }
-  }, [scheduleData.id, scheduledIdKey]);
+  }, [loadFromStorage]);
 
   useEffect(() => {
     setScheduleData(initialData);
@@ -76,10 +83,9 @@ export const Schedule = ({
 
   useEffect(() => {
     if (hasChanges) {
-      const stringifiedData = JSON.stringify(scheduleData);
-      localStorage.setItem(scheduledIdKey, stringifiedData);
+      saveToStorage();
     }
-  }, [scheduleData, hasChanges, scheduledIdKey]);
+  }, [hasChanges, saveToStorage]);
 
   useBeforeunload(hasChanges ? (event) => event.preventDefault() : undefined);
 
@@ -144,7 +150,7 @@ export const Schedule = ({
         });
       }
 
-      localStorage.setItem(scheduledIdKey, "");
+      removeFromStorage();
     });
   };
 
@@ -318,9 +324,9 @@ export const Schedule = ({
   };
 
   const acceptLoadFromStorage = () => {
-    const data = localStorage.getItem(scheduledIdKey);
+    const data = loadFromStorage();
     if (data) {
-      setScheduleData(JSON.parse(data));
+      setScheduleData(data);
       setOpen(false);
     }
   };
