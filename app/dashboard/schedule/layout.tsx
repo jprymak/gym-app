@@ -5,7 +5,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   const clients = await fetchClients();
 
   return (
-    <div className="flex">
+    <div className="flex flex-col">
       <ClientCombobox clients={clients} />
       {children}
     </div>

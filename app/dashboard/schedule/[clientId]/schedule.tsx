@@ -1,21 +1,26 @@
 "use client";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 import { ScheduledDay } from "./scheduledDay";
 import { Button } from "@/components/ui/button";
-import { Exercise, ScheduledDay as ScheduledDayType } from "@prisma/client";
+import { Exercise } from "@prisma/client";
 import { ScheduledDayWithExercises, ScheduledExercise } from "@/lib/data";
 import { ScheduleWithDaysAndExercises, updateSchedule } from "@/lib/data";
 import { columns } from "./columns";
 import { createInitialDay, createInitialExerciseRow } from "@/lib/initialData";
-import { Direction, SCHEDULE_DAY_LIMIT } from "@/lib/constants";
-import { Loader2, Save } from "lucide-react";
+import {
+  Direction,
+  MARGINAL_VALUES,
+  SCHEDULE_DAY_LIMIT,
+} from "@/lib/constants";
+import { AlertCircle, Loader2, Save } from "lucide-react";
 import { useBeforeunload } from "react-beforeunload";
 import { AvailableStoredDataDialog } from "./availableStoredDataDialog";
 import { toast } from "@/components/ui/use-toast";
 
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface ScheduleProps {
   scheduleData: ScheduleWithDaysAndExercises;
@@ -57,8 +62,10 @@ export const Schedule = ({
 }: ScheduleProps) => {
   const [scheduleData, setScheduleData] = useState(initialData);
   const [open, setOpen] = useState(false);
-  const [animationParent] = useAutoAnimate();
+  const [scheduleAnimationWrapper] = useAutoAnimate();
+  const [daysAnimationWrapper] = useAutoAnimate();
   const [isPending, startTransition] = useTransition();
+  const [scheduleIsValid, setScheduleIsValid] = useState(true);
 
   const scheduledIdKey = `schedule-${scheduleData.id}`;
 
@@ -69,6 +76,8 @@ export const Schedule = ({
 
   const hasChanges =
     JSON.stringify(initialData.days) !== JSON.stringify(scheduleData.days);
+
+  const cannotSaveChanges = isPending || !hasChanges || !scheduleIsValid;
 
   useEffect(() => {
     const data = loadFromStorage();
@@ -87,6 +96,46 @@ export const Schedule = ({
     }
   }, [hasChanges, saveToStorage]);
 
+  const validateSchedule = useCallback(() => {
+    let valid = true;
+    for (let day of scheduleData.days as PreparedScheduledDay[]) {
+      if (day.taggedForDelete) {
+        continue;
+      }
+      const exercises = day.exercises as PreparedScheduledExercise[];
+
+      valid = exercises.every((exercise) => {
+        if (exercise.taggedForDelete) {
+          return true;
+        }
+        const keysToCheck = Object.keys(
+          MARGINAL_VALUES
+        ) as (keyof typeof MARGINAL_VALUES)[];
+        return keysToCheck.every((key) => {
+          const value = exercise[key];
+          if (key === "comment") {
+            return (
+              value.length >= MARGINAL_VALUES[key].min &&
+              value.length <= MARGINAL_VALUES[key].max
+            );
+          }
+          return (
+            +value >= MARGINAL_VALUES[key].min &&
+            +value <= MARGINAL_VALUES[key].max
+          );
+        });
+      });
+      if (!valid) {
+        return false;
+      }
+    }
+
+    return valid;
+  }, [scheduleData.days]);
+
+  useEffect(() => {
+    setScheduleIsValid(validateSchedule());
+  }, [scheduleData, validateSchedule]);
   useBeforeunload(hasChanges ? (event) => event.preventDefault() : undefined);
 
   const reachedLimit = scheduleData.days.length >= SCHEDULE_DAY_LIMIT;
@@ -335,12 +384,24 @@ export const Schedule = ({
   };
 
   return (
-    <div>
-      <div className="flex w-full justify-end gap-2 mb-5">
+    <div className="flex flex-col w-full justify-end gap-2 mb-5 p-5 border-2 rounded-md">
+      <div ref={scheduleAnimationWrapper}>
+        {!scheduleIsValid && (
+          <Alert variant="destructive" className="mb-5">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              Schedule cannot be saved. One or more fields have invalid values.
+            </AlertDescription>
+          </Alert>
+        )}
+      </div>
+      <div className="flex gap-2 mb-5">
         <Button
           onClick={saveChanges}
-          disabled={isPending || !hasChanges}
-          {...(hasChanges && { className: "animate-bounce" })}
+          disabled={cannotSaveChanges}
+          {...(hasChanges &&
+            !cannotSaveChanges && { className: "animate-bounce" })}
         >
           {isPending ? (
             <>
@@ -357,7 +418,7 @@ export const Schedule = ({
           Add day
         </Button>
       </div>
-      <div className="flex flex-col gap-5" ref={animationParent}>
+      <div ref={daysAnimationWrapper} className="flex flex-col gap-5">
         {filterDeletedItems<PreparedScheduledDay>(scheduleData.days).map(
           (day, index) => {
             return (
