@@ -2,9 +2,9 @@ import { v4 as uuidv4 } from "uuid";
 
 export const createInitialExerciseRow = () => ({
   id: "temp-" + uuidv4(),
-  sets: "0",
-  reps: "0",
-  rpe: "0",
+  sets: "1",
+  reps: "1",
+  rpe: "1",
   comment: "",
   exerciseId: null,
   scheduledDayId: "",
