@@ -331,6 +331,11 @@ export const Schedule = ({
     }
   };
 
+  const rejectLoadFromStorage = () => {
+    removeFromStorage();
+    setOpen(false);
+  };
+
   return (
     <div>
       <div className="flex w-full justify-end gap-2 mb-5">
@@ -383,7 +388,8 @@ export const Schedule = ({
       <AvailableStoredDataDialog
         open={open}
         setOpen={handleOpenDialog}
-        accept={acceptLoadFromStorage}
+        handleAccept={acceptLoadFromStorage}
+        handleReject={rejectLoadFromStorage}
       />
     </div>
   );

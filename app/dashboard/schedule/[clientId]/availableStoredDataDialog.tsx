@@ -12,13 +12,15 @@ import { Button } from "@/components/ui/button";
 interface AvailableStoredDataDialogProps {
   open: boolean;
   setOpen: () => void;
-  accept: () => void;
+  handleAccept: () => void;
+  handleReject: () => void;
 }
 
 export const AvailableStoredDataDialog = ({
   open,
   setOpen,
-  accept,
+  handleAccept,
+  handleReject,
 }: AvailableStoredDataDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -34,10 +36,14 @@ export const AvailableStoredDataDialog = ({
           Would you like to load from storage recent changes that were not
           saved?
         </p>
+        <p className="text-destructive">
+          Clicking &quot;Reject&quot; removes data from local storage. This
+          action cannot be undone!
+        </p>
         <div className="flex gap-2 justify-end">
-          <Button onClick={accept}>Accept</Button>
-          <DialogClose asChild>
-            <Button>Cancel</Button>
+          <Button onClick={handleAccept}>Accept</Button>
+          <DialogClose onClick={handleReject} asChild>
+            <Button variant="destructive">Reject</Button>
           </DialogClose>
         </div>
       </DialogContent>
