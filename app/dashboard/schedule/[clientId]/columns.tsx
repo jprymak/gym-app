@@ -6,13 +6,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { PreparedScheduledExercise } from "./schedule";
+import { MARGINAL_VALUES } from "@/lib/constants";
+
+interface ScheduledExerciseField extends CellContext<any, string> {
+  marginalValues: { max: number; min: number };
+}
 
 const TableCellWithTextArea = ({
   getValue,
   row,
   column: { id },
   table,
-}: CellContext<any, string>) => {
+  marginalValues,
+}: ScheduledExerciseField) => {
   const initialValue = getValue();
 
   const [value, setValue] = useState(initialValue);
@@ -27,6 +33,9 @@ const TableCellWithTextArea = ({
 
   return (
     <Textarea
+      placeholder={`Max character count is ${marginalValues.max}`}
+      maxLength={marginalValues.max}
+      className=" w-36"
       value={value as string}
       onChange={(e) => setValue(e.target.value)}
       onBlur={onBlur}
@@ -39,10 +48,13 @@ const TableCellWithNumInput = ({
   row,
   column: { id },
   table,
-}: CellContext<any, string>) => {
+  marginalValues,
+}: ScheduledExerciseField) => {
   const initialValue = getValue();
 
   const [value, setValue] = useState(initialValue);
+
+  const badValue = +value < marginalValues.min || +value > marginalValues.max;
 
   const onBlur = () => {
     table.options.meta?.updateData(row.original.id, id, value);
@@ -54,8 +66,10 @@ const TableCellWithNumInput = ({
 
   return (
     <Input
-      className="w-14"
+      className={`w-16 ${badValue && "text-white bg-destructive"}`}
       value={value as string}
+      min={marginalValues.min}
+      max={marginalValues.max}
       type="number"
       onChange={(e) => setValue(e.target.value)}
       onBlur={onBlur}
@@ -87,23 +101,43 @@ export const columns: ColumnDef<PreparedScheduledExercise>[] = [
       {
         accessorKey: "sets",
         header: "Sets",
-        cell: TableCellWithNumInput,
+        cell: (props) => (
+          <TableCellWithNumInput
+            marginalValues={MARGINAL_VALUES.sets}
+            {...props}
+          />
+        ),
       },
       {
         accessorKey: "reps",
         header: "Reps",
-        cell: TableCellWithNumInput,
+        cell: (props) => (
+          <TableCellWithNumInput
+            marginalValues={MARGINAL_VALUES.reps}
+            {...props}
+          />
+        ),
       },
       {
         header: "RPE",
         accessorKey: "rpe",
-        cell: TableCellWithNumInput,
+        cell: (props) => (
+          <TableCellWithNumInput
+            marginalValues={MARGINAL_VALUES.rpe}
+            {...props}
+          />
+        ),
       },
       {
         header: "Comment",
         accessorKey: "comment",
         cell: (props) => {
-          return <TableCellWithTextArea {...props} />;
+          return (
+            <TableCellWithTextArea
+              marginalValues={MARGINAL_VALUES.comment}
+              {...props}
+            />
+          );
         },
       },
       {

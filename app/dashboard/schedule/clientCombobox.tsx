@@ -63,7 +63,7 @@ export function ClientCombobox({ clients }: ClientComboboxProps) {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger className="mb-5" asChild>
         <Button
           variant="outline"
           role="combobox"
