@@ -111,8 +111,6 @@ export const Schedule = ({
     const updatedDays = scheduleData.days.reduce<PreparedScheduledDay[]>(
       (result, current) => {
         if (current.id === idToDelete && current.id.startsWith("temp")) {
-          current.ordinalNum = -1;
-          result.push({ ...current, taggedForDelete: true });
           return result;
         } else if (current.id === idToDelete) {
           current.ordinalNum = -1;
