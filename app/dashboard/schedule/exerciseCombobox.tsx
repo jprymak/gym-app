@@ -40,6 +40,8 @@ export function ExerciseCombobox({
 
     if (selectedExercise) {
       table.options.meta?.updateData(row.original.id, id, selectedExercise);
+    } else {
+      table.options.meta?.updateData(row.original.id, id, "");
     }
 
     setOpen(false);
@@ -52,7 +54,9 @@ export function ExerciseCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className={`w-[200px] justify-between ${
+            !value && "text-white bg-destructive"
+          }`}
         >
           {value
             ? exercises.find(

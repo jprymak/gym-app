@@ -1,11 +1,17 @@
 "use client";
+import { writeFileXLSX, utils } from "xlsx";
+
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 import { ScheduledDay } from "./scheduledDay";
 import { Button } from "@/components/ui/button";
 import { Exercise } from "@prisma/client";
-import { ScheduledDayWithExercises, ScheduledExercise } from "@/lib/data";
+import {
+  ScheduledDayWithExercises,
+  ScheduledExercise,
+  prepareScheduleForExport,
+} from "@/lib/data";
 import { ScheduleWithDaysAndExercises, updateSchedule } from "@/lib/data";
 import { columns } from "./columns";
 import { createInitialDay, createInitialExerciseRow } from "@/lib/initialData";
@@ -14,13 +20,14 @@ import {
   MARGINAL_VALUES,
   SCHEDULE_DAY_LIMIT,
 } from "@/lib/constants";
-import { AlertCircle, Loader2, Save } from "lucide-react";
+import { AlertCircle, Download, Loader2, Save } from "lucide-react";
 import { useBeforeunload } from "react-beforeunload";
 import { AvailableStoredDataDialog } from "./availableStoredDataDialog";
 import { toast } from "@/components/ui/use-toast";
 
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { createWorksheetFromData } from "@/lib/worksheet/helpers";
 
 interface ScheduleProps {
   scheduleData: ScheduleWithDaysAndExercises;
@@ -107,6 +114,9 @@ export const Schedule = ({
       valid = exercises.every((exercise) => {
         if (exercise.taggedForDelete) {
           return true;
+        }
+        if (!exercise.exerciseId) {
+          return false;
         }
         const keysToCheck = Object.keys(
           MARGINAL_VALUES
@@ -383,6 +393,33 @@ export const Schedule = ({
     setOpen(false);
   };
 
+  const exportData = async () => {
+    try {
+      const result = await prepareScheduleForExport(scheduleData.clientId);
+      if (!result) return;
+
+      const { clientName, clientSurname } = result;
+
+      const ws = createWorksheetFromData(result);
+
+      //create new workbook
+      const workbook = utils.book_new();
+      utils.book_append_sheet(workbook, ws, "Date range here"); //TO DO: Pass date range here once date-rage feature is ready
+
+      //write file
+      writeFileXLSX(workbook, `${clientName} ${clientSurname}.xlsx`);
+
+      toast({
+        title: "Schedule was exported.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Schedule could not be exported.",
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col w-full justify-end gap-2 mb-5 p-5 border-2 rounded-md">
       <div ref={scheduleAnimationWrapper}>
@@ -391,7 +428,8 @@ export const Schedule = ({
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>
-              Schedule cannot be saved. One or more fields have invalid values.
+              Schedule cannot be saved. One or more fields have invalid or
+              missing values.
             </AlertDescription>
           </Alert>
         )}
@@ -413,6 +451,9 @@ export const Schedule = ({
           ) : (
             <Save />
           )}
+        </Button>
+        <Button disabled={hasChanges} onClick={exportData}>
+          <Download />
         </Button>
         <Button disabled={reachedLimit} className="" onClick={addDay}>
           Add day

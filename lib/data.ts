@@ -58,6 +58,27 @@ export type ScheduledDayWithExercises = Prisma.ScheduledDayGetPayload<{
   };
 }>;
 
+export type ScheduledExercisePreparedForExport = {
+  Name: string;
+  Number: number;
+  Sets: string;
+  Reps: string;
+  Rpe: string;
+  Comment: string;
+  Demo: string;
+};
+
+export type ScheduledDayPreparedForExport = {
+  exercises: ScheduledExercisePreparedForExport[];
+};
+
+export type SchedulePreparedForExport = {
+  clientName: string;
+  clientSurname: string;
+  //TO DO: add date range for schedule once feature is ready
+  days: ScheduledDayPreparedForExport[];
+};
+
 export type ScheduledExercise = Prisma.ScheduledExerciseGetPayload<{
   select: {
     id: true;
@@ -456,4 +477,62 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
     };
     return result;
   }
+}
+
+export async function prepareScheduleForExport(clientId: string) {
+  const schedule = await fetchSchedule(clientId);
+  const client = await db.client.findFirst({
+    where: {
+      id: clientId,
+    },
+  });
+
+  if (!schedule || !client) {
+    return;
+  }
+
+  const exerciseIDs = schedule?.days.reduce<string[]>((prev, curr) => {
+    curr.exercises.forEach((exercise) => {
+      if (!prev.includes(exercise.exerciseId)) {
+        prev.push(exercise.exerciseId);
+      }
+    });
+
+    return prev;
+  }, []);
+
+  const exercises = await db.exercise.findMany({
+    where: {
+      id: {
+        in: exerciseIDs,
+      },
+    },
+  });
+
+  const daysPreparedForExport: ScheduledDayPreparedForExport[] =
+    schedule?.days.map((day) => {
+      const newExercises = day.exercises.map((scheduledExercise) => {
+        const exerciseMatch = exercises.find((exercise) => {
+          return scheduledExercise.exerciseId === exercise.id;
+        });
+        return {
+          Number: scheduledExercise.ordinalNum,
+          Name: exerciseMatch?.name || "",
+          Sets: scheduledExercise.sets,
+          Reps: scheduledExercise.reps,
+          Rpe: scheduledExercise.rpe,
+          Demo: exerciseMatch?.demoLink || "",
+          Comment: scheduledExercise.comment,
+        };
+      });
+      return { ...day, exercises: newExercises };
+    });
+
+  const schedulePreparedForExport: SchedulePreparedForExport = {
+    clientName: client.name,
+    clientSurname: client.surname,
+    days: daysPreparedForExport,
+  };
+
+  return schedulePreparedForExport;
 }
