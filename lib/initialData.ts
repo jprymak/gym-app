@@ -6,7 +6,7 @@ export const createInitialExerciseRow = () => ({
   reps: "1",
   rpe: "1",
   comment: "",
-  exerciseId: null,
+  exerciseId: "",
   scheduledDayId: "",
   ordinalNum: -1,
 });

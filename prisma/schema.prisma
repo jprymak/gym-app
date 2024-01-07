@@ -40,7 +40,7 @@ model ScheduledExercise {
   comment        String
   created        DateTime?     @default(now())
   modified       DateTime?     @updatedAt
-  exerciseId     String?       @db.ObjectId
+  exerciseId     String        @db.ObjectId
   scheduledDay   ScheduledDay? @relation(fields: [scheduledDayId], references: [id])
   scheduledDayId String?       @db.ObjectId
   ordinalNum     Int
