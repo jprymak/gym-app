@@ -68,7 +68,16 @@ export const columns: ColumnDef<Exercise>[] = [
   },
   {
     accessorKey: "demoLink",
-    header: "Demo link",
+    header: "Demo",
+    cell: ({ row }) => {
+      return row.original.demoLink ? (
+        <a target="blank" href={row.original.demoLink}>
+          Link
+        </a>
+      ) : (
+        "-"
+      );
+    },
   },
   // { TO DO: add once realtions are ready
   //   accessorKey: "usedBy",

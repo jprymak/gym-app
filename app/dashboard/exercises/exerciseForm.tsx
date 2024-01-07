@@ -34,7 +34,7 @@ const formSchema = z.object({
   muscleGroups: z.array(z.string()).min(1, {
     message: "At least one muscle group must be selected",
   }),
-  demoLink: z.string().url(),
+  demoLink: z.string().url().or(z.literal("")),
 });
 
 interface ExerciseFormProps {
