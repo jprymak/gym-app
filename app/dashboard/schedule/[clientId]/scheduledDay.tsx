@@ -1,47 +1,46 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { MoveDown, MoveUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-
 import {
   Table,
-  TableHeader,
-  TableRow,
-  TableHead,
   TableBody,
   TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-
-import {
-  ColumnDef,
-  RowData,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { Exercise } from "@prisma/client";
-import { PreparedScheduledExercise } from "./schedule";
 import { Direction, SCHEDULED_EXERCISE_DAY_LIMIT } from "@/lib/constants";
 import {
-  SortableContext,
-  arrayMove,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import {
+  closestCenter,
   DndContext,
   DragOverlay,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
-  closestCenter,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { Exercise } from "@prisma/client";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  RowData,
+  useReactTable,
+} from "@tanstack/react-table";
+
 import { DraggableTableRow } from "./draggableTableRow";
+import { PreparedScheduledExercise } from "./schedule";
 import { StaticTableRow } from "./staticTableRow";
-import { MoveDown, MoveUp } from "lucide-react";
 
 interface DataTableProps<TData extends PreparedScheduledExercise, TValue> {
   columns: ColumnDef<TData, TValue>[];

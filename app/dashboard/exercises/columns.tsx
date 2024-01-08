@@ -1,11 +1,11 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SortableHeader } from "@/components/ui/sortableHeader";
+import { ColumnDef } from "@tanstack/react-table";
 
-import { EditExerciseDialog } from "./editExerciseDialog";
 import { DeleteExerciseDialog } from "./deleteExerciseDialog";
+import { EditExerciseDialog } from "./editExerciseDialog";
 
 export const MUSCLE_GROUPS = [
   "chest",

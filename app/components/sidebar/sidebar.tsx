@@ -1,12 +1,13 @@
 import Image from "next/image";
-import MenuLink from "../menuLink/menuLink";
 import {
-  Users,
-  Dumbbell,
-  Settings,
-  LayoutDashboard,
   CalendarCheck,
+  Dumbbell,
+  LayoutDashboard,
+  Settings,
+  Users,
 } from "lucide-react";
+
+import MenuLink from "../menuLink/menuLink";
 
 const menuItems = [
   {

@@ -1,5 +1,9 @@
 "use client";
 import React, { useState, useTransition } from "react";
+import { XCircle } from "lucide-react";
+
+import { DeleteBtnWithStatus } from "@/components/deleteBtnWithStatus";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -8,12 +12,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { XCircle } from "lucide-react";
-import { Client } from "./columns";
-import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { deleteClient } from "@/lib/data";
-import { DeleteBtnWithStatus } from "@/components/deleteBtnWithStatus";
+
+import { Client } from "./columns";
 
 interface DeleteClientDialogProps {
   data: Client;

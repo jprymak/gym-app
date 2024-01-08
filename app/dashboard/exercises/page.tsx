@@ -1,6 +1,8 @@
-import { Exercise, columns } from "./columns";
-import { DataTable } from "../../../components/ui/data-table";
 import { fetchExercises } from "@/lib/data";
+
+import { DataTable } from "../../../components/ui/data-table";
+
+import { columns,Exercise } from "./columns";
 import { ExercisesDataTable } from "./exercisesDataTable";
 
 const exercisesMock: Exercise[] = [

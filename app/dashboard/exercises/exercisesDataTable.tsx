@@ -2,10 +2,10 @@
 
 import { DataTable } from "@/components/ui/data-table";
 
+import { BulkDeleteExerciseDialog } from "./bulkDeleteExercise";
 import { columns } from "./columns";
 import { Exercise } from "./columns";
 import { EditExerciseDialog } from "./editExerciseDialog";
-import { BulkDeleteExerciseDialog } from "./bulkDeleteExercise";
 
 interface ExercisesDataTableProps {
   data: Exercise[];

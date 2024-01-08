@@ -1,6 +1,7 @@
-import { Client } from "./columns";
 import { fetchClients } from "@/lib/data";
+
 import { ClientDataTable } from "./clientsDataTable";
+import { Client } from "./columns";
 
 const clientsMock: Client[] = [
   {

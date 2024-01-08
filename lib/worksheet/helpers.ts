@@ -1,7 +1,8 @@
 import { utils } from "xlsx";
+
 import {
-  SchedulePreparedForExport,
   ScheduledExercisePreparedForExport,
+  SchedulePreparedForExport,
 } from "../data";
 
 export const createWorksheetFromData = (result: SchedulePreparedForExport) => {

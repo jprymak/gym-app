@@ -1,10 +1,11 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SortableHeader } from "@/components/ui/sortableHeader";
-import { EditClientDialog } from "./editClientDialog";
+import { ColumnDef } from "@tanstack/react-table";
+
 import { DeleteClientDialog } from "./deleteClientDialog";
+import { EditClientDialog } from "./editClientDialog";
 
 export type ClientPartial = {
   name: string;

@@ -1,8 +1,9 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,7 +11,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import { getHeaderString } from "@/lib/stringHelpers";
 
 function ModeToggle() {
