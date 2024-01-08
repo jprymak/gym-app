@@ -4,7 +4,11 @@ import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 
 interface MenuLinkProps {
-  item: any;
+  item: {
+    title: string;
+    path: string;
+    icon: JSX.Element;
+  };
 }
 
 const MenuLink = ({ item }: MenuLinkProps) => {

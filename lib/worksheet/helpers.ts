@@ -81,7 +81,7 @@ export const createWorksheetFromData = (result: SchedulePreparedForExport) => {
 
   /* merge columns with Day number */
   const merge = [];
-  for (let index of rowIndexesForColumnMerge) {
+  for (const index of rowIndexesForColumnMerge) {
     merge.push({ s: { r: index, c: 0 }, e: { r: index, c: columnsCount } });
   }
   ws["!merges"] = merge;

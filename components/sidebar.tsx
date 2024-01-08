@@ -7,7 +7,7 @@ import {
   Users,
 } from "lucide-react";
 
-import MenuLink from "../menuLink/menuLink";
+import MenuLink from "./menuLink";
 
 const menuItems = [
   {

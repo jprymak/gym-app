@@ -59,6 +59,7 @@ export function DataTable<TData, TValue>({
     return React.Children.map(children, (child: React.ReactNode) => {
       if (React.isValidElement(child)) {
         return React.cloneElement(child, {
+          // eslint-disable-next-line
           // @ts-ignore
           selectedRows: rowSelection,
         });

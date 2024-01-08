@@ -1,8 +1,9 @@
-import { TableCell,TableRow } from "@/components/ui/table";
-import { flexRender,Row } from "@tanstack/react-table";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { flexRender, Row } from "@tanstack/react-table";
+
+import { PreparedScheduledExercise } from "../app/dashboard/schedule/[clientId]/schedule";
 
 import { DragHandle } from "./dragHandle";
-import { PreparedScheduledExercise } from "./schedule";
 
 export const StaticTableRow = ({
   row,

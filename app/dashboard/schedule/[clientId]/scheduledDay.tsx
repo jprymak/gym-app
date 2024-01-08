@@ -3,6 +3,8 @@
 import React, { useMemo, useState } from "react";
 import { MoveDown, MoveUp } from "lucide-react";
 
+import { DraggableTableRow } from "@/components/draggableTableRow";
+import { StaticTableRow } from "@/components/staticTableRow";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -38,9 +40,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { DraggableTableRow } from "./draggableTableRow";
 import { PreparedScheduledExercise } from "./schedule";
-import { StaticTableRow } from "./staticTableRow";
 
 interface DataTableProps<TData extends PreparedScheduledExercise, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -54,7 +54,7 @@ interface DataTableProps<TData extends PreparedScheduledExercise, TValue> {
   updateRow: (
     scheduledDayId: string,
     columnId: string,
-    value: any,
+    value: string,
     rowId: string
   ) => void;
   reorderExercises: (
@@ -67,6 +67,7 @@ interface DataTableProps<TData extends PreparedScheduledExercise, TValue> {
 }
 
 declare module "@tanstack/react-table" {
+  // eslint-disable-next-line
   interface TableMeta<TData extends RowData> {
     updateData: (rowId: string, columnId: string, value: string) => void;
     getExercises: () => Exercise[];

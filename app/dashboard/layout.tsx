@@ -1,7 +1,7 @@
 "use client";
 
-import Header from "../components/header/header";
-import Sidebar from "../components/sidebar/sidebar";
+import Header from "../../components/header";
+import Sidebar from "../../components/sidebar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (

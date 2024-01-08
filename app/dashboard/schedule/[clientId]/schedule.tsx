@@ -2,9 +2,9 @@
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { AlertCircle, Download, Loader2, Save } from "lucide-react";
 import { useBeforeunload } from "react-beforeunload";
-import { utils,writeFileXLSX } from "xlsx";
+import { utils, writeFileXLSX } from "xlsx";
 
-import { Alert, AlertDescription,AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import {
@@ -51,7 +51,7 @@ const filterDeletedItems = <T,>(items: ScheduleItems<T>[]) => {
 
 const applyOrdinalNumbers = <T,>(items: ScheduleItems<T>[]) => {
   let counter = 1;
-  return items.map((item, i) => {
+  return items.map((item) => {
     if (!item.taggedForDelete) {
       const itemWithNum = { ...item, ordinalNum: counter };
       counter++;
@@ -104,7 +104,7 @@ export const Schedule = ({
 
   const validateSchedule = useCallback(() => {
     let valid = true;
-    for (let day of scheduleData.days as PreparedScheduledDay[]) {
+    for (const day of scheduleData.days as PreparedScheduledDay[]) {
       if (day.taggedForDelete) {
         continue;
       }

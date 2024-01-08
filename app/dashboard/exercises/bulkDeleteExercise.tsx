@@ -19,7 +19,7 @@ import { Exercise } from "./columns";
 
 interface DeleteExerciseDialogProps {
   data: Exercise[];
-  selectedRows?: { [key: string]: Boolean };
+  selectedRows?: { [key: string]: boolean };
 }
 
 export const BulkDeleteExerciseDialog = ({
