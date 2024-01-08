@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { FileEdit, Plus } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,10 +9,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FileEdit, Plus } from "lucide-react";
-import { ExerciseForm } from "./exerciseForm";
+
 import { Exercise } from "./columns";
-import { Button } from "@/components/ui/button";
+import { ExerciseForm } from "./exerciseForm";
 
 interface EditExerciseDialogProps {
   data?: Exercise;

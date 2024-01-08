@@ -1,4 +1,5 @@
 import { fetchExercises, fetchSchedule } from "@/lib/data";
+
 import { Schedule } from "./schedule";
 
 export default async function SchedulePage({

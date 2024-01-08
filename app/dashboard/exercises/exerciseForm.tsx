@@ -1,9 +1,13 @@
 "use client";
-import { useState, useRef, useCallback, useEffect, useTransition } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { Command as CommandPrimitive } from "cmdk";
+import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { X } from "lucide-react";
+
+import { SubmitBtn } from "@/components/submitBtn";
+import { Badge } from "@/components/ui/badge";
+import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
 import {
   Form,
   FormControl,
@@ -13,14 +17,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
-import { Command as CommandPrimitive } from "cmdk";
+import { toast } from "@/components/ui/use-toast";
+import { createExercise, updateExercise } from "@/lib/data";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Exercise, MUSCLE_GROUPS } from "./columns";
-import { createExercise, updateExercise } from "@/lib/data";
-import { toast } from "@/components/ui/use-toast";
-import { SubmitBtn } from "@/components/submitBtn";
 
 const formSchema = z.object({
   name: z

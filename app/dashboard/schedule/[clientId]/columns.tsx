@@ -1,12 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { CellContext, ColumnDef } from "@tanstack/react-table";
+import { useEffect,useState } from "react";
 import { XCircle } from "lucide-react";
-import { ExerciseCombobox } from "../exerciseCombobox";
+
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useState, useEffect } from "react";
-import { PreparedScheduledExercise } from "./schedule";
 import { MARGINAL_VALUES } from "@/lib/constants";
+import { CellContext, ColumnDef } from "@tanstack/react-table";
+
+import { ExerciseCombobox } from "../exerciseCombobox";
+
+import { PreparedScheduledExercise } from "./schedule";
 
 interface ScheduledExerciseField extends CellContext<any, string> {
   marginalValues: { max: number; min: number };

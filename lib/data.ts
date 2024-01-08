@@ -1,10 +1,12 @@
 "use server";
 
-import { ExercisePartial } from "@/app/dashboard/exercises/columns";
-import { db } from "./db";
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client";
+
 import { ClientPartial } from "@/app/dashboard/clients/columns";
+import { ExercisePartial } from "@/app/dashboard/exercises/columns";
+import { Prisma } from "@prisma/client";
+
+import { db } from "./db";
 
 export type ScheduledDay = Prisma.ScheduledDayGetPayload<{
   select: {

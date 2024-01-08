@@ -1,7 +1,8 @@
 "use client";
 
+import { ArrowDown, ArrowUp,ArrowUpDown } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, ArrowDown, ArrowUp } from "lucide-react";
 import { Column } from "@tanstack/react-table";
 
 export type SortableHeaderProps = {
