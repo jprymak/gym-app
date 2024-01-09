@@ -51,7 +51,7 @@ describe("Client Form", () => {
 
     const submitBtn = screen.getByRole("button", { name: /submit/i });
 
-    await user.dblClick(submitBtn);
+    await user.click(submitBtn);
 
     const nameError = screen.getByText(clientFormMessages.nameMinError);
     const surnameError = screen.getByText(clientFormMessages.surnameMinError);
@@ -64,7 +64,7 @@ describe("Client Form", () => {
     expect(statusError).toBeInTheDocument();
   });
 
-  it("should be filled with form data in edit mode", async () => {
+  it("should be filled with form data in edit mode", () => {
     const { data } = renderComponentWithData();
 
     const nameInput = screen.getByRole("textbox", { name: /^name$/i });
@@ -72,7 +72,7 @@ describe("Client Form", () => {
     const emailInput = screen.getByRole("textbox", { name: /email/i });
     const statusSelect = screen.getByRole("combobox", { name: /status/i });
 
-    await selectEvent.select(statusSelect, "inactive");
+    selectEvent.select(statusSelect, "inactive");
 
     expect(nameInput).toHaveValue(data.name);
     expect(surnameInput).toHaveValue(data.surname);

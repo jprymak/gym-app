@@ -23,6 +23,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Exercise, MUSCLE_GROUPS } from "./columns";
 
+export const exerciseFormMessages = {
+  nameMinError: "Exercise name must be at least 4 characters long.",
+  nameMaxError: "Exercise name cannot contain more than 20 characters",
+  muscleGroupsError: "At least one muscle group must be selected",
+};
+
 const formSchema = z.object({
   name: z
     .string()
