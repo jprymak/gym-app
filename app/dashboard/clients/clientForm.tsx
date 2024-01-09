@@ -26,30 +26,39 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Client } from "./columns";
 
-const formSchema = z.object({
+export const clientFormMessages = {
+  nameMinError: "Name must be at least 2 characters long.",
+  nameMaxError: "Name cannot contain more than 20 characters.",
+  surnameMinError: "Surname must be at least 2 characters long.",
+  surnameMaxError: "Surname cannot contain more than 20 characters",
+  emailError: "Email is invalid.",
+  statusError: "Status must be selected before submitting.",
+};
+
+export const formSchema = z.object({
   name: z
     .string()
     .min(2, {
-      message: "Name must be at least 2 characters long.",
+      message: clientFormMessages.nameMinError,
     })
     .max(20, {
-      message: "Name cannot contain more than 20 characters.",
+      message: clientFormMessages.nameMaxError,
     }),
 
   surname: z
     .string()
     .min(2, {
-      message: "Surname must be at least 2 characters long.",
+      message: clientFormMessages.surnameMinError,
     })
     .max(20, {
-      message: "Surname cannot contain more than 20 characters",
+      message: clientFormMessages.surnameMaxError,
     }),
 
   email: z.string().email({
-    message: "Email is invalid.",
+    message: clientFormMessages.emailError,
   }),
   status: z.string().min(2, {
-    message: "Status must be selected before submitting.",
+    message: clientFormMessages.statusError,
   }),
 });
 
