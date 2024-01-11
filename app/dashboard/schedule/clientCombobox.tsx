@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Check,ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -51,6 +51,8 @@ export function ClientCombobox({ clients }: ClientComboboxProps) {
 
     if (selectedClientId) {
       router.push(`/dashboard/schedule/${selectedClientId}`);
+    } else {
+      router.push(`/dashboard/schedule`);
     }
 
     setOpen(false);

@@ -7,6 +7,11 @@ const nextConfig = {
         destination: "/dashboard",
         permanent: true,
       },
+      {
+        source: "/dashboard",
+        destination: "/dashboard/schedule",
+        permanent: true,
+      },
     ];
   },
 };
