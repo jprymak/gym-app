@@ -420,7 +420,7 @@ export const Schedule = ({
   };
 
   return (
-    <div className="flex flex-col w-full justify-end gap-2 mb-5 p-5 border-2 rounded-md">
+    <div className="overflow-auto flex flex-col w-full justify-end gap-2 mb-5 p-5 border-2 rounded-md">
       <div ref={scheduleAnimationWrapper}>
         {!scheduleIsValid && (
           <Alert variant="destructive" className="mb-5">

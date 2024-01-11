@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Moon, Sun } from "lucide-react";
+import { Menu, Moon, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useGlobalContext } from "@/lib/context/globalContext";
 import { getHeaderString } from "@/lib/stringHelpers";
 
 function ModeToggle() {
@@ -42,13 +43,22 @@ function ModeToggle() {
 
 function Header() {
   const pathname = usePathname();
+  const { toggleOpenMobileNav } = useGlobalContext();
 
   return (
-    <header className="border-2 px-4 py-3 rounded-md capitalize flex items-center">
+    <header className="border-2 px-4 py-3 rounded-md capitalize flex items-center gap-1">
       <h1 className=" text-2xl font-bold mr-auto">
         {getHeaderString(pathname)}
       </h1>
       <ModeToggle />
+      <Button
+        variant="outline"
+        type="button"
+        className="md:hidden"
+        onClick={toggleOpenMobileNav}
+      >
+        <Menu />
+      </Button>
     </header>
   );
 }
