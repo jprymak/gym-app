@@ -76,7 +76,7 @@ export function DataTable<TData, TValue>({
           onChange={(event) => setSearchString(event.target.value)}
           className="w-56 mr-auto"
         />
-        <div>{renderChildren()}</div>
+        <div className="flex gap-2">{renderChildren()}</div>
       </div>
       <div className="rounded-md border">
         <Table className="overflow-auto">

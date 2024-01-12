@@ -1,11 +1,18 @@
 "use client";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { AlertCircle, Download, Loader2, Plus, Save } from "lucide-react";
+import {
+  AlertCircle,
+  CalendarPlus,
+  Download,
+  Loader2,
+  Save,
+} from "lucide-react";
 import { useBeforeunload } from "react-beforeunload";
 import { utils, writeFileXLSX } from "xlsx";
 
+import { IconButton } from "@/components/iconButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
 import {
   Direction,
@@ -468,78 +475,78 @@ export const Schedule = ({
   };
 
   return (
-    <div className="overflow-auto flex flex-col w-full justify-end gap-2 mb-5 p-5 border-2 rounded-md">
-      <div ref={scheduleAnimationWrapper}>
-        {!scheduleIsValid && (
-          <Alert variant="destructive" className="mb-5">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-              Schedule cannot be saved. One or more fields have invalid or
-              missing values.
-            </AlertDescription>
-          </Alert>
-        )}
-      </div>
-      <div className="flex gap-2 mb-5">
-        <Button
-          onClick={saveChanges}
-          disabled={cannotSaveChanges}
-          {...(hasChanges &&
-            !cannotSaveChanges && { className: "animate-bounce" })}
-        >
-          {isPending ? (
-            <>
-              <span className="mr-2">
-                <Loader2 className="animate-spin" />
-              </span>
-              Saving...
-            </>
-          ) : (
-            <Save />
+    <TooltipProvider>
+      <div className="overflow-auto flex flex-col w-full justify-end gap-2 mb-5 p-5 border-2 rounded-md">
+        <div ref={scheduleAnimationWrapper}>
+          {!scheduleIsValid && (
+            <Alert variant="destructive" className="mb-5">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                Schedule cannot be saved. One or more fields have invalid or
+                missing values.
+              </AlertDescription>
+            </Alert>
           )}
-        </Button>
-        <Button disabled={hasChanges} onClick={exportData}>
-          <Download />
-        </Button>
-        <Button disabled={reachedLimit} className="" onClick={addDay}>
-          <Plus className="mr-2" />
-          Add Day
-        </Button>
+        </div>
+        <div className="flex gap-2 mb-5">
+          <IconButton
+            tooltip="Save changes"
+            icon={isPending ? <Loader2 className="animate-spin" /> : <Save />}
+            disabled={cannotSaveChanges}
+            onClick={saveChanges}
+            {...(isPending && { label: "Saving..." })}
+            {...(hasChanges &&
+              !cannotSaveChanges && { className: "animate-bounce" })}
+          />
+          <IconButton
+            tooltip="Export"
+            icon={<Download />}
+            disabled={hasChanges}
+            onClick={exportData}
+          />
+          <IconButton
+            tooltip="Add Day"
+            icon={<CalendarPlus />}
+            disabled={reachedLimit}
+            className=""
+            onClick={addDay}
+          />
+        </div>
+        <div ref={daysAnimationWrapper} className="flex flex-col gap-9">
+          {filterDeletedItems<PreparedScheduledDay>(scheduleData.days).map(
+            (day, index) => {
+              return (
+                <ScheduledDay
+                  key={day.id}
+                  columns={columns}
+                  data={filterDeletedItems<PreparedScheduledExercise>(
+                    day.exercises
+                  )}
+                  exercises={exercises}
+                  deleteDay={deleteDay}
+                  scheduledDayId={day.id}
+                  title={(index + 1).toString()}
+                  addRow={addRow}
+                  copyRow={copyRow}
+                  deleteRow={deleteRow}
+                  updateRow={updateRow}
+                  reorderExercises={reorderExercises}
+                  moveDay={moveDay}
+                  isFirst={index === 0}
+                  isLast={index === scheduleData.days.length - 1}
+                />
+              );
+            }
+          )}
+        </div>
+        <AvailableStoredDataDialog
+          open={open}
+          setOpen={handleOpenDialog}
+          handleAccept={acceptLoadFromStorage}
+          handleReject={rejectLoadFromStorage}
+        />
       </div>
-      <div ref={daysAnimationWrapper} className="flex flex-col gap-9">
-        {filterDeletedItems<PreparedScheduledDay>(scheduleData.days).map(
-          (day, index) => {
-            return (
-              <ScheduledDay
-                key={day.id}
-                columns={columns}
-                data={filterDeletedItems<PreparedScheduledExercise>(
-                  day.exercises
-                )}
-                exercises={exercises}
-                deleteDay={deleteDay}
-                scheduledDayId={day.id}
-                title={(index + 1).toString()}
-                addRow={addRow}
-                copyRow={copyRow}
-                deleteRow={deleteRow}
-                updateRow={updateRow}
-                reorderExercises={reorderExercises}
-                moveDay={moveDay}
-                isFirst={index === 0}
-                isLast={index === scheduleData.days.length - 1}
-              />
-            );
-          }
-        )}
-      </div>
-      <AvailableStoredDataDialog
-        open={open}
-        setOpen={handleOpenDialog}
-        handleAccept={acceptLoadFromStorage}
-        handleReject={rejectLoadFromStorage}
-      />
-    </div>
+    </TooltipProvider>
   );
 };

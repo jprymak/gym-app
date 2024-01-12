@@ -1,8 +1,9 @@
 "use client";
 import React, { useState, useTransition } from "react";
-import { XCircle } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 import { DeleteBtnWithStatus } from "@/components/deleteBtnWithStatus";
+import { IconButton } from "@/components/iconButton";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -50,9 +51,11 @@ export const DeleteClientDialog = ({ data }: DeleteClientDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive">
-          <XCircle />
-        </Button>
+        <IconButton
+          tooltip="Delete client"
+          icon={<Trash2 className="text-destructive" />}
+          variant="ghost"
+        />
       </DialogTrigger>
       <DialogContent
         onInteractOutside={(e) => {

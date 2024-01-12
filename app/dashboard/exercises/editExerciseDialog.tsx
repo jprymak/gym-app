@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FileEdit, Plus } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/iconButton";
 import {
   Dialog,
   DialogContent,
@@ -29,16 +29,12 @@ export const EditExerciseDialog = ({ data }: EditExerciseDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          {editMode ? (
-            <FileEdit />
-          ) : (
-            <>
-              <Plus className="mr-2" />
-              Add exercise
-            </>
-          )}
-        </Button>
+        <IconButton
+          icon={editMode ? <FileEdit /> : <Plus />}
+          variant={editMode ? "ghost" : "default"}
+          tooltip={editMode ? "Edit exercise" : "Add exercise"}
+          {...(!editMode && { label: "Add exercise" })}
+        />
       </DialogTrigger>
       <DialogContent
         onInteractOutside={(e) => {
