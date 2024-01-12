@@ -1,13 +1,13 @@
 import { v4 as uuidv4 } from "uuid";
 
-export const createInitialExerciseRow = () => ({
+export const createInitialExerciseRow = (scheduledDayId = "") => ({
   id: "temp-" + uuidv4(),
   sets: "1",
   reps: "1",
   rpe: "1",
   comment: "",
   exerciseId: "",
-  scheduledDayId: "",
+  scheduledDayId,
   ordinalNum: -1,
 });
 
