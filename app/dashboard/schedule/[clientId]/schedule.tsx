@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { AlertCircle, Download, Loader2, Save } from "lucide-react";
+import { AlertCircle, Download, Loader2, Plus, Save } from "lucide-react";
 import { useBeforeunload } from "react-beforeunload";
 import { utils, writeFileXLSX } from "xlsx";
 
@@ -211,7 +211,7 @@ export const Schedule = ({
   };
 
   const addRow = (scheduledDayId: string) => {
-    const newRow: any = createInitialExerciseRow();
+    const newRow: any = createInitialExerciseRow(scheduledDayId);
     const dayToUpdate = scheduleData.days.find(
       (day) => day.id === scheduledDayId
     );
@@ -229,6 +229,54 @@ export const Schedule = ({
 
     const indexOfDayToUpdate = scheduleData.days.findIndex(
       (day) => day.id === scheduledDayId
+    );
+
+    const updatedDays = [...scheduleData.days];
+
+    updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
+
+    const updatedSchedule = {
+      ...scheduleData,
+      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
+    };
+
+    setScheduleData(updatedSchedule);
+  };
+
+  const copyRow = (scheduledExerciseToCopy: PreparedScheduledExercise) => {
+    const dayToUpdate = scheduleData.days.find(
+      (day) => day.id === scheduledExerciseToCopy.scheduledDayId
+    );
+    if (!dayToUpdate) {
+      return;
+    }
+    const indexOfCopiedExercise = dayToUpdate.exercises.findIndex(
+      (exercise) => scheduledExerciseToCopy.id === exercise.id
+    );
+
+    const newScheduledExercise = {
+      ...createInitialExerciseRow(),
+      exerciseId: scheduledExerciseToCopy.exerciseId,
+      sets: scheduledExerciseToCopy.sets,
+      reps: scheduledExerciseToCopy.reps,
+      rpe: scheduledExerciseToCopy.rpe,
+      comment: scheduledExerciseToCopy.comment,
+      scheduledDayId: scheduledExerciseToCopy.scheduledDayId,
+    };
+
+    dayToUpdate.exercises.splice(
+      indexOfCopiedExercise,
+      0,
+      newScheduledExercise
+    );
+
+    const updatedDay = {
+      ...dayToUpdate,
+      exercises: applyOrdinalNumbers<ScheduledExercise>(dayToUpdate.exercises),
+    };
+
+    const indexOfDayToUpdate = scheduleData.days.findIndex(
+      (day) => day.id === scheduledExerciseToCopy.scheduledDayId
     );
 
     const updatedDays = [...scheduleData.days];
@@ -455,10 +503,11 @@ export const Schedule = ({
           <Download />
         </Button>
         <Button disabled={reachedLimit} className="" onClick={addDay}>
-          Add day
+          <Plus className="mr-2" />
+          Add Day
         </Button>
       </div>
-      <div ref={daysAnimationWrapper} className="flex flex-col gap-5">
+      <div ref={daysAnimationWrapper} className="flex flex-col gap-9">
         {filterDeletedItems<PreparedScheduledDay>(scheduleData.days).map(
           (day, index) => {
             return (
@@ -473,6 +522,7 @@ export const Schedule = ({
                 scheduledDayId={day.id}
                 title={(index + 1).toString()}
                 addRow={addRow}
+                copyRow={copyRow}
                 deleteRow={deleteRow}
                 updateRow={updateRow}
                 reorderExercises={reorderExercises}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { MoveDown, MoveUp } from "lucide-react";
+import { MoveDown, MoveUp, Plus } from "lucide-react";
 
 import { DraggableTableRow } from "@/components/draggableTableRow";
 import { StaticTableRow } from "@/components/staticTableRow";
@@ -50,6 +50,7 @@ interface DataTableProps<TData extends PreparedScheduledExercise, TValue> {
   scheduledDayId: string;
   title: string;
   addRow: (scheduledDayId: string) => void;
+  copyRow: (scheduledExercise: PreparedScheduledExercise) => void;
   deleteRow: (scheduledDayId: string, rowToDeleteId: string) => void;
   updateRow: (
     scheduledDayId: string,
@@ -72,7 +73,10 @@ declare module "@tanstack/react-table" {
     updateData: (rowId: string, columnId: string, value: string) => void;
     getExercises: () => Exercise[];
     deleteRow: (id: string) => void;
+    copyRow: (scheduledExercise: PreparedScheduledExercise) => void;
+    deleteDay: () => void;
     getTableTitle: () => string;
+    getDataLength: () => number;
   }
 }
 
@@ -84,6 +88,7 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
   scheduledDayId,
   title,
   addRow,
+  copyRow,
   deleteRow,
   updateRow,
   reorderExercises,
@@ -107,6 +112,9 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
         deleteRow(scheduledDayId, id);
       },
       getTableTitle: () => title,
+      deleteDay: () => deleteDay(scheduledDayId),
+      copyRow: (scheduledExercise) => copyRow(scheduledExercise),
+      getDataLength: () => data.length,
     },
   });
 
@@ -154,7 +162,7 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
 
   return (
     <div className="flex">
-      <div className="flex flex-col gap-1 mr-2">
+      <div className="flex flex-col gap-2 mr-2">
         <Button
           disabled={isFirst}
           onClick={() => moveDay(scheduledDayId, Direction.Up)}
@@ -168,6 +176,13 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
           variant="outline"
         >
           <MoveDown />
+        </Button>
+        <Button
+          disabled={dayLimitRached}
+          variant="outline"
+          onClick={() => addRow(scheduledDayId)}
+        >
+          <Plus />
         </Button>
       </div>
       <div className="rounded-md border">
@@ -211,7 +226,7 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
                     ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
+                    <TableCell colSpan={7} className="h-24 text-center">
                       No exercises for this day.
                     </TableCell>
                   </TableRow>
@@ -229,17 +244,6 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
             )}
           </DragOverlay>
         </DndContext>
-      </div>
-      <div className="flex flex-col gap-1 m-2">
-        <Button
-          disabled={dayLimitRached}
-          onClick={() => addRow(scheduledDayId)}
-        >
-          Add row
-        </Button>
-        <Button variant="destructive" onClick={() => deleteDay(scheduledDayId)}>
-          Delete day
-        </Button>
       </div>
     </div>
   );
