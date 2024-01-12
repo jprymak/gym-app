@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FileEdit, Plus } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/iconButton";
 import {
   Dialog,
   DialogContent,
@@ -29,16 +29,12 @@ export const EditClientDialog = ({ data }: EditClientDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          {editMode ? (
-            <FileEdit />
-          ) : (
-            <>
-              <Plus className="mr-2" />
-              Add client
-            </>
-          )}
-        </Button>
+        <IconButton
+          icon={editMode ? <FileEdit /> : <Plus />}
+          variant={editMode ? "ghost" : "default"}
+          tooltip={editMode ? "Add client" : "Edit client"}
+          {...(!editMode && { label: "Add client" })}
+        />
       </DialogTrigger>
       <DialogContent
         onInteractOutside={(e) => {

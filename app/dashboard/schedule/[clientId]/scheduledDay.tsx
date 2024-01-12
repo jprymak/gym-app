@@ -4,8 +4,8 @@ import React, { useMemo, useState } from "react";
 import { MoveDown, MoveUp, Plus } from "lucide-react";
 
 import { DraggableTableRow } from "@/components/draggableTableRow";
+import { IconButton } from "@/components/iconButton";
 import { StaticTableRow } from "@/components/staticTableRow";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -163,27 +163,27 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
   return (
     <div className="flex">
       <div className="flex flex-col gap-2 mr-2">
-        <Button
+        <IconButton
           disabled={isFirst}
+          tooltip="Move Up"
+          icon={<MoveUp />}
           onClick={() => moveDay(scheduledDayId, Direction.Up)}
           variant="outline"
-        >
-          <MoveUp />
-        </Button>
-        <Button
+        />
+        <IconButton
+          tooltip="Move Down"
+          icon={<MoveDown />}
           disabled={isLast}
           onClick={() => moveDay(scheduledDayId, Direction.Down)}
           variant="outline"
-        >
-          <MoveDown />
-        </Button>
-        <Button
+        />
+        <IconButton
+          tooltip="Add exercise row"
+          icon={<Plus />}
           disabled={dayLimitRached}
           variant="outline"
           onClick={() => addRow(scheduledDayId)}
-        >
-          <Plus />
-        </Button>
+        />
       </div>
       <div className="rounded-md border">
         <DndContext

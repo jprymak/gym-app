@@ -1,8 +1,9 @@
 "use client";
 import React, { useState, useTransition } from "react";
-import { XCircle } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 import { DeleteBtnWithStatus } from "@/components/deleteBtnWithStatus";
+import { IconButton } from "@/components/iconButton";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,6 +34,9 @@ export const BulkDeleteExerciseDialog = ({
     return Object.keys(selectedRows).includes(exercise.id);
   });
 
+  const deleteButtonText =
+    exercisesToDelete.length >= 2 ? " Delete exercises" : "Delete exercise";
+
   const closeDialog = () => {
     setOpen(false);
   };
@@ -59,10 +63,12 @@ export const BulkDeleteExerciseDialog = ({
     <Dialog open={open} onOpenChange={setOpen}>
       {!!exercisesToDelete.length && (
         <DialogTrigger asChild>
-          <Button variant="destructive" className="mr-2">
-            <XCircle className="mr-2" />
-            Delete exercise
-          </Button>
+          <IconButton
+            icon={<Trash2 />}
+            variant="destructive"
+            label={deleteButtonText}
+            tooltip={deleteButtonText}
+          />
         </DialogTrigger>
       )}
 

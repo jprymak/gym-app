@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Copy, Trash2, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/iconButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MARGINAL_VALUES } from "@/lib/constants";
@@ -88,10 +88,12 @@ export const columns: ColumnDef<PreparedScheduledExercise>[] = [
         <h2 className="font-bold text-lg mr-auto">
           Day: {table.options.meta?.getTableTitle()}
         </h2>
-
-        <Button variant="ghost" onClick={() => table.options.meta?.deleteDay()}>
-          <Trash2 className="text-destructive" />
-        </Button>
+        <IconButton
+          tooltip="Delete day"
+          icon={<Trash2 className="text-destructive" />}
+          onClick={table.options.meta?.deleteDay}
+          variant="ghost"
+        />
       </div>
     ),
     columns: [
@@ -158,19 +160,19 @@ export const columns: ColumnDef<PreparedScheduledExercise>[] = [
             table.options.meta?.getDataLength() >= 8;
           return (
             <div className="flex">
-              <Button
+              <IconButton
+                tooltip="Copy row"
+                icon={<Copy />}
                 disabled={reachedExerciseLimit}
                 onClick={() => table.options.meta?.copyRow(row.original)}
                 variant="ghost"
-              >
-                <Copy />
-              </Button>
-              <Button
+              />
+              <IconButton
+                tooltip="Delete row"
+                icon={<X className="text-destructive" />}
                 onClick={() => table.options.meta?.deleteRow(row.original.id)}
                 variant="ghost"
-              >
-                <X className="text-destructive" />
-              </Button>
+              />
             </div>
           );
         },
