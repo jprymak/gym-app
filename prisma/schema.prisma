@@ -42,7 +42,7 @@ model ScheduledExercise {
   modified       DateTime?     @updatedAt
   exerciseId     String        @db.ObjectId
   scheduledDay   ScheduledDay? @relation(fields: [scheduledDayId], references: [id])
-  scheduledDayId String?       @db.ObjectId
+  scheduledDayId String        @db.ObjectId
   ordinalNum     Int
 }
 

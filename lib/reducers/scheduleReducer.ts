@@ -89,6 +89,14 @@ const applyOrdinalNumbers = <T>(items: ScheduleItems<T>[]) => {
   });
 };
 
+const findDayById = (state: ScheduleWithDaysAndExercises, dayId: string) => {
+  return state.days.find((day) => day.id === dayId);
+};
+
+const findItemIndex = <T>(items: ScheduleItems<T>[], itemId: string) => {
+  return items.findIndex((item) => item.id === itemId);
+};
+
 export function scheduleReducer(
   state: ScheduleWithDaysAndExercises,
   action: ScheduleAction
@@ -99,26 +107,18 @@ export function scheduleReducer(
       return payload;
     }
     case ScheduleActionKind.ADD_DAY: {
-      const newDay = createInitialDay();
-      const exercisesWithOridinals = newDay.exercises.map((ex, index) => ({
-        ...ex,
-        ordinalNum: index + 1,
-      }));
-      const updatedSchedule = {
+      return {
         ...state,
-        days: applyOrdinalNumbers<ScheduledDayWithExercises>([
-          ...state.days,
-          { ...newDay, exercises: exercisesWithOridinals },
-        ]),
+        days: [...state.days, createInitialDay()],
       };
-      return updatedSchedule;
     }
     case ScheduleActionKind.MOVE_DAY: {
       const { scheduledDayId, direction } = payload;
       const updatedDays = [...state.days];
 
-      const oldIndex = updatedDays.findIndex(
-        (day) => day.id === scheduledDayId
+      const oldIndex = findItemIndex<ScheduledDayWithExercises>(
+        updatedDays,
+        scheduledDayId
       );
 
       const newIndex =
@@ -153,17 +153,15 @@ export function scheduleReducer(
         []
       );
 
-      const updatedSchedule = {
+      return {
         ...state,
         days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
       };
-
-      return updatedSchedule;
     }
     case ScheduleActionKind.ADD_EXERCISE: {
       const { scheduledDayId } = payload;
       const newRow = createInitialExerciseRow(scheduledDayId);
-      const dayToUpdate = state.days.find((day) => day.id === scheduledDayId);
+      const dayToUpdate = findDayById(state, scheduledDayId);
       if (!dayToUpdate) {
         return state;
       }
@@ -175,12 +173,12 @@ export function scheduleReducer(
           newRow,
         ]),
       };
-
-      const indexOfDayToUpdate = state.days.findIndex(
-        (day) => day.id === scheduledDayId
-      );
-
       const updatedDays = [...state.days];
+
+      const indexOfDayToUpdate = findItemIndex<ScheduledDayWithExercises>(
+        updatedDays,
+        scheduledDayId
+      );
 
       updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
 
@@ -191,14 +189,18 @@ export function scheduleReducer(
     }
     case ScheduleActionKind.COPY_EXERCISE: {
       const { scheduledExerciseToCopy } = payload;
-      const dayToUpdate = state.days.find(
-        (day) => day.id === scheduledExerciseToCopy.scheduledDayId
+
+      const dayToUpdate = findDayById(
+        state,
+        scheduledExerciseToCopy.scheduledDayId
       );
       if (!dayToUpdate) {
         return state;
       }
-      const indexOfCopiedExercise = dayToUpdate.exercises.findIndex(
-        (exercise) => scheduledExerciseToCopy.id === exercise.id
+
+      const indexOfCopiedExercise = findItemIndex<ScheduledExercise>(
+        dayToUpdate.exercises,
+        scheduledExerciseToCopy.id
       );
 
       const newScheduledExercise = {
@@ -211,21 +213,18 @@ export function scheduleReducer(
         scheduledDayId: scheduledExerciseToCopy.scheduledDayId,
       };
 
-      dayToUpdate.exercises.splice(
-        indexOfCopiedExercise,
-        0,
-        newScheduledExercise
-      );
+      const updatedExercises = [...dayToUpdate.exercises];
+
+      updatedExercises.splice(indexOfCopiedExercise, 0, newScheduledExercise);
 
       const updatedDay = {
         ...dayToUpdate,
-        exercises: applyOrdinalNumbers<ScheduledExercise>(
-          dayToUpdate.exercises
-        ),
+        exercises: applyOrdinalNumbers<ScheduledExercise>(updatedExercises),
       };
 
-      const indexOfDayToUpdate = state.days.findIndex(
-        (day) => day.id === scheduledExerciseToCopy.scheduledDayId
+      const indexOfDayToUpdate = findItemIndex<ScheduledDayWithExercises>(
+        state.days,
+        scheduledExerciseToCopy.scheduledDayId
       );
 
       const updatedDays = [...state.days];
@@ -239,7 +238,9 @@ export function scheduleReducer(
     }
     case ScheduleActionKind.DELETE_EXERCISE: {
       const { scheduledDayId, rowToDeleteId } = payload;
-      const dayToUpdate = state.days.find((day) => day.id === scheduledDayId);
+
+      const dayToUpdate = findDayById(state, scheduledDayId);
+
       if (!dayToUpdate) {
         return state;
       }
@@ -266,8 +267,9 @@ export function scheduleReducer(
         exercises: applyOrdinalNumbers(newExercises),
       };
 
-      const indexOfDayToUpdate = state.days.findIndex(
-        (day) => day.id === scheduledDayId
+      const indexOfDayToUpdate = findItemIndex<ScheduledDayWithExercises>(
+        state.days,
+        scheduledDayId
       );
 
       const updatedDays = [...state.days];
@@ -282,7 +284,7 @@ export function scheduleReducer(
     case ScheduleActionKind.UPDATE_EXERCISE: {
       const { columnId, scheduledDayId, rowId, value } = payload;
 
-      const dayToUpdate = state.days.find((day) => day.id === scheduledDayId);
+      const dayToUpdate = findDayById(state, scheduledDayId);
 
       if (!dayToUpdate) {
         return state;
@@ -302,8 +304,9 @@ export function scheduleReducer(
         exercises: updatedExercises,
       };
 
-      const indexOfDayToUpdate = state.days.findIndex(
-        (day) => day.id === scheduledDayId
+      const indexOfDayToUpdate = findItemIndex<ScheduledDayWithExercises>(
+        state.days,
+        scheduledDayId
       );
 
       const updatedDays = [...state.days];
@@ -318,7 +321,8 @@ export function scheduleReducer(
     case ScheduleActionKind.REORDER_EXERCISES: {
       const { array, scheduledDayId } = payload;
 
-      const dayToUpdate = state.days.find((day) => day.id === scheduledDayId);
+      const dayToUpdate = findDayById(state, scheduledDayId);
+
       if (!dayToUpdate) {
         return state;
       }
@@ -328,8 +332,9 @@ export function scheduleReducer(
         exercises: applyOrdinalNumbers<ScheduledExercise>(array),
       };
 
-      const indexOfDayToUpdate = state.days.findIndex(
-        (day) => day.id === scheduledDayId
+      const indexOfDayToUpdate = findItemIndex<ScheduledDayWithExercises>(
+        state.days,
+        scheduledDayId
       );
 
       const newDays = [...state.days];
