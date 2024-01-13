@@ -5,11 +5,10 @@ import { IconButton } from "@/components/iconButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MARGINAL_VALUES } from "@/lib/constants";
+import { PreparedScheduledExercise } from "@/lib/types/schedule";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 
 import { ExerciseCombobox } from "../exerciseCombobox";
-
-import { PreparedScheduledExercise } from "./schedule";
 
 interface ScheduledExerciseField extends CellContext<any, string> {
   marginalValues: { max: number; min: number };

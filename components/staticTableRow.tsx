@@ -1,7 +1,6 @@
 import { TableCell, TableRow } from "@/components/ui/table";
+import { PreparedScheduledExercise } from "@/lib/types/schedule";
 import { flexRender, Row } from "@tanstack/react-table";
-
-import { PreparedScheduledExercise } from "../app/dashboard/schedule/[clientId]/schedule";
 
 import { DragHandle } from "./dragHandle";
 
