@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { useBeforeunload } from "react-beforeunload";
 
 import {
@@ -7,45 +7,37 @@ import {
   MARGINAL_VALUES,
   SCHEDULE_WEEK_LIMIT,
 } from "@/lib/constants";
-import { ScheduledDayWithExercises, ScheduledExercise } from "@/lib/data";
 import { ScheduleWithDaysAndExercises } from "@/lib/data";
-import { createInitialDay, createInitialExerciseRow } from "@/lib/initialData";
 
+import {
+  ScheduleActionKind,
+  scheduleReducer,
+} from "../reducers/scheduleReducer";
 import {
   PreparedScheduledDay,
   PreparedScheduledExercise,
-  ScheduleItems,
 } from "../types/schedule";
 
-const applyOrdinalNumbers = <T>(items: ScheduleItems<T>[]) => {
-  let counter = 1;
-  return items.map((item) => {
-    if (!item.taggedForDelete) {
-      const itemWithNum = { ...item, ordinalNum: counter };
-      counter++;
-      return itemWithNum;
-    } else {
-      return item;
-    }
-  });
-};
-
 export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
-  const [scheduleData, setScheduleData] = useState(initialData);
+  const [state, dispatch] = useReducer(scheduleReducer, initialData);
+
   const [scheduleIsValid, setScheduleIsValid] = useState(true);
 
-  const reachedWeekLimit = scheduleData.days.length >= SCHEDULE_WEEK_LIMIT;
+  const reachedWeekLimit = state.days.length >= SCHEDULE_WEEK_LIMIT;
 
   const hasChanges =
-    JSON.stringify(initialData.days) !== JSON.stringify(scheduleData.days);
+    JSON.stringify(initialData.days) !== JSON.stringify(state.days);
 
   useEffect(() => {
-    setScheduleData(initialData);
+    dispatch({
+      type: ScheduleActionKind.INITIAL_SETUP,
+      payload: initialData,
+    });
   }, [initialData]);
 
   const validateSchedule = useCallback(() => {
     let valid = true;
-    for (const day of scheduleData.days as PreparedScheduledDay[]) {
+    for (const day of state.days as PreparedScheduledDay[]) {
       if (day.taggedForDelete) {
         continue;
       }
@@ -81,180 +73,40 @@ export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
     }
 
     return valid;
-  }, [scheduleData.days]);
+  }, [state.days]);
 
   useEffect(() => {
     setScheduleIsValid(validateSchedule());
-  }, [scheduleData, validateSchedule]);
+  }, [state, validateSchedule]);
   useBeforeunload(hasChanges ? (event) => event.preventDefault() : undefined);
 
   const addDay = () => {
-    const newDay = createInitialDay();
-    const exercisesWithOridinals = newDay.exercises.map((ex, index) => ({
-      ...ex,
-      ordinalNum: index + 1,
-    }));
-    const updatedSchedule = {
-      ...scheduleData,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>([
-        ...scheduleData.days,
-        { ...newDay, exercises: exercisesWithOridinals },
-      ]),
-    };
-    setScheduleData(updatedSchedule);
+    dispatch({ type: ScheduleActionKind.ADD_DAY, payload: null });
   };
 
   const deleteDay = (idToDelete: string) => {
-    const updatedDays = scheduleData.days.reduce<PreparedScheduledDay[]>(
-      (result, current) => {
-        if (current.id === idToDelete && current.id.startsWith("temp")) {
-          return result;
-        } else if (current.id === idToDelete) {
-          current.ordinalNum = -1;
-          result.push({ ...current, taggedForDelete: true });
-          return result;
-        } else {
-          current.ordinalNum = result.length + 1;
-          result.push(current);
-
-          return result;
-        }
-      },
-      []
-    );
-
-    const updatedSchedule = {
-      ...scheduleData,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
-    };
-    setScheduleData(updatedSchedule);
+    dispatch({ type: ScheduleActionKind.DELETE_DAY, payload: { idToDelete } });
   };
 
   const addExercise = (scheduledDayId: string) => {
-    const newRow: any = createInitialExerciseRow(scheduledDayId);
-    const dayToUpdate = scheduleData.days.find(
-      (day) => day.id === scheduledDayId
-    );
-    if (!dayToUpdate) {
-      return;
-    }
-
-    const updatedDay = {
-      ...dayToUpdate,
-      exercises: applyOrdinalNumbers<ScheduledExercise>([
-        ...dayToUpdate.exercises,
-        newRow,
-      ]),
-    };
-
-    const indexOfDayToUpdate = scheduleData.days.findIndex(
-      (day) => day.id === scheduledDayId
-    );
-
-    const updatedDays = [...scheduleData.days];
-
-    updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
-
-    const updatedSchedule = {
-      ...scheduleData,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
-    };
-
-    setScheduleData(updatedSchedule);
+    dispatch({
+      type: ScheduleActionKind.ADD_EXERCISE,
+      payload: { scheduledDayId },
+    });
   };
 
   const copyExercise = (scheduledExerciseToCopy: PreparedScheduledExercise) => {
-    const dayToUpdate = scheduleData.days.find(
-      (day) => day.id === scheduledExerciseToCopy.scheduledDayId
-    );
-    if (!dayToUpdate) {
-      return;
-    }
-    const indexOfCopiedExercise = dayToUpdate.exercises.findIndex(
-      (exercise) => scheduledExerciseToCopy.id === exercise.id
-    );
-
-    const newScheduledExercise = {
-      ...createInitialExerciseRow(),
-      exerciseId: scheduledExerciseToCopy.exerciseId,
-      sets: scheduledExerciseToCopy.sets,
-      reps: scheduledExerciseToCopy.reps,
-      rpe: scheduledExerciseToCopy.rpe,
-      comment: scheduledExerciseToCopy.comment,
-      scheduledDayId: scheduledExerciseToCopy.scheduledDayId,
-    };
-
-    dayToUpdate.exercises.splice(
-      indexOfCopiedExercise,
-      0,
-      newScheduledExercise
-    );
-
-    const updatedDay = {
-      ...dayToUpdate,
-      exercises: applyOrdinalNumbers<ScheduledExercise>(dayToUpdate.exercises),
-    };
-
-    const indexOfDayToUpdate = scheduleData.days.findIndex(
-      (day) => day.id === scheduledExerciseToCopy.scheduledDayId
-    );
-
-    const updatedDays = [...scheduleData.days];
-
-    updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
-
-    const updatedSchedule = {
-      ...scheduleData,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
-    };
-
-    setScheduleData(updatedSchedule);
+    dispatch({
+      type: ScheduleActionKind.COPY_EXERCISE,
+      payload: { scheduledExerciseToCopy },
+    });
   };
 
   const deleteExercise = (scheduledDayId: string, rowToDeleteId: string) => {
-    const dayToUpdate = scheduleData.days.find(
-      (day) => day.id === scheduledDayId
-    );
-    if (!dayToUpdate) {
-      return;
-    }
-
-    const newExercises = dayToUpdate.exercises.reduce<
-      PreparedScheduledExercise[]
-    >((result, current) => {
-      if (current.id === rowToDeleteId && current.id.startsWith("temp")) {
-        return result;
-      } else if (current.id === rowToDeleteId) {
-        current.ordinalNum = -1;
-        result.push({ ...current, taggedForDelete: true });
-        return result;
-      } else {
-        current.ordinalNum = result.length + 1;
-        result.push(current);
-
-        return result;
-      }
-    }, []);
-
-    const updatedDay = {
-      ...dayToUpdate,
-      exercises: applyOrdinalNumbers(newExercises),
-    };
-
-    const indexOfDayToUpdate = scheduleData.days.findIndex(
-      (day) => day.id === scheduledDayId
-    );
-
-    const updatedDays = [...scheduleData.days];
-
-    updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
-
-    const updatedSchedule = {
-      ...scheduleData,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
-    };
-
-    setScheduleData(updatedSchedule);
+    dispatch({
+      type: ScheduleActionKind.DELETE_EXERCISE,
+      payload: { scheduledDayId, rowToDeleteId },
+    });
   };
 
   const updateExercise = (
@@ -263,92 +115,38 @@ export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
     value: string,
     rowId: string
   ) => {
-    const dayToUpdate = scheduleData.days.find(
-      (day) => day.id === scheduledDayId
-    );
-
-    if (!dayToUpdate) {
-      return;
-    }
-
-    const updatedExercises = dayToUpdate.exercises.map((scheduledExercise) => {
-      if (columnId && scheduledExercise.id === rowId) {
-        return { ...scheduledExercise, [columnId]: value };
-      }
-      return scheduledExercise;
+    dispatch({
+      type: ScheduleActionKind.UPDATE_EXERCISE,
+      payload: { scheduledDayId, columnId, value, rowId },
     });
-
-    const updatedDay = {
-      ...dayToUpdate,
-      exercises: updatedExercises,
-    };
-
-    const indexOfDayToUpdate = scheduleData.days.findIndex(
-      (day) => day.id === scheduledDayId
-    );
-
-    const updatedDays = [...scheduleData.days];
-
-    updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
-
-    const updatedSchedule = {
-      ...scheduleData,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
-    };
-
-    setScheduleData(updatedSchedule);
   };
 
   const reorderExercises = (
     scheduledDayId: string,
     array: PreparedScheduledExercise[]
   ) => {
-    const dayToUpdate = scheduleData.days.find(
-      (day) => day.id === scheduledDayId
-    );
-    if (!dayToUpdate) {
-      return;
-    }
-
-    const updatedDay = {
-      ...dayToUpdate,
-      exercises: applyOrdinalNumbers<ScheduledExercise>(array),
-    };
-
-    const indexOfDayToUpdate = scheduleData.days.findIndex(
-      (day) => day.id === scheduledDayId
-    );
-
-    const newDays = [...scheduleData.days];
-
-    newDays.splice(indexOfDayToUpdate, 1, updatedDay);
-
-    setScheduleData((prev) => ({ ...prev, days: newDays }));
+    dispatch({
+      type: ScheduleActionKind.REORDER_EXERCISES,
+      payload: { scheduledDayId, array },
+    });
   };
 
   const moveDay = (scheduledDayId: string, direction: Direction) => {
-    const updatedDays = [...scheduleData.days];
-
-    const oldIndex = updatedDays.findIndex((day) => day.id === scheduledDayId);
-
-    const newIndex = direction === Direction.Down ? oldIndex + 1 : oldIndex - 1;
-
-    const temp = updatedDays[newIndex];
-    updatedDays[newIndex] = updatedDays[oldIndex];
-    updatedDays[oldIndex] = temp;
-
-    setScheduleData((prev) => ({
-      ...prev,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
-    }));
+    dispatch({
+      type: ScheduleActionKind.MOVE_DAY,
+      payload: { scheduledDayId, direction },
+    });
   };
 
   const handleSetData = (data: ScheduleWithDaysAndExercises) => {
-    setScheduleData(data);
+    dispatch({
+      type: ScheduleActionKind.INITIAL_SETUP,
+      payload: data,
+    });
   };
 
   return {
-    scheduleData,
+    state,
     scheduleIsValid,
     hasChanges,
     moveDay,

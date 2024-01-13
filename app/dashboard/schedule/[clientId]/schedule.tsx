@@ -40,7 +40,7 @@ export const Schedule = ({
   exercises,
 }: ScheduleProps) => {
   const {
-    scheduleData,
+    state: scheduleData,
     handleSetData,
     hasChanges,
     addExercise,

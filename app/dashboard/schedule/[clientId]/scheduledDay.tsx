@@ -112,7 +112,9 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
       },
       getTableTitle: () => title,
       deleteDay: () => deleteDay(scheduledDayId),
-      copyRow: (scheduledExercise) => copyExercise(scheduledExercise),
+      copyRow: (scheduledExercise) => {
+        copyExercise(scheduledExercise);
+      },
       getDataLength: () => data.length,
     },
   });
