@@ -68,6 +68,7 @@ const TableCellWithNumInput = ({
 
   return (
     <Input
+      aria-label={id}
       className={`w-16 ${badValue && "text-white bg-destructive"}`}
       value={value as string}
       min={marginalValues.min}

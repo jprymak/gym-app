@@ -32,6 +32,7 @@ export const DraggableTableRow = ({
       style={style}
       data-state={row.getIsSelected() && "selected"}
       className="h-full"
+      data-testid={`row-${row.index}`}
     >
       {isDragging ? (
         <TableCell colSpan={6} className="h-[69px]">

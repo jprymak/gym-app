@@ -162,7 +162,7 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
   }, [activeId, table]);
 
   return (
-    <div className="flex">
+    <div className="flex" data-testid={`day-${title}`}>
       <div className="flex flex-col gap-2 mr-2">
         <IconButton
           disabled={isFirst}
@@ -214,7 +214,7 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
                 </TableRow>
               ))}
             </TableHeader>
-            <TableBody>
+            <TableBody data-testid="tbody">
               <SortableContext
                 items={items}
                 strategy={verticalListSortingStrategy}
