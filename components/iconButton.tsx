@@ -22,7 +22,7 @@ export const IconButton = ({
     <TooltipProvider delayDuration={300}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button className="flex gap-2" {...props}>
+          <Button aria-label={tooltip} className="flex gap-2" {...props}>
             {icon}
             {label}
           </Button>

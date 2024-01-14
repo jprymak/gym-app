@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Direction, SCHEDULED_EXERCISE_DAY_LIMIT } from "@/lib/constants";
+import { PreparedScheduledExercise } from "@/lib/types/schedule";
 import {
   closestCenter,
   DndContext,
@@ -40,8 +41,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { PreparedScheduledExercise } from "./schedule";
-
 interface DataTableProps<TData extends PreparedScheduledExercise, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: Array<TData>;
@@ -49,10 +48,10 @@ interface DataTableProps<TData extends PreparedScheduledExercise, TValue> {
   deleteDay: (idToDelete: string) => void;
   scheduledDayId: string;
   title: string;
-  addRow: (scheduledDayId: string) => void;
-  copyRow: (scheduledExercise: PreparedScheduledExercise) => void;
-  deleteRow: (scheduledDayId: string, rowToDeleteId: string) => void;
-  updateRow: (
+  addExercise: (scheduledDayId: string) => void;
+  copyExercise: (scheduledExercise: PreparedScheduledExercise) => void;
+  deleteExercise: (scheduledDayId: string, rowToDeleteId: string) => void;
+  updateExercise: (
     scheduledDayId: string,
     columnId: string,
     value: string,
@@ -87,10 +86,10 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
   deleteDay,
   scheduledDayId,
   title,
-  addRow,
-  copyRow,
-  deleteRow,
-  updateRow,
+  addExercise,
+  copyExercise,
+  deleteExercise,
+  updateExercise,
   reorderExercises,
   moveDay,
   isFirst,
@@ -105,15 +104,17 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
     getCoreRowModel: getCoreRowModel(),
     meta: {
       updateData: (rowId, columnId, value) => {
-        updateRow(scheduledDayId, columnId, value, rowId);
+        updateExercise(scheduledDayId, columnId, value, rowId);
       },
       getExercises: () => exercises,
       deleteRow: (id) => {
-        deleteRow(scheduledDayId, id);
+        deleteExercise(scheduledDayId, id);
       },
       getTableTitle: () => title,
       deleteDay: () => deleteDay(scheduledDayId),
-      copyRow: (scheduledExercise) => copyRow(scheduledExercise),
+      copyRow: (scheduledExercise) => {
+        copyExercise(scheduledExercise);
+      },
       getDataLength: () => data.length,
     },
   });
@@ -161,7 +162,7 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
   }, [activeId, table]);
 
   return (
-    <div className="flex">
+    <div className="flex" data-testid={`day-${title}`}>
       <div className="flex flex-col gap-2 mr-2">
         <IconButton
           disabled={isFirst}
@@ -182,7 +183,7 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
           icon={<Plus />}
           disabled={dayLimitRached}
           variant="outline"
-          onClick={() => addRow(scheduledDayId)}
+          onClick={() => addExercise(scheduledDayId)}
         />
       </div>
       <div className="rounded-md border">
@@ -213,7 +214,7 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
                 </TableRow>
               ))}
             </TableHeader>
-            <TableBody>
+            <TableBody data-testid="tbody">
               <SortableContext
                 items={items}
                 strategy={verticalListSortingStrategy}

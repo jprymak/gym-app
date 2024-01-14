@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   AlertCircle,
   CalendarPlus,
@@ -14,71 +14,51 @@ import { IconButton } from "@/components/iconButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
-import {
-  Direction,
-  MARGINAL_VALUES,
-  SCHEDULE_DAY_LIMIT,
-} from "@/lib/constants";
-import {
-  prepareScheduleForExport,
-  ScheduledDayWithExercises,
-  ScheduledExercise,
-} from "@/lib/data";
-import { ScheduleWithDaysAndExercises, updateSchedule } from "@/lib/data";
+import { prepareScheduleForExport } from "@/lib/data";
+import { updateSchedule } from "@/lib/data";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
-import { createInitialDay, createInitialExerciseRow } from "@/lib/initialData";
+import { useSchedule } from "@/lib/hooks/useSchedule";
+import {
+  PreparedScheduledDay,
+  PreparedScheduledExercise,
+  ScheduleItems,
+  ScheduleProps,
+} from "@/lib/types/schedule";
 import { createWorksheetFromData } from "@/lib/worksheet/helpers";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { Exercise } from "@prisma/client";
 
 import { AvailableStoredDataDialog } from "./availableStoredDataDialog";
 import { columns } from "./columns";
 import { ScheduledDay } from "./scheduledDay";
 
-interface ScheduleProps {
-  scheduleData: ScheduleWithDaysAndExercises;
-  exercises: Exercise[];
-}
-
-interface PreparedScheduledDay extends ScheduledDayWithExercises {
-  taggedForDelete?: boolean;
-}
-
-export interface PreparedScheduledExercise extends ScheduledExercise {
-  taggedForDelete?: boolean;
-}
-
-type ScheduleItems<T> = T extends PreparedScheduledDay
-  ? PreparedScheduledDay
-  : PreparedScheduledExercise;
-
 const filterDeletedItems = <T,>(items: ScheduleItems<T>[]) => {
   return items.filter((currentItem) => !currentItem.taggedForDelete);
-};
-
-const applyOrdinalNumbers = <T,>(items: ScheduleItems<T>[]) => {
-  let counter = 1;
-  return items.map((item) => {
-    if (!item.taggedForDelete) {
-      const itemWithNum = { ...item, ordinalNum: counter };
-      counter++;
-      return itemWithNum;
-    } else {
-      return item;
-    }
-  });
 };
 
 export const Schedule = ({
   scheduleData: initialData,
   exercises,
 }: ScheduleProps) => {
-  const [scheduleData, setScheduleData] = useState(initialData);
+  const {
+    state: scheduleData,
+    handleSetData,
+    hasChanges,
+    addExercise,
+    copyExercise,
+    deleteExercise,
+    updateExercise,
+    reorderExercises,
+    moveDay,
+    addDay,
+    deleteDay,
+    scheduleIsValid,
+    reachedWeekLimit,
+  } = useSchedule(initialData);
+
   const [open, setOpen] = useState(false);
   const [scheduleAnimationWrapper] = useAutoAnimate();
   const [daysAnimationWrapper] = useAutoAnimate();
   const [isPending, startTransition] = useTransition();
-  const [scheduleIsValid, setScheduleIsValid] = useState(true);
 
   const scheduledIdKey = `schedule-${scheduleData.id}`;
 
@@ -86,9 +66,6 @@ export const Schedule = ({
     scheduledIdKey,
     scheduleData
   );
-
-  const hasChanges =
-    JSON.stringify(initialData.days) !== JSON.stringify(scheduleData.days);
 
   const cannotSaveChanges = isPending || !hasChanges || !scheduleIsValid;
 
@@ -100,103 +77,12 @@ export const Schedule = ({
   }, [loadFromStorage]);
 
   useEffect(() => {
-    setScheduleData(initialData);
-  }, [initialData]);
-
-  useEffect(() => {
     if (hasChanges) {
       saveToStorage();
     }
   }, [hasChanges, saveToStorage]);
 
-  const validateSchedule = useCallback(() => {
-    let valid = true;
-    for (const day of scheduleData.days as PreparedScheduledDay[]) {
-      if (day.taggedForDelete) {
-        continue;
-      }
-      const exercises = day.exercises as PreparedScheduledExercise[];
-
-      valid = exercises.every((exercise) => {
-        if (exercise.taggedForDelete) {
-          return true;
-        }
-        if (!exercise.exerciseId) {
-          return false;
-        }
-        const keysToCheck = Object.keys(
-          MARGINAL_VALUES
-        ) as (keyof typeof MARGINAL_VALUES)[];
-        return keysToCheck.every((key) => {
-          const value = exercise[key];
-          if (key === "comment") {
-            return (
-              value.length >= MARGINAL_VALUES[key].min &&
-              value.length <= MARGINAL_VALUES[key].max
-            );
-          }
-          return (
-            +value >= MARGINAL_VALUES[key].min &&
-            +value <= MARGINAL_VALUES[key].max
-          );
-        });
-      });
-      if (!valid) {
-        return false;
-      }
-    }
-
-    return valid;
-  }, [scheduleData.days]);
-
-  useEffect(() => {
-    setScheduleIsValid(validateSchedule());
-  }, [scheduleData, validateSchedule]);
   useBeforeunload(hasChanges ? (event) => event.preventDefault() : undefined);
-
-  const reachedLimit = scheduleData.days.length >= SCHEDULE_DAY_LIMIT;
-
-  const addDay = () => {
-    const newDay = createInitialDay();
-    const exercisesWithOridinals = newDay.exercises.map((ex, index) => ({
-      ...ex,
-      ordinalNum: index + 1,
-    }));
-    const updatedSchedule = {
-      ...scheduleData,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>([
-        ...scheduleData.days,
-        { ...newDay, exercises: exercisesWithOridinals },
-      ]),
-    };
-    setScheduleData(updatedSchedule);
-  };
-
-  const deleteDay = (idToDelete: string) => {
-    const updatedDays = scheduleData.days.reduce<PreparedScheduledDay[]>(
-      (result, current) => {
-        if (current.id === idToDelete && current.id.startsWith("temp")) {
-          return result;
-        } else if (current.id === idToDelete) {
-          current.ordinalNum = -1;
-          result.push({ ...current, taggedForDelete: true });
-          return result;
-        } else {
-          current.ordinalNum = result.length + 1;
-          result.push(current);
-
-          return result;
-        }
-      },
-      []
-    );
-
-    const updatedSchedule = {
-      ...scheduleData,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
-    };
-    setScheduleData(updatedSchedule);
-  };
 
   const saveChanges = () => {
     startTransition(async () => {
@@ -217,219 +103,6 @@ export const Schedule = ({
     });
   };
 
-  const addRow = (scheduledDayId: string) => {
-    const newRow: any = createInitialExerciseRow(scheduledDayId);
-    const dayToUpdate = scheduleData.days.find(
-      (day) => day.id === scheduledDayId
-    );
-    if (!dayToUpdate) {
-      return;
-    }
-
-    const updatedDay = {
-      ...dayToUpdate,
-      exercises: applyOrdinalNumbers<ScheduledExercise>([
-        ...dayToUpdate.exercises,
-        newRow,
-      ]),
-    };
-
-    const indexOfDayToUpdate = scheduleData.days.findIndex(
-      (day) => day.id === scheduledDayId
-    );
-
-    const updatedDays = [...scheduleData.days];
-
-    updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
-
-    const updatedSchedule = {
-      ...scheduleData,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
-    };
-
-    setScheduleData(updatedSchedule);
-  };
-
-  const copyRow = (scheduledExerciseToCopy: PreparedScheduledExercise) => {
-    const dayToUpdate = scheduleData.days.find(
-      (day) => day.id === scheduledExerciseToCopy.scheduledDayId
-    );
-    if (!dayToUpdate) {
-      return;
-    }
-    const indexOfCopiedExercise = dayToUpdate.exercises.findIndex(
-      (exercise) => scheduledExerciseToCopy.id === exercise.id
-    );
-
-    const newScheduledExercise = {
-      ...createInitialExerciseRow(),
-      exerciseId: scheduledExerciseToCopy.exerciseId,
-      sets: scheduledExerciseToCopy.sets,
-      reps: scheduledExerciseToCopy.reps,
-      rpe: scheduledExerciseToCopy.rpe,
-      comment: scheduledExerciseToCopy.comment,
-      scheduledDayId: scheduledExerciseToCopy.scheduledDayId,
-    };
-
-    dayToUpdate.exercises.splice(
-      indexOfCopiedExercise,
-      0,
-      newScheduledExercise
-    );
-
-    const updatedDay = {
-      ...dayToUpdate,
-      exercises: applyOrdinalNumbers<ScheduledExercise>(dayToUpdate.exercises),
-    };
-
-    const indexOfDayToUpdate = scheduleData.days.findIndex(
-      (day) => day.id === scheduledExerciseToCopy.scheduledDayId
-    );
-
-    const updatedDays = [...scheduleData.days];
-
-    updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
-
-    const updatedSchedule = {
-      ...scheduleData,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
-    };
-
-    setScheduleData(updatedSchedule);
-  };
-
-  const deleteRow = (scheduledDayId: string, rowToDeleteId: string) => {
-    const dayToUpdate = scheduleData.days.find(
-      (day) => day.id === scheduledDayId
-    );
-    if (!dayToUpdate) {
-      return;
-    }
-
-    const newExercises = dayToUpdate.exercises.reduce<
-      PreparedScheduledExercise[]
-    >((result, current) => {
-      if (current.id === rowToDeleteId && current.id.startsWith("temp")) {
-        return result;
-      } else if (current.id === rowToDeleteId) {
-        current.ordinalNum = -1;
-        result.push({ ...current, taggedForDelete: true });
-        return result;
-      } else {
-        current.ordinalNum = result.length + 1;
-        result.push(current);
-
-        return result;
-      }
-    }, []);
-
-    const updatedDay = {
-      ...dayToUpdate,
-      exercises: applyOrdinalNumbers(newExercises),
-    };
-
-    const indexOfDayToUpdate = scheduleData.days.findIndex(
-      (day) => day.id === scheduledDayId
-    );
-
-    const updatedDays = [...scheduleData.days];
-
-    updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
-
-    const updatedSchedule = {
-      ...scheduleData,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
-    };
-
-    setScheduleData(updatedSchedule);
-  };
-
-  const updateRow = (
-    scheduledDayId: string,
-    columnId: string,
-    value: string,
-    rowId: string
-  ) => {
-    const dayToUpdate = scheduleData.days.find(
-      (day) => day.id === scheduledDayId
-    );
-
-    if (!dayToUpdate) {
-      return;
-    }
-
-    const updatedExercises = dayToUpdate.exercises.map((scheduledExercise) => {
-      if (columnId && scheduledExercise.id === rowId) {
-        return { ...scheduledExercise, [columnId]: value };
-      }
-      return scheduledExercise;
-    });
-
-    const updatedDay = {
-      ...dayToUpdate,
-      exercises: updatedExercises,
-    };
-
-    const indexOfDayToUpdate = scheduleData.days.findIndex(
-      (day) => day.id === scheduledDayId
-    );
-
-    const updatedDays = [...scheduleData.days];
-
-    updatedDays.splice(indexOfDayToUpdate, 1, updatedDay);
-
-    const updatedSchedule = {
-      ...scheduleData,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
-    };
-
-    setScheduleData(updatedSchedule);
-  };
-
-  const reorderExercises = (
-    scheduledDayId: string,
-    array: PreparedScheduledExercise[]
-  ) => {
-    const dayToUpdate = scheduleData.days.find(
-      (day) => day.id === scheduledDayId
-    );
-    if (!dayToUpdate) {
-      return;
-    }
-
-    const updatedDay = {
-      ...dayToUpdate,
-      exercises: applyOrdinalNumbers<ScheduledExercise>(array),
-    };
-
-    const indexOfDayToUpdate = scheduleData.days.findIndex(
-      (day) => day.id === scheduledDayId
-    );
-
-    const newDays = [...scheduleData.days];
-
-    newDays.splice(indexOfDayToUpdate, 1, updatedDay);
-
-    setScheduleData((prev) => ({ ...prev, days: newDays }));
-  };
-
-  const moveDay = (scheduledDayId: string, direction: Direction) => {
-    const updatedDays = [...scheduleData.days];
-
-    const oldIndex = updatedDays.findIndex((day) => day.id === scheduledDayId);
-
-    const newIndex = direction === Direction.Down ? oldIndex + 1 : oldIndex - 1;
-
-    const temp = updatedDays[newIndex];
-    updatedDays[newIndex] = updatedDays[oldIndex];
-    updatedDays[oldIndex] = temp;
-
-    setScheduleData((prev) => ({
-      ...prev,
-      days: applyOrdinalNumbers<ScheduledDayWithExercises>(updatedDays),
-    }));
-  };
-
   const handleOpenDialog = () => {
     setOpen(false);
   };
@@ -437,7 +110,7 @@ export const Schedule = ({
   const acceptLoadFromStorage = () => {
     const data = loadFromStorage();
     if (data) {
-      setScheduleData(data);
+      handleSetData(data);
       setOpen(false);
     }
   };
@@ -508,7 +181,7 @@ export const Schedule = ({
           <IconButton
             tooltip="Add Day"
             icon={<CalendarPlus />}
-            disabled={reachedLimit}
+            disabled={reachedWeekLimit}
             className=""
             onClick={addDay}
           />
@@ -527,10 +200,10 @@ export const Schedule = ({
                   deleteDay={deleteDay}
                   scheduledDayId={day.id}
                   title={(index + 1).toString()}
-                  addRow={addRow}
-                  copyRow={copyRow}
-                  deleteRow={deleteRow}
-                  updateRow={updateRow}
+                  addExercise={addExercise}
+                  copyExercise={copyExercise}
+                  deleteExercise={deleteExercise}
+                  updateExercise={updateExercise}
                   reorderExercises={reorderExercises}
                   moveDay={moveDay}
                   isFirst={index === 0}
