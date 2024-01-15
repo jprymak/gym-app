@@ -32,7 +32,7 @@ export const EditClientDialog = ({ data }: EditClientDialogProps) => {
         <IconButton
           icon={editMode ? <FileEdit /> : <Plus />}
           variant={editMode ? "ghost" : "default"}
-          tooltip={editMode ? "Add client" : "Edit client"}
+          tooltip={editMode ? "Edit client" : "Add client"}
           {...(!editMode && { label: "Add client" })}
         />
       </DialogTrigger>
