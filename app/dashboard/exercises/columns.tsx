@@ -61,10 +61,12 @@ export const columns: ColumnDef<Exercise>[] = [
     header: ({ column }) => {
       return <SortableHeader header="Name" column={column} />;
     },
+    sortingFn: "text",
   },
   {
     accessorKey: "muscleGroups",
     header: "Muscle groups",
+    accessorFn: (row) => row.muscleGroups.join(", "),
   },
   {
     accessorKey: "demoLink",
