@@ -41,7 +41,7 @@ model ScheduledExercise {
   created        DateTime?     @default(now())
   modified       DateTime?     @updatedAt
   exerciseId     String        @db.ObjectId
-  scheduledDay   ScheduledDay? @relation(fields: [scheduledDayId], references: [id])
+  scheduledDay   ScheduledDay? @relation(fields: [scheduledDayId], references: [id], onDelete: Cascade)
   scheduledDayId String        @db.ObjectId
   ordinalNum     Int
 }
