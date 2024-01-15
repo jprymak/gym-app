@@ -275,4 +275,34 @@ describe("Schedule", () => {
     expect(copyRow).toBeDisabled();
     expect(addExerciseRow).toBeDisabled();
   });
+
+  it("disables move down button for last visible day", async () => {
+    renderComponent();
+
+    let dayOne = screen.getByTestId("day-1");
+
+    let moveDown = within(dayOne).getByRole("button", {
+      name: /move down/i,
+    });
+    const addDay = screen.getByRole("button", {
+      name: /add day/i,
+    });
+
+    await user.click(addDay);
+    await user.click(moveDown);
+
+    const dayTwo = screen.getByTestId("day-2");
+    const deleteDay = within(dayTwo).getByRole("button", {
+      name: /delete day/i,
+    });
+
+    await user.click(deleteDay);
+
+    dayOne = screen.getByTestId("day-1");
+    moveDown = within(dayOne).getByRole("button", {
+      name: /move down/i,
+    });
+
+    expect(moveDown).toBeDisabled();
+  });
 });

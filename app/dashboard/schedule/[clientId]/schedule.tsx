@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import {
   AlertCircle,
   CalendarPlus,
@@ -12,7 +12,6 @@ import { utils, writeFileXLSX } from "xlsx";
 
 import { IconButton } from "@/components/iconButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
 import { prepareScheduleForExport } from "@/lib/data";
 import { updateSchedule } from "@/lib/data";
@@ -147,79 +146,84 @@ export const Schedule = ({
     }
   };
 
+  const daysWithoutDeleted = useMemo(() => {
+    return filterDeletedItems<PreparedScheduledDay>(
+      scheduleData.days.map((day) => {
+        const filteredExercises = filterDeletedItems<PreparedScheduledExercise>(
+          day.exercises
+        );
+        return { ...day, exercises: filteredExercises };
+      })
+    );
+  }, [scheduleData.days]);
+
   return (
-    <TooltipProvider>
-      <div className="overflow-auto flex flex-col w-full justify-end gap-2 mb-5 p-5 border-2 rounded-md">
-        <div ref={scheduleAnimationWrapper}>
-          {!scheduleIsValid && (
-            <Alert variant="destructive" className="mb-5">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>
-                Schedule cannot be saved. One or more fields have invalid or
-                missing values.
-              </AlertDescription>
-            </Alert>
-          )}
-        </div>
-        <div className="flex gap-2 mb-5">
-          <IconButton
-            tooltip="Save changes"
-            icon={isPending ? <Loader2 className="animate-spin" /> : <Save />}
-            disabled={cannotSaveChanges}
-            onClick={saveChanges}
-            {...(isPending && { label: "Saving..." })}
-            {...(hasChanges &&
-              !cannotSaveChanges && { className: "animate-bounce" })}
-          />
-          <IconButton
-            tooltip="Export"
-            icon={<Download />}
-            disabled={hasChanges}
-            onClick={exportData}
-          />
-          <IconButton
-            tooltip="Add Day"
-            icon={<CalendarPlus />}
-            disabled={reachedWeekLimit}
-            className=""
-            onClick={addDay}
-          />
-        </div>
-        <div ref={daysAnimationWrapper} className="flex flex-col gap-9">
-          {filterDeletedItems<PreparedScheduledDay>(scheduleData.days).map(
-            (day, index) => {
-              return (
-                <ScheduledDay
-                  key={day.id}
-                  columns={columns}
-                  data={filterDeletedItems<PreparedScheduledExercise>(
-                    day.exercises
-                  )}
-                  exercises={exercises}
-                  deleteDay={deleteDay}
-                  scheduledDayId={day.id}
-                  title={(index + 1).toString()}
-                  addExercise={addExercise}
-                  copyExercise={copyExercise}
-                  deleteExercise={deleteExercise}
-                  updateExercise={updateExercise}
-                  reorderExercises={reorderExercises}
-                  moveDay={moveDay}
-                  isFirst={index === 0}
-                  isLast={index === scheduleData.days.length - 1}
-                />
-              );
-            }
-          )}
-        </div>
-        <AvailableStoredDataDialog
-          open={open}
-          setOpen={handleOpenDialog}
-          handleAccept={acceptLoadFromStorage}
-          handleReject={rejectLoadFromStorage}
+    <div className="overflow-auto flex flex-col w-full justify-end gap-2 mb-5 p-5 border-2 rounded-md">
+      <div ref={scheduleAnimationWrapper}>
+        {!scheduleIsValid && (
+          <Alert variant="destructive" className="mb-5">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              Schedule cannot be saved. One or more fields have invalid or
+              missing values.
+            </AlertDescription>
+          </Alert>
+        )}
+      </div>
+      <div className="flex gap-2 mb-5">
+        <IconButton
+          tooltip="Save changes"
+          icon={isPending ? <Loader2 className="animate-spin" /> : <Save />}
+          disabled={cannotSaveChanges}
+          onClick={saveChanges}
+          {...(isPending && { label: "Saving..." })}
+          {...(hasChanges &&
+            !cannotSaveChanges && { className: "animate-bounce" })}
+        />
+        <IconButton
+          tooltip="Export"
+          icon={<Download />}
+          disabled={hasChanges}
+          onClick={exportData}
+        />
+        <IconButton
+          tooltip="Add Day"
+          icon={<CalendarPlus />}
+          disabled={reachedWeekLimit}
+          className=""
+          onClick={addDay}
         />
       </div>
-    </TooltipProvider>
+      <div ref={daysAnimationWrapper} className="flex flex-col gap-9">
+        {daysWithoutDeleted.map((day, index) => {
+          return (
+            <ScheduledDay
+              key={day.id}
+              columns={columns}
+              data={day.exercises}
+              exercises={exercises}
+              deleteDay={deleteDay}
+              scheduledDayId={day.id}
+              title={(index + 1).toString()}
+              addExercise={addExercise}
+              copyExercise={copyExercise}
+              deleteExercise={deleteExercise}
+              updateExercise={updateExercise}
+              reorderExercises={reorderExercises}
+              moveDay={moveDay}
+              isFirst={index === 0}
+              isLast={index === daysWithoutDeleted.length - 1}
+            />
+          );
+        })}
+      </div>
+      <AvailableStoredDataDialog
+        open={open}
+        setOpen={handleOpenDialog}
+        handleAccept={acceptLoadFromStorage}
+        handleReject={rejectLoadFromStorage}
+      />
+    </div>
   );
 };
