@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Button, ButtonProps } from "./ui/button";
 import {
   Tooltip,
@@ -12,25 +14,27 @@ interface IconButtonProps extends ButtonProps {
   label?: string;
 }
 
-export const IconButton = ({
-  tooltip,
-  icon,
-  label = "",
-  ...props
-}: IconButtonProps) => {
-  return (
-    <TooltipProvider delayDuration={300}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button aria-label={tooltip} className="flex gap-2" {...props}>
-            {icon}
-            {label}
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent asChild>
-          <p>{tooltip}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
-};
+const IconButton = React.forwardRef<
+  HTMLButtonElement,
+  React.HTMLAttributes<HTMLButtonElement> & IconButtonProps
+>(({ tooltip, icon, label = "", ...props }, ref) => (
+  <TooltipProvider delayDuration={300}>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          aria-label={tooltip}
+          className="flex gap-2"
+          {...props}
+          ref={ref}
+        >
+          {icon}
+          {label}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>{tooltip}</TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+));
+IconButton.displayName = "IconButton";
+
+export { IconButton };

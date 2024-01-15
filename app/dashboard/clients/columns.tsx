@@ -48,18 +48,21 @@ export const columns: ColumnDef<Client>[] = [
     header: ({ column }) => {
       return <SortableHeader header="Name" column={column} />;
     },
+    sortingFn: "text",
   },
   {
     accessorKey: "surname",
     header: ({ column }) => {
       return <SortableHeader header="Surname" column={column} />;
     },
+    sortingFn: "text",
   },
   {
     accessorKey: "email",
     header: ({ column }) => {
       return <SortableHeader header="Email" column={column} />;
     },
+    sortingFn: "text",
   },
   {
     accessorKey: "created",
