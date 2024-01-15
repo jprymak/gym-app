@@ -1,10 +1,13 @@
-import { ExercisesDataTable } from "@/app/dashboard/exercises/exercisesDataTable";
+import {
+  ExercisesDataTable,
+  PreparedExercisesData,
+} from "@/app/dashboard/exercises/exercisesDataTable";
 import { render, screen, within } from "@testing-library/react";
 import user from "@testing-library/user-event";
 
 import "@testing-library/jest-dom";
 
-const mockTableData = [
+const mockTableData: PreparedExercisesData[] = [
   {
     id: "6599b7d0ca0bb0ed96b00c59",
     name: "Bench press",
@@ -12,6 +15,7 @@ const mockTableData = [
     demoLink: "",
     created: "6.01.2024",
     modified: "6.01.2024",
+    scheduledExercise: [],
   },
   {
     id: "659b27079f02df1dcc253c4c",
@@ -20,6 +24,7 @@ const mockTableData = [
     demoLink: "",
     created: "7.01.2024",
     modified: "7.01.2024",
+    scheduledExercise: [],
   },
   {
     id: "65a07f0c7fe7e9ada3d348a1",
@@ -28,6 +33,7 @@ const mockTableData = [
     demoLink: "",
     created: "12.01.2024",
     modified: "12.01.2024",
+    scheduledExercise: [{ id: "12345" }],
   },
 ];
 
@@ -172,5 +178,20 @@ describe("Exercise Table", () => {
     expect(
       within(rowOne).getByRole("cell", { name: /deadlift/i })
     ).toBeInTheDocument();
+  });
+  it("disables checkboxes and delete buttons for assigned exercises", async () => {
+    renderComponent();
+
+    const rowTwo = screen.getByTestId("row-2");
+    expect(within(rowTwo).getByRole("checkbox")).toBeDisabled();
+    expect(
+      within(rowTwo).getByRole("button", {
+        name: /delete/i,
+      })
+    ).toBeDisabled();
+
+    const checkAll = screen.getByRole("checkbox", { name: /select all/i });
+    await user.click(checkAll);
+    expect(within(rowTwo).getByRole("checkbox")).toBeDisabled();
   });
 });
