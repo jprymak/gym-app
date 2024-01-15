@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useGlobalContext } from "@/lib/context/globalContext";
-import { getHeaderString } from "@/lib/stringHelpers";
+import { getHeaderString } from "@/lib/helpers/stringHelpers";
 
 function ModeToggle() {
   const { setTheme } = useTheme();

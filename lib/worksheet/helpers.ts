@@ -3,7 +3,7 @@ import { utils } from "xlsx";
 import {
   ScheduledExercisePreparedForExport,
   SchedulePreparedForExport,
-} from "../data";
+} from "../data/types";
 
 export const createWorksheetFromData = (result: SchedulePreparedForExport) => {
   const { days, clientName, clientSurname } = result;

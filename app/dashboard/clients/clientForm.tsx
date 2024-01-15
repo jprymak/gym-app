@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
-import { addClient, updateClient } from "@/lib/data";
+import { addClient, updateClient } from "@/lib/data/clients";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Client } from "./columns";

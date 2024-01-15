@@ -1,4 +1,4 @@
-import { fetchClients } from "@/lib/data";
+import { fetchClients } from "@/lib/data/clients";
 
 import { ClientDataTable } from "./clientsDataTable";
 

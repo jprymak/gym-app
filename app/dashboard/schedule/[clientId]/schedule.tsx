@@ -13,18 +13,18 @@ import { utils, writeFileXLSX } from "xlsx";
 import { IconButton } from "@/components/iconButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "@/components/ui/use-toast";
-import { prepareScheduleForExport } from "@/lib/data";
-import { updateSchedule } from "@/lib/data";
+import { prepareScheduleForExport, updateSchedule } from "@/lib/data/schedule";
+import { ScheduleWithDaysAndExercises } from "@/lib/data/types";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useSchedule } from "@/lib/hooks/useSchedule";
 import {
   PreparedScheduledDay,
   PreparedScheduledExercise,
   ScheduleItems,
-  ScheduleProps,
 } from "@/lib/types/schedule";
 import { createWorksheetFromData } from "@/lib/worksheet/helpers";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { Exercise } from "@prisma/client";
 
 import { AvailableStoredDataDialog } from "./availableStoredDataDialog";
 import { columns } from "./columns";
@@ -33,6 +33,11 @@ import { ScheduledDay } from "./scheduledDay";
 const filterDeletedItems = <T,>(items: ScheduleItems<T>[]) => {
   return items.filter((currentItem) => !currentItem.taggedForDelete);
 };
+
+export interface ScheduleProps {
+  scheduleData: ScheduleWithDaysAndExercises;
+  exercises: Exercise[];
+}
 
 export const Schedule = ({
   scheduleData: initialData,

@@ -1,15 +1,4 @@
-import { ScheduledExercise } from "@/lib/data";
-import { Exercise } from "@prisma/client";
-
-import {
-  ScheduledDayWithExercises,
-  ScheduleWithDaysAndExercises,
-} from "../data";
-
-export interface ScheduleProps {
-  scheduleData: ScheduleWithDaysAndExercises;
-  exercises: Exercise[];
-}
+import { ScheduledDayWithExercises, ScheduledExercise } from "../data/types";
 
 export interface PreparedScheduledDay extends ScheduledDayWithExercises {
   taggedForDelete?: boolean;
