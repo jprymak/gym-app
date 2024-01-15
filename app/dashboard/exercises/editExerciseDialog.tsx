@@ -10,11 +10,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { Exercise } from "./columns";
 import { ExerciseForm } from "./exerciseForm";
+import { PreparedExercisesData } from "./exercisesDataTable";
 
 interface EditExerciseDialogProps {
-  data?: Exercise;
+  data?: PreparedExercisesData;
 }
 
 export const EditExerciseDialog = ({ data }: EditExerciseDialogProps) => {

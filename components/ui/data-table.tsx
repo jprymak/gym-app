@@ -17,6 +17,7 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  Row,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
@@ -24,12 +25,14 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData & { id: string }, TValue>[];
   data: Array<TData & { id: string }>;
+  enableRowSelectionFn?: (row: Row<TData>) => boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   children,
+  enableRowSelectionFn,
 }: React.PropsWithChildren<DataTableProps<TData, TValue>>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [searchString, setSearchString] = React.useState("");
@@ -44,6 +47,7 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onGlobalFilterChange: setSearchString,
     onRowSelectionChange: setRowSelection,
+    enableRowSelection: enableRowSelectionFn,
     getRowId: (originalRow) => originalRow.id,
     state: {
       sorting,

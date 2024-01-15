@@ -21,15 +21,17 @@ const IconButton = React.forwardRef<
   <TooltipProvider delayDuration={300}>
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button
-          aria-label={tooltip}
-          className="flex gap-2"
-          {...props}
-          ref={ref}
-        >
-          {icon}
-          {label}
-        </Button>
+        <span tabIndex={0}>
+          <Button
+            aria-label={tooltip}
+            className="flex gap-2"
+            {...props}
+            ref={ref}
+          >
+            {icon}
+            {label}
+          </Button>
+        </span>
       </TooltipTrigger>
       <TooltipContent>{tooltip}</TooltipContent>
     </Tooltip>

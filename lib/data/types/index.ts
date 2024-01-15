@@ -87,3 +87,13 @@ export type ScheduledExercise = Prisma.ScheduledExerciseGetPayload<{
     ordinalNum: true;
   };
 }>;
+
+export type ExerciseWithScheduledExercises = Prisma.ExerciseGetPayload<{
+  include: {
+    scheduledExercise: {
+      select: {
+        id: true;
+      };
+    };
+  };
+}>;

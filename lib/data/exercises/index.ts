@@ -2,13 +2,21 @@
 
 import { revalidatePath } from "next/cache";
 
-import { ExercisePartial } from "@/app/dashboard/exercises/columns";
 import { db } from "@/lib/db";
+import { ExercisePartial } from "@/lib/types/exercise";
 import { Prisma } from "@prisma/client";
 
 export async function fetchExercises() {
   try {
-    const exercises = await db.exercise.findMany();
+    const exercises = await db.exercise.findMany({
+      include: {
+        scheduledExercise: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
     return exercises;
   } catch (error) {
     console.error(error);
