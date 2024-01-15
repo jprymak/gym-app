@@ -16,15 +16,17 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { deleteExercise } from "@/lib/data/exercises";
 
-import { Exercise } from "./columns";
+import { PreparedExercisesData } from "./exercisesDataTable";
 
 interface DeleteExerciseDialogProps {
-  data: Exercise;
+  data: PreparedExercisesData;
 }
 
 export const DeleteExerciseDialog = ({ data }: DeleteExerciseDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  const cantBeDeleted = !!data.scheduledExercise.length;
 
   const closeDialog = () => {
     setOpen(false);
@@ -52,7 +54,12 @@ export const DeleteExerciseDialog = ({ data }: DeleteExerciseDialogProps) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <IconButton
-          tooltip="Delete exercise"
+          disabled={cantBeDeleted}
+          tooltip={
+            cantBeDeleted
+              ? "Delete is not possible if exercise is being used in a schedule."
+              : "Delete exercise"
+          }
           icon={<Trash2 className="text-destructive" />}
           variant="ghost"
         />

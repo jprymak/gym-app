@@ -17,7 +17,7 @@ model Exercise {
   demoLink          String
   created           DateTime            @default(now())
   modified          DateTime            @updatedAt
-  ScheduledExercise ScheduledExercise[]
+  scheduledExercise ScheduledExercise[]
 }
 
 model Client {

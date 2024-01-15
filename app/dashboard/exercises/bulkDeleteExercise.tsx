@@ -16,10 +16,10 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { bulkDeleteExercise } from "@/lib/data/exercises";
 
-import { Exercise } from "./columns";
+import { PreparedExercisesData } from "./exercisesDataTable";
 
 interface DeleteExerciseDialogProps {
-  data: Exercise[];
+  data: PreparedExercisesData[];
   selectedRows?: { [key: string]: boolean };
 }
 

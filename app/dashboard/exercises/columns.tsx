@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { DeleteExerciseDialog } from "./deleteExerciseDialog";
 import { EditExerciseDialog } from "./editExerciseDialog";
+import { PreparedExercisesData } from "./exercisesDataTable";
 
 export const MUSCLE_GROUPS = [
   "chest",
@@ -21,19 +22,7 @@ export const MUSCLE_GROUPS = [
   "forearms",
 ];
 
-export type ExercisePartial = {
-  name: string;
-  muscleGroups: string[];
-  demoLink: string;
-};
-
-export type Exercise = ExercisePartial & {
-  id: string;
-  created: string;
-  modified: string;
-};
-
-export const columns: ColumnDef<Exercise>[] = [
+export const columns: ColumnDef<PreparedExercisesData>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -48,6 +37,7 @@ export const columns: ColumnDef<Exercise>[] = [
     ),
     cell: ({ row }) => (
       <Checkbox
+        disabled={!!row.original.scheduledExercise.length}
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
@@ -81,12 +71,17 @@ export const columns: ColumnDef<Exercise>[] = [
       );
     },
   },
-  // { TO DO: add once realtions are ready
-  //   accessorKey: "usedBy",
-  //   header: ({ column }) => {
-  //     return <SortableHeader header="Used By" column={column} />;
-  //   },
-  // },
+  {
+    accessorKey: "assignedTo",
+    header: ({ column }) => {
+      return <SortableHeader header="Assigned To" column={column} />;
+    },
+    cell: ({ row }) => {
+      return (
+        <p className=" text-center">{row.original.scheduledExercise.length}</p>
+      );
+    },
+  },
   {
     accessorKey: "created",
     header: ({ column }) => {
