@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
-import { deleteClient } from "@/lib/data";
+import { deleteClient } from "@/lib/data/clients";
 
 import { Client } from "./columns";
 

@@ -6,9 +6,9 @@ import {
   Direction,
   MARGINAL_VALUES,
   SCHEDULE_WEEK_LIMIT,
-} from "@/lib/constants";
-import { ScheduleWithDaysAndExercises } from "@/lib/data";
+} from "@/lib/constants/schedule";
 
+import { ScheduleWithDaysAndExercises } from "../data/types";
 import {
   ScheduleActionKind,
   scheduleReducer,

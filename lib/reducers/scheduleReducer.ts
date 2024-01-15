@@ -1,11 +1,13 @@
-import { ScheduledExercise } from "@prisma/client";
-
-import { Direction } from "../constants";
+import { Direction } from "../constants/schedule";
 import {
   ScheduledDayWithExercises,
+  ScheduledExercise,
   ScheduleWithDaysAndExercises,
-} from "../data";
-import { createInitialDay, createInitialExerciseRow } from "../initialData";
+} from "../data/types";
+import {
+  createInitialDay,
+  createInitialExerciseRow,
+} from "../helpers/initialData";
 import {
   PreparedScheduledDay,
   PreparedScheduledExercise,

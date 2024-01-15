@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { createExercise, updateExercise } from "@/lib/data";
+import { createExercise, updateExercise } from "@/lib/data/exercises";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Exercise, MUSCLE_GROUPS } from "./columns";

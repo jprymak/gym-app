@@ -14,7 +14,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Direction, SCHEDULED_EXERCISE_DAY_LIMIT } from "@/lib/constants";
+import {
+  Direction,
+  SCHEDULED_EXERCISE_DAY_LIMIT,
+} from "@/lib/constants/schedule";
 import { PreparedScheduledExercise } from "@/lib/types/schedule";
 import {
   closestCenter,

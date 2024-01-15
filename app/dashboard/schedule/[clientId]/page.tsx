@@ -1,4 +1,5 @@
-import { fetchExercises, fetchSchedule } from "@/lib/data";
+import { fetchExercises } from "@/lib/data/exercises";
+import { fetchSchedule } from "@/lib/data/schedule";
 
 import { Schedule } from "./schedule";
 

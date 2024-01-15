@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
-import { bulkDeleteExercise } from "@/lib/data";
+import { bulkDeleteExercise } from "@/lib/data/exercises";
 
 import { Exercise } from "./columns";
 

@@ -4,7 +4,7 @@ import { Copy, Trash2, X } from "lucide-react";
 import { IconButton } from "@/components/iconButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { MARGINAL_VALUES } from "@/lib/constants";
+import { MARGINAL_VALUES } from "@/lib/constants/schedule";
 import { PreparedScheduledExercise } from "@/lib/types/schedule";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 

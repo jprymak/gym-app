@@ -1,4 +1,4 @@
-import { fetchExercises } from "@/lib/data";
+import { fetchExercises } from "@/lib/data/exercises";
 
 import { ExercisesDataTable } from "./exercisesDataTable";
 
