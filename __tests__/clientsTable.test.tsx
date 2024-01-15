@@ -127,7 +127,7 @@ describe("Clients Table", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it.only("can sort rows", async () => {
+  it("can sort rows", async () => {
     renderComponent();
 
     //name column
