@@ -1,11 +1,13 @@
-// @ts-nocheck
-
+import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 
 import { db } from "@/lib/db";
 
-export const options = {
+const MINUTE = 60;
+const HOUR = 60 * MINUTE;
+
+export const options: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -22,21 +24,21 @@ export const options = {
         },
       },
       async authorize(credentials) {
+        if (!credentials) return null;
         try {
           const foundUser = await db.user.findFirst({
             where: {
-              email: credentials.email,
+              email: credentials?.email,
             },
           });
 
           if (foundUser) {
             const match = await bcrypt.compare(
-              credentials.password,
+              credentials?.password,
               foundUser.password
             );
 
             if (match) {
-              delete foundUser.password;
               return foundUser;
             }
           }
@@ -47,6 +49,9 @@ export const options = {
       },
     }),
   ],
+  session: {
+    maxAge: 8 * HOUR,
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) token.role = user.role;
@@ -55,8 +60,8 @@ export const options = {
     async session({ session, token }) {
       if (session?.user) {
         session.user.role = token.role;
-        return session;
       }
+      return session;
     },
   },
   pages: {
