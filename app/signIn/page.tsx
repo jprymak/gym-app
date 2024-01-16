@@ -30,7 +30,7 @@ const formSchema = z.object({
   password: z.string(),
 });
 
-export function SignInForm() {
+function SignInForm() {
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof formSchema>>({
