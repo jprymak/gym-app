@@ -50,9 +50,9 @@ export function ClientCombobox({ clients }: ClientComboboxProps) {
     )?.id;
 
     if (selectedClientId) {
-      router.push(`/dashboard/schedule/${selectedClientId}`);
+      router.push(`/schedule/${selectedClientId}`);
     } else {
-      router.push(`/dashboard/schedule`);
+      router.push(`/schedule`);
     }
 
     setOpen(false);

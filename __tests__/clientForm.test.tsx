@@ -1,9 +1,6 @@
 import selectEvent from "react-select-event";
 
-import {
-  ClientForm,
-  clientFormMessages,
-} from "@/app/dashboard/clients/clientForm";
+import { ClientForm, clientFormMessages } from "@/app/clients/clientForm";
 import { render, screen } from "@testing-library/react";
 import user from "@testing-library/user-event";
 

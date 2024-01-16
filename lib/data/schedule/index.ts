@@ -52,7 +52,7 @@ export async function fetchSchedule(clientId: string) {
       },
     });
     if (!result) throw Error;
-    revalidatePath("/dashboard/schedule");
+    revalidatePath("/schedule");
     return result;
   } catch (e) {
     console.error(e);
@@ -212,7 +212,7 @@ export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
       }),
     ]);
 
-    revalidatePath(`/dashboard/schedule/${schedule.clientId}`);
+    revalidatePath(`/schedule/${schedule.clientId}`);
     return { data: transaction };
   } catch (e) {
     console.log(e);

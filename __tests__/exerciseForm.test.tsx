@@ -1,7 +1,7 @@
 import {
   ExerciseForm,
   exerciseFormMessages,
-} from "@/app/dashboard/exercises/exerciseForm";
+} from "@/app/exercises/exerciseForm";
 import { render, screen } from "@testing-library/react";
 import user from "@testing-library/user-event";
 

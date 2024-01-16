@@ -1,4 +1,4 @@
-import { ClientDataTable } from "@/app/dashboard/clients/clientsDataTable";
+import { ClientDataTable } from "@/app/clients/clientsDataTable";
 import { render, screen, within } from "@testing-library/react";
 import user from "@testing-library/user-event";
 
