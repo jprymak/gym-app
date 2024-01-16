@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
-import { Menu, Moon, Sun } from "lucide-react";
+import { LogIn, LogOut, Menu, Moon, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -44,20 +46,34 @@ function ModeToggle() {
 function Header() {
   const pathname = usePathname();
   const { toggleOpenMobileNav } = useGlobalContext();
+  const { data: session } = useSession();
 
   return (
-    <header className="border-2 px-4 py-3 rounded-md capitalize flex items-center gap-1">
+    <header className="border-2 px-4 py-3 rounded-md capitalize flex items-center gap-2">
       <h1 className=" text-2xl font-bold mr-auto">
         {getHeaderString(pathname)}
       </h1>
       <ModeToggle />
-      <Button
-        variant="outline"
-        type="button"
-        className="md:hidden"
-        onClick={toggleOpenMobileNav}
-      >
-        <Menu />
+      {session && (
+        <Button
+          variant="outline"
+          type="button"
+          className="md:hidden"
+          onClick={toggleOpenMobileNav}
+        >
+          <Menu />
+        </Button>
+      )}
+      <Button asChild variant="outline" type="button" className="md:hidden">
+        {session ? (
+          <Link href="/api/auth/signout?callbackUrl=/">
+            <LogOut />
+          </Link>
+        ) : (
+          <Link href="/api/auth/signin">
+            <LogIn />
+          </Link>
+        )}
       </Button>
     </header>
   );

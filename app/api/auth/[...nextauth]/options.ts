@@ -1,30 +1,50 @@
 // @ts-nocheck
 
-import GitHubProvider from "next-auth/providers/github";
-import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcrypt";
+
+import { db } from "@/lib/db";
 
 export const options = {
   providers: [
-    GitHubProvider({
-      profile(profile) {
-        return {
-          ...profile,
-          role: "admin",
-        };
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: {
+          label: "email",
+          type: "text",
+          placeholder: "your email",
+        },
+        password: {
+          label: "password",
+          type: "password",
+          placeholder: "your password",
+        },
       },
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_Secret,
-    }),
-    GoogleProvider({
-      profile(profile) {
-        return {
-          ...profile,
-          id: profile.sub,
-          role: "admin",
-        };
+      async authorize(credentials) {
+        try {
+          const foundUser = await db.user.findFirst({
+            where: {
+              email: credentials.email,
+            },
+          });
+
+          if (foundUser) {
+            const match = await bcrypt.compare(
+              credentials.password,
+              foundUser.password
+            );
+
+            if (match) {
+              delete foundUser.password;
+              return foundUser;
+            }
+          }
+        } catch (error) {
+          console.log(error);
+        }
+        return null;
       },
-      clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_Secret,
     }),
   ],
   callbacks: {
@@ -38,5 +58,9 @@ export const options = {
         return session;
       }
     },
+  },
+  pages: {
+    signIn: "/signIn",
+    signOut: "/signOut",
   },
 };

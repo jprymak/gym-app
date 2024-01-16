@@ -26,7 +26,7 @@ export const Sidebar = async () => {
               height="50"
             />
             <div className="flex flex-col mr-4">
-              <span className="font-bold">John Doe</span>
+              <span className="font-bold">{session?.user?.name}</span>
               <span className="text-sm">Trainer</span>
             </div>
           </div>
@@ -49,7 +49,7 @@ export const Sidebar = async () => {
             className="flex p-3 items-center gap-2 mx-0 my-1 rounded-md hover:bg-muted"
           >
             <LogOut />
-            Logout
+            Log out
           </Link>
         ) : (
           <Link
@@ -57,7 +57,7 @@ export const Sidebar = async () => {
             className="flex p-3 items-center gap-2 mx-0 my-1 rounded-md hover:bg-muted"
           >
             <LogIn />
-            Signin
+            Sign in
           </Link>
         )}
       </section>

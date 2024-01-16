@@ -3,7 +3,7 @@ import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { SubmitBtn } from "@/components/submitBtn";
+import { PendingBtn } from "@/components/pendingBtn";
 import {
   Form,
   FormControl,
@@ -173,7 +173,11 @@ export function ClientForm({ data, closeDialog }: ClientFormProps) {
             </FormItem>
           )}
         />
-        <SubmitBtn isPending={isPending} />
+        <PendingBtn
+          label="Submit"
+          pendingLabel="Submitting..."
+          isPending={isPending}
+        />
       </form>
     </Form>
   );
