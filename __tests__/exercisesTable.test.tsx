@@ -1,7 +1,7 @@
 import {
   ExercisesDataTable,
   PreparedExercisesData,
-} from "@/app/dashboard/exercises/exercisesDataTable";
+} from "@/app/exercises/exercisesDataTable";
 import { render, screen, within } from "@testing-library/react";
 import user from "@testing-library/user-event";
 

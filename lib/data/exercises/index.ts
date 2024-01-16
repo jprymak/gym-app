@@ -31,7 +31,7 @@ export async function createExercise(formData: ExercisePartial) {
         ...formData,
       },
     });
-    revalidatePath("/dashboard/exercises");
+    revalidatePath("/exercises");
     return result;
   } catch (e) {
     const result = {
@@ -56,7 +56,7 @@ export async function updateExercise(formData: ExercisePartial, id: string) {
         ...formData,
       },
     });
-    revalidatePath("/dashboard/exercises");
+    revalidatePath("/exercises");
     return result;
   } catch (e) {
     const result = {
@@ -78,7 +78,7 @@ export async function deleteExercise(id: string) {
         id,
       },
     });
-    revalidatePath("/dashboard/exercises");
+    revalidatePath("/exercises");
     return result;
   } catch (e) {
     console.log(e);
@@ -98,7 +98,7 @@ export async function bulkDeleteExercise(idsToDelete: string[]) {
         },
       },
     });
-    revalidatePath("/dashboard/exercises");
+    revalidatePath("/exercises");
     return result;
   } catch (e) {
     return {

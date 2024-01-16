@@ -1,4 +1,4 @@
-import { Schedule } from "@/app/dashboard/schedule/[clientId]/schedule";
+import { Schedule } from "@/app/schedule/[clientId]/schedule";
 import { ScheduleWithDaysAndExercises } from "@/lib/data/types";
 import { Exercise } from "@prisma/client";
 import { render, screen, within } from "@testing-library/react";

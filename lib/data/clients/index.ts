@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { ClientPartial } from "@/app/dashboard/clients/columns";
+import { ClientPartial } from "@/app/clients/columns";
 import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 
@@ -30,7 +30,7 @@ export async function addClient(formData: ClientPartial) {
         },
       },
     });
-    revalidatePath("/dashboard/clients");
+    revalidatePath("/clients");
     return result;
   } catch (e) {
     console.log(e);
@@ -57,7 +57,7 @@ export async function updateClient(formData: ClientPartial, id: string) {
         ...formData,
       },
     });
-    revalidatePath("/dashboard/clients");
+    revalidatePath("/clients");
     return result;
   } catch (e) {
     const result = {
@@ -80,7 +80,7 @@ export async function deleteClient(id: string) {
         id,
       },
     });
-    revalidatePath("/dashboard/clients");
+    revalidatePath("/clients");
     return result;
   } catch (e) {
     console.error(e);

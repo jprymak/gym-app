@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { SubmitBtn } from "@/components/submitBtn";
+import { PendingBtn } from "@/components/pendingBtn";
 import { Badge } from "@/components/ui/badge";
 import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
 import {
@@ -137,7 +137,11 @@ export function ExerciseForm({ data, closeDialog }: ExerciseFormProps) {
           )}
         />
 
-        <SubmitBtn isPending={isPending} />
+        <PendingBtn
+          label="Submit"
+          pendingLabel="Pending..."
+          isPending={isPending}
+        />
       </form>
     </Form>
   );
