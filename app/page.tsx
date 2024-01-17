@@ -45,7 +45,7 @@ const Homepage = async () => {
                   the ones who want to build their own plans and track progress
                   individually.
                 </p>
-                <p>Do not hesitate! Start your Gym Driven Develompent today!</p>
+                <p>Do not hesitate! Start your Gym Driven Development today!</p>
               </CardContent>
             </Card>
           </section>

@@ -69,7 +69,7 @@ export function DataTable<TData, TValue>({
   };
 
   return (
-    <div>
+    <>
       <div className="flex items-start py-4 flex-col md:flex-row md:items-center gap-2">
         <Input
           placeholder="Filter rows..."
@@ -80,7 +80,7 @@ export function DataTable<TData, TValue>({
         <div className="flex gap-2">{renderChildren()}</div>
       </div>
       <div className="rounded-md border">
-        <Table className="overflow-auto">
+        <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -134,6 +134,6 @@ export function DataTable<TData, TValue>({
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
-    </div>
+    </>
   );
 }

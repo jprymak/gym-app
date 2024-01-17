@@ -16,7 +16,7 @@ export const Sidebar = async () => {
   return (
     <>
       {session ? (
-        <aside className="hidden md:block p-4 pt-0 min-h-screen border-r-2">
+        <aside className="hidden md:block p-4 pt-0 grow-1 ">
           <div className=" top-0 sticky pt-4">
             <section className="w-56 p-4 divide-y-2 border-2 rounded-md mb-4 ">
               <div className="flex items-center gap-5 mb-5 mx-2">

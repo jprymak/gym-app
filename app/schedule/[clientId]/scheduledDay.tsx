@@ -165,89 +165,91 @@ export function ScheduledDay<TData extends PreparedScheduledExercise, TValue>({
   }, [activeId, table]);
 
   return (
-    <div className="flex" data-testid={`day-${title}`}>
-      <div className="flex flex-col gap-2 mr-2">
-        <IconButton
-          disabled={isFirst}
-          tooltip="Move Up"
-          icon={<MoveUp />}
-          onClick={() => moveDay(scheduledDayId, Direction.Up)}
-          variant="outline"
-        />
-        <IconButton
-          tooltip="Move Down"
-          icon={<MoveDown />}
-          disabled={isLast}
-          onClick={() => moveDay(scheduledDayId, Direction.Down)}
-          variant="outline"
-        />
-        <IconButton
-          tooltip="Add exercise row"
-          icon={<Plus />}
-          disabled={dayLimitRached}
-          variant="outline"
-          onClick={() => addExercise(scheduledDayId)}
-        />
-      </div>
-      <div className="rounded-md border">
-        <DndContext
-          sensors={sensors}
-          onDragEnd={handleDragEnd}
-          onDragStart={handleDragStart}
-          onDragCancel={handleDragCancel}
-          collisionDetection={closestCenter}
-          modifiers={[restrictToVerticalAxis]}
-        >
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} colSpan={header.colSpan}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody data-testid="tbody">
-              <SortableContext
-                items={items}
-                strategy={verticalListSortingStrategy}
-              >
-                {hasRowsToRender ? (
-                  table
-                    .getRowModel()
-                    .rows.map((row) => (
-                      <DraggableTableRow key={row.original.id} row={row} />
-                    ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
-                      No exercises for this day.
-                    </TableCell>
+    <div className="w-full h-full">
+      <div className="flex overflow-auto" data-testid={`day-${title}`}>
+        <div className="flex flex-col gap-2 mr-2">
+          <IconButton
+            disabled={isFirst}
+            tooltip="Move Up"
+            icon={<MoveUp />}
+            onClick={() => moveDay(scheduledDayId, Direction.Up)}
+            variant="outline"
+          />
+          <IconButton
+            tooltip="Move Down"
+            icon={<MoveDown />}
+            disabled={isLast}
+            onClick={() => moveDay(scheduledDayId, Direction.Down)}
+            variant="outline"
+          />
+          <IconButton
+            tooltip="Add exercise row"
+            icon={<Plus />}
+            disabled={dayLimitRached}
+            variant="outline"
+            onClick={() => addExercise(scheduledDayId)}
+          />
+        </div>
+        <div className="rounded-md border ">
+          <DndContext
+            sensors={sensors}
+            onDragEnd={handleDragEnd}
+            onDragStart={handleDragStart}
+            onDragCancel={handleDragCancel}
+            collisionDetection={closestCenter}
+            modifiers={[restrictToVerticalAxis]}
+          >
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id} colSpan={header.colSpan}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      );
+                    })}
                   </TableRow>
-                )}
-              </SortableContext>
-            </TableBody>
-          </Table>
-          <DragOverlay>
-            {activeId && (
-              <table style={{ width: "100%" }}>
-                <tbody>
-                  <StaticTableRow row={selectedRow} />
-                </tbody>
-              </table>
-            )}
-          </DragOverlay>
-        </DndContext>
+                ))}
+              </TableHeader>
+              <TableBody data-testid="tbody">
+                <SortableContext
+                  items={items}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {hasRowsToRender ? (
+                    table
+                      .getRowModel()
+                      .rows.map((row) => (
+                        <DraggableTableRow key={row.original.id} row={row} />
+                      ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={7} className="h-24 text-center">
+                        No exercises for this day.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </SortableContext>
+              </TableBody>
+            </Table>
+            <DragOverlay>
+              {activeId && (
+                <table style={{ width: "100%" }}>
+                  <tbody>
+                    <StaticTableRow row={selectedRow} />
+                  </tbody>
+                </table>
+              )}
+            </DragOverlay>
+          </DndContext>
+        </div>
       </div>
     </div>
   );

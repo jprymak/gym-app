@@ -163,7 +163,7 @@ export const Schedule = ({
   }, [scheduleData.days]);
 
   return (
-    <div className="overflow-auto flex flex-col w-full justify-end gap-2 mb-5 p-5 border-2 rounded-md">
+    <div className="flex flex-col w-full p-5 border-2 rounded-md flex-1">
       <div ref={scheduleAnimationWrapper}>
         {!scheduleIsValid && (
           <Alert variant="destructive" className="mb-5">
@@ -200,7 +200,7 @@ export const Schedule = ({
           onClick={addDay}
         />
       </div>
-      <div ref={daysAnimationWrapper} className="flex flex-col gap-9">
+      <div ref={daysAnimationWrapper} className="flex flex-col gap-8 grow-1">
         {daysWithoutDeleted.map((day, index) => {
           return (
             <ScheduledDay
