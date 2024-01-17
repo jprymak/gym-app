@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { useBeforeunload } from "react-beforeunload";
 
 import {
@@ -16,14 +16,17 @@ import {
 import {
   PreparedScheduledDay,
   PreparedScheduledExercise,
+  ScheduleItems,
 } from "../types/schedule";
+
+const filterDeletedItems = <T>(items: ScheduleItems<T>[]) => {
+  return items.filter((currentItem) => !currentItem.taggedForDelete);
+};
 
 export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
   const [state, dispatch] = useReducer(scheduleReducer, initialData);
 
   const [scheduleIsValid, setScheduleIsValid] = useState(true);
-
-  const reachedWeekLimit = state.days.length >= SCHEDULE_WEEK_LIMIT;
 
   const hasChanges =
     JSON.stringify(initialData.days) !== JSON.stringify(state.days);
@@ -145,8 +148,22 @@ export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
     });
   };
 
+  const dataToDisplay = useMemo(() => {
+    return filterDeletedItems<PreparedScheduledDay>(
+      state.days.map((day) => {
+        const filteredExercises = filterDeletedItems<PreparedScheduledExercise>(
+          day.exercises
+        );
+        return { ...day, exercises: filteredExercises };
+      })
+    );
+  }, [state.days]);
+
+  const reachedWeekLimit = dataToDisplay.length >= SCHEDULE_WEEK_LIMIT;
+
   return {
     state,
+    dataToDisplay,
     scheduleIsValid,
     hasChanges,
     moveDay,
