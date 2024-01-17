@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { LogIn, LogOut, Menu, Moon, Sun } from "lucide-react";
 
+import { HeaderTitle } from "@/components/headerTitle";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,7 +15,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useGlobalContext } from "@/lib/context/globalContext";
-import { getHeaderString } from "@/lib/helpers/stringHelpers";
 
 function ModeToggle() {
   const { setTheme } = useTheme();
@@ -50,9 +50,7 @@ function Header() {
 
   return (
     <header className="border-2 px-4 py-3 rounded-md capitalize flex items-center gap-2">
-      <h1 className=" text-2xl font-bold mr-auto">
-        {getHeaderString(pathname)}
-      </h1>
+      <HeaderTitle pathname={pathname} />
       <ModeToggle />
       {session && (
         <Button
