@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -23,6 +23,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
+import { revalidateServerSide } from "@/lib/helpers/cache";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const formSchema = z.object({
@@ -31,6 +33,8 @@ const formSchema = z.object({
 });
 
 function SignInForm() {
+  const { get } = useSearchParams();
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -39,12 +43,23 @@ function SignInForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
-      await signIn("credentials", {
+      const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: true,
-        callbackUrl: "",
+        redirect: false,
       });
+      if (result?.error) {
+        toast({
+          variant: "destructive",
+          title: "Invalid credentials",
+        });
+      } else if (result?.url) {
+        await revalidateServerSide(result?.url);
+        const callbackUrl = get("callbackUrl");
+        if (callbackUrl) {
+          router.push(callbackUrl);
+        }
+      }
     });
   }
 
