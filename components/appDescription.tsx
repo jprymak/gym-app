@@ -11,12 +11,12 @@ export function AppDescription() {
       <AccordionItem value="item-1">
         <AccordionTrigger>Exercises</AccordionTrigger>
         <AccordionContent>
-          <p className="mb-2">
+          <p className="mb-2 text-base">
             You should start here. You can freely add, delete, and edit
             exercises. Created exercises can be later used in the training
             schedule.
           </p>
-          <p>
+          <p className="mb-2 text-base">
             Keep in mind that an exercise cannot be deleted if it has already
             been assigned to a schedule. &apos;Assigned To&apos; column
             indicates how many times it&apos;s been used.
@@ -26,7 +26,7 @@ export function AppDescription() {
       <AccordionItem value="item-2">
         <AccordionTrigger>Clients</AccordionTrigger>
         <AccordionContent>
-          <p>
+          <p className="mb-2 text-base">
             You can add, edit, and delete clients from your list as you see fit.
             Training schedules are assigned to a client so you need to have at
             least one created to move forward.
@@ -37,8 +37,8 @@ export function AppDescription() {
         <AccordionTrigger>Schedule</AccordionTrigger>
         <AccordionContent>
           <section className="mb-5">
-            <h4 className="mb-2 font-semibold">Schedule</h4>
-            <ul className=" list-disc pl-10 flex flex-col gap-1">
+            <h4 className="mb-2 font-semibold text-base">Schedule</h4>
+            <ul className="text-base list-disc pl-6 flex flex-col gap-1">
               <li>
                 Once you have at least one exercise and one client, you can
                 proceed with the schedule.
@@ -60,8 +60,8 @@ export function AppDescription() {
           </section>
 
           <section className="mb-5">
-            <h4 className="mb-2 font-semibold">Days</h4>
-            <ul className=" list-disc pl-10 flex flex-col gap-1">
+            <h4 className="mb-2 font-semibold text-base">Days</h4>
+            <ul className="text-base list-disc pl-6 flex flex-col gap-1">
               <li>You can add days.</li>
               <li>
                 You can change the order of days by clicking on the arrow
@@ -73,8 +73,8 @@ export function AppDescription() {
           </section>
 
           <section>
-            <h4 className="mb-2 font-semibold">Exercises</h4>
-            <ul className=" list-disc pl-10 flex flex-col gap-1">
+            <h4 className="mb-2 font-semibold text-base">Exercises</h4>
+            <ul className="text-base list-disc pl-6 flex flex-col gap-1">
               <li>
                 You can specify sets, reps, and RPE numbers for each exercise
                 and comment on it.

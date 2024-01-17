@@ -49,7 +49,7 @@ function Header() {
   const { data: session } = useSession();
 
   return (
-    <header className="border-2 px-4 py-3 rounded-md capitalize flex items-center gap-2">
+    <header className="border-2 mb-5 px-4 py-3 rounded-md capitalize flex items-center gap-2">
       <HeaderTitle pathname={pathname} />
       <ModeToggle />
       {session && (

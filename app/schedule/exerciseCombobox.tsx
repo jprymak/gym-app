@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Check,ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -55,7 +55,7 @@ export function ExerciseCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={`w-[200px] justify-between ${
+          className={`w-[255px] justify-between ${
             !value && "text-white bg-destructive"
           }`}
         >
@@ -68,7 +68,7 @@ export function ExerciseCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[255px] p-0">
         <Command>
           <CommandInput placeholder="Search exercises..." />
           <CommandEmpty>No exercise found.</CommandEmpty>

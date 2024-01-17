@@ -12,9 +12,5 @@ export default async function DemoPage() {
     };
   });
 
-  return (
-    <div className="md:container mx-auto md:py-10">
-      <ExercisesDataTable data={parsedData} />
-    </div>
-  );
+  return <ExercisesDataTable data={parsedData} />;
 }

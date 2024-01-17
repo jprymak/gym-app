@@ -13,9 +13,5 @@ export default async function Clients() {
     };
   });
 
-  return (
-    <div className="md:container mx-auto md:py-10">
-      <ClientDataTable data={parsedData} />
-    </div>
-  );
+  return <ClientDataTable data={parsedData} />;
 }

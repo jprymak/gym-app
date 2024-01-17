@@ -11,8 +11,8 @@ export default async function SchedulePage({
   const exercises = await fetchExercises();
   const schedule = await fetchSchedule(params?.clientId);
   return (
-    <div>
+    <>
       {schedule && <Schedule scheduleData={schedule} exercises={exercises} />}
-    </div>
+    </>
   );
 }

@@ -32,13 +32,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <div className="flex flex-col md:flex-row">
+            <div className="flex flex-col md:flex-row min-h-screen">
               <Sidebar />
               <ContextProvider>
                 <MobileNav />
-                <div className="flex-1 p-4">
+                <div className="md:border-l-2 flex-1 p-4 flex flex-col f-full">
                   <Header />
-                  <div className="mt-5">{children}</div>
+                  {children}
                 </div>
               </ContextProvider>
             </div>
