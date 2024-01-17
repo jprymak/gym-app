@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   AlertCircle,
   CalendarPlus,
@@ -17,11 +17,6 @@ import { prepareScheduleForExport, updateSchedule } from "@/lib/data/schedule";
 import { ScheduleWithDaysAndExercises } from "@/lib/data/types";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useSchedule } from "@/lib/hooks/useSchedule";
-import {
-  PreparedScheduledDay,
-  PreparedScheduledExercise,
-  ScheduleItems,
-} from "@/lib/types/schedule";
 import { createWorksheetFromData } from "@/lib/worksheet/helpers";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Exercise } from "@prisma/client";
@@ -29,10 +24,6 @@ import { Exercise } from "@prisma/client";
 import { AvailableStoredDataDialog } from "./availableStoredDataDialog";
 import { columns } from "./columns";
 import { ScheduledDay } from "./scheduledDay";
-
-const filterDeletedItems = <T,>(items: ScheduleItems<T>[]) => {
-  return items.filter((currentItem) => !currentItem.taggedForDelete);
-};
 
 export interface ScheduleProps {
   scheduleData: ScheduleWithDaysAndExercises;
@@ -45,6 +36,7 @@ export const Schedule = ({
 }: ScheduleProps) => {
   const {
     state: scheduleData,
+    dataToDisplay,
     handleSetData,
     hasChanges,
     addExercise,
@@ -151,17 +143,6 @@ export const Schedule = ({
     }
   };
 
-  const daysWithoutDeleted = useMemo(() => {
-    return filterDeletedItems<PreparedScheduledDay>(
-      scheduleData.days.map((day) => {
-        const filteredExercises = filterDeletedItems<PreparedScheduledExercise>(
-          day.exercises
-        );
-        return { ...day, exercises: filteredExercises };
-      })
-    );
-  }, [scheduleData.days]);
-
   return (
     <div className="flex flex-col w-full p-5 border-2 rounded-md flex-1">
       <div ref={scheduleAnimationWrapper}>
@@ -201,7 +182,7 @@ export const Schedule = ({
         />
       </div>
       <div ref={daysAnimationWrapper} className="flex flex-col gap-8 grow-1">
-        {daysWithoutDeleted.map((day, index) => {
+        {dataToDisplay.map((day, index) => {
           return (
             <ScheduledDay
               key={day.id}
@@ -218,7 +199,7 @@ export const Schedule = ({
               reorderExercises={reorderExercises}
               moveDay={moveDay}
               isFirst={index === 0}
-              isLast={index === daysWithoutDeleted.length - 1}
+              isLast={index === dataToDisplay.length - 1}
             />
           );
         })}
