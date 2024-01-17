@@ -1,19 +1,25 @@
-import { CalendarCheck, Dumbbell, Users } from "lucide-react";
+import { CalendarCheck, Dumbbell, Home, Users } from "lucide-react";
 
 export const menuItems = [
   {
     title: "",
     list: [
       {
-        title: "Clients",
-        path: "/clients",
-        icon: <Users />,
+        title: "Home",
+        path: "/",
+        icon: <Home />,
       },
       {
         title: "Exercises",
         path: "/exercises",
         icon: <Dumbbell />,
       },
+      {
+        title: "Clients",
+        path: "/clients",
+        icon: <Users />,
+      },
+
       {
         title: "Schedule",
         path: "/schedule",
