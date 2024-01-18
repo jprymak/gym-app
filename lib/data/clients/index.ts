@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getServerSession } from "next-auth";
 
+import { options } from "@/app/api/auth/[...nextauth]/options";
 import { ClientPartial } from "@/app/clients/columns";
 import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
@@ -18,6 +20,10 @@ export async function fetchClients() {
 
 export async function addClient(formData: ClientPartial) {
   try {
+    const session = await getServerSession(options);
+    const userId = session?.user?.id;
+
+    if (!userId) throw Error;
     const result = await db.client.create({
       data: {
         ...formData,
@@ -28,6 +34,7 @@ export async function addClient(formData: ClientPartial) {
             },
           },
         },
+        userId,
       },
     });
     revalidatePath("/clients");

@@ -1,14 +1,24 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getServerSession } from "next-auth";
 
+import { options } from "@/app/api/auth/[...nextauth]/options";
 import { db } from "@/lib/db";
 import { ExercisePartial } from "@/lib/types/exercise";
 import { Prisma } from "@prisma/client";
 
 export async function fetchExercises() {
   try {
+    const session = await getServerSession(options);
+    const userId = session?.user?.id;
+
+    if (!userId) throw Error;
+
     const exercises = await db.exercise.findMany({
+      where: {
+        userId,
+      },
       include: {
         scheduledExercise: {
           select: {
@@ -26,14 +36,21 @@ export async function fetchExercises() {
 
 export async function createExercise(formData: ExercisePartial) {
   try {
+    const session = await getServerSession(options);
+    const userId = session?.user?.id;
+
+    if (!userId) throw Error;
+
     const result = await db.exercise.create({
       data: {
         ...formData,
+        userId,
       },
     });
     revalidatePath("/exercises");
     return result;
   } catch (e) {
+    console.log(e);
     const result = {
       error: "Something went wrong!",
     };

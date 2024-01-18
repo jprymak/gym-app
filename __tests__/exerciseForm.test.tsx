@@ -7,6 +7,8 @@ import user from "@testing-library/user-event";
 
 import "@testing-library/jest-dom";
 
+jest.mock("next-auth", () => {});
+
 const renderComponent = () => {
   render(<ExerciseForm closeDialog={() => {}} />);
 };
@@ -20,6 +22,7 @@ const renderComponentWithData = () => {
     muscleGroups: ["chest"],
     name: "Bench press",
     scheduledExercise: [],
+    userId: "12345",
   };
 
   const { container } = render(

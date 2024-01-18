@@ -45,6 +45,7 @@ const mockExercises: Exercise[] = [
     demoLink: "",
     created: new Date("2024-01-06T20:28:00.000Z"),
     modified: new Date("2024-01-06T20:28:00.000Z"),
+    userId: "12345",
   },
   {
     id: "659b27079f02df1dcc253c4c", //initially selected in schedule above
@@ -53,6 +54,7 @@ const mockExercises: Exercise[] = [
     demoLink: "",
     created: new Date("2024-01-07T22:34:47.000Z"),
     modified: new Date("2024-01-07T22:34:47.000Z"),
+    userId: "12345",
   },
 ];
 
