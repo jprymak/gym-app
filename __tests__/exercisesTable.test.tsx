@@ -7,6 +7,8 @@ import user from "@testing-library/user-event";
 
 import "@testing-library/jest-dom";
 
+jest.mock("next-auth", () => {});
+
 const mockTableData: PreparedExercisesData[] = [
   {
     id: "6599b7d0ca0bb0ed96b00c59",
@@ -16,6 +18,7 @@ const mockTableData: PreparedExercisesData[] = [
     created: "6.01.2024",
     modified: "6.01.2024",
     scheduledExercise: [],
+    userId: "12345",
   },
   {
     id: "659b27079f02df1dcc253c4c",
@@ -25,6 +28,7 @@ const mockTableData: PreparedExercisesData[] = [
     created: "7.01.2024",
     modified: "7.01.2024",
     scheduledExercise: [],
+    userId: "12345",
   },
   {
     id: "65a07f0c7fe7e9ada3d348a1",
@@ -34,6 +38,7 @@ const mockTableData: PreparedExercisesData[] = [
     created: "12.01.2024",
     modified: "12.01.2024",
     scheduledExercise: [{ id: "12345" }],
+    userId: "12345",
   },
 ];
 

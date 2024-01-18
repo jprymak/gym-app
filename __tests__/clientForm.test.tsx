@@ -6,6 +6,8 @@ import user from "@testing-library/user-event";
 
 import "@testing-library/jest-dom";
 
+jest.mock("next-auth", () => {});
+
 const renderComponent = () => {
   render(<ClientForm closeDialog={() => {}} />);
 };

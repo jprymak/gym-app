@@ -4,6 +4,8 @@ import user from "@testing-library/user-event";
 
 import "@testing-library/jest-dom";
 
+jest.mock("next-auth", () => {});
+
 const mockTableData = [
   {
     id: "6595435ae49b40a3c4ad1d43",
