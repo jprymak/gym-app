@@ -10,7 +10,17 @@ import { Prisma } from "@prisma/client";
 
 export async function fetchClients() {
   try {
-    const clients = await db.client.findMany();
+    const session = await getServerSession(options);
+    const userId = session?.user?.id;
+
+    if (!userId) throw Error;
+
+    const clients = await db.client.findMany({
+      where: {
+        userId,
+      },
+    });
+
     return clients;
   } catch (error) {
     console.error(error);
