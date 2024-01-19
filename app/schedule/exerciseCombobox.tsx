@@ -14,6 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { CellContext } from "@tanstack/react-table";
 
@@ -55,8 +56,8 @@ export function ExerciseCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={`w-[255px] justify-between ${
-            !value && "text-white bg-destructive"
+          className={`min-w-[255px] justify-between ${
+            !value && "text-white bg-destructive "
           }`}
         >
           {value
@@ -68,30 +69,32 @@ export function ExerciseCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[255px] p-0">
-        <Command>
-          <CommandInput placeholder="Search exercises..." />
-          <CommandEmpty>No exercise found.</CommandEmpty>
-          <CommandGroup>
-            {exercises.map((exercise) => (
-              <CommandItem
-                key={exercise.id}
-                value={exercise.name}
-                onSelect={onSelect}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value.toLowerCase() === exercise.name.toLowerCase()
-                      ? "opacity-100"
-                      : "opacity-0"
-                  )}
-                />
-                {exercise.name}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
+      <PopoverContent className="min-w-[255px] p-0 ">
+        <ScrollArea className="max-h-48 overflow-auto">
+          <Command>
+            <CommandInput placeholder="Search exercises..." />
+            <CommandEmpty>No exercise found.</CommandEmpty>
+            <CommandGroup>
+              {exercises.map((exercise) => (
+                <CommandItem
+                  key={exercise.id}
+                  value={exercise.name}
+                  onSelect={onSelect}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value.toLowerCase() === exercise.name.toLowerCase()
+                        ? "opacity-100"
+                        : "opacity-0"
+                    )}
+                  />
+                  {exercise.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </Command>
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   );

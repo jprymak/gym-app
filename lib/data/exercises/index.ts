@@ -63,6 +63,49 @@ export async function createExercise(formData: ExercisePartial) {
   }
 }
 
+export async function bulkCreateExercise(
+  data: { exercise: string; link: string }[]
+) {
+  try {
+    const session = await getServerSession(options);
+    const userId = session?.user?.id;
+
+    if (!userId) throw Error;
+
+    const preparedData = data.map((record) => {
+      const linkOptions = ["https://youtu.be", "https://www.youtube.com"];
+
+      const link = linkOptions.some((option) => record.link.startsWith(option))
+        ? record.link
+        : "";
+
+      return {
+        name: record.exercise.trim(),
+        muscleGroups: [],
+        demoLink: link,
+        userId,
+      };
+    });
+
+    const result = await db.exercise.createMany({
+      data: preparedData,
+    });
+    revalidatePath("/exercises");
+    return result;
+  } catch (e) {
+    console.log(e);
+    const result = {
+      error: "Something went wrong!",
+    };
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        result.error = "Exercise name is already taken";
+      }
+    }
+    return result;
+  }
+}
+
 export async function updateExercise(formData: ExercisePartial, id: string) {
   try {
     const result = await db.exercise.update({

@@ -2,6 +2,7 @@ import {
   ExercisesDataTable,
   PreparedExercisesData,
 } from "@/app/exercises/exercisesDataTable";
+import { DialogContextProvider } from "@/lib/context/useDialogContext";
 import { render, screen, within } from "@testing-library/react";
 import user from "@testing-library/user-event";
 
@@ -43,7 +44,11 @@ const mockTableData: PreparedExercisesData[] = [
 ];
 
 const renderComponent = () => {
-  render(<ExercisesDataTable data={mockTableData} />);
+  render(
+    <DialogContextProvider>
+      <ExercisesDataTable data={mockTableData} />
+    </DialogContextProvider>
+  );
 };
 
 describe("Exercise Table", () => {
