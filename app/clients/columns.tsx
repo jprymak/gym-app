@@ -1,6 +1,7 @@
 "use client";
 
 import { SortableHeader } from "@/components/ui/sortableHeader";
+import { Client } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { DeleteClientDialog } from "./deleteClientDialog";
@@ -12,12 +13,6 @@ export type ClientPartial = {
   email: string;
   status: string;
 };
-
-export type Client = {
-  id: string;
-  created: string;
-  modified: string;
-} & ClientPartial;
 
 export const columns: ColumnDef<Client>[] = [
   // {

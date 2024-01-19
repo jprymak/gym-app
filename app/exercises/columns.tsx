@@ -7,9 +7,8 @@ import { IconButton } from "@/components/iconButton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SortableHeader } from "@/components/ui/sortableHeader";
 import { useDialogContext } from "@/lib/context/useDialogContext";
+import { ExerciseWithScheduledExercises } from "@/lib/data/types";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
-
-import { PreparedExercisesData } from "./exercisesDataTable";
 
 export const MUSCLE_GROUPS = [
   "chest",
@@ -25,7 +24,9 @@ export const MUSCLE_GROUPS = [
   "forearms",
 ];
 
-const ActionsCell = ({ row }: CellContext<PreparedExercisesData, unknown>) => {
+const ActionsCell = ({
+  row,
+}: CellContext<ExerciseWithScheduledExercises, unknown>) => {
   const { triggerOpenDialog } = useDialogContext();
 
   const cantBeDeleted = !!row.original.scheduledExercise.length;
@@ -53,7 +54,7 @@ const ActionsCell = ({ row }: CellContext<PreparedExercisesData, unknown>) => {
   );
 };
 
-export const columns: ColumnDef<PreparedExercisesData>[] = [
+export const columns: ColumnDef<ExerciseWithScheduledExercises>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -118,12 +119,14 @@ export const columns: ColumnDef<PreparedExercisesData>[] = [
     header: ({ column }) => {
       return <SortableHeader header="Created" column={column} />;
     },
+    cell: ({ row }) => row.original.created.toLocaleDateString(),
   },
   {
     accessorKey: "modified",
     header: ({ column }) => {
       return <SortableHeader header="Modified" column={column} />;
     },
+    cell: ({ row }) => row.original.modified.toLocaleDateString(),
   },
   {
     accessorKey: "actions",

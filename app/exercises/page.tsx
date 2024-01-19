@@ -5,17 +5,10 @@ import { ExercisesDataTable } from "./exercisesDataTable";
 
 export default async function DemoPage() {
   const data = await fetchExercises();
-  const parsedData = data.map((item) => {
-    return {
-      ...item,
-      created: item.created.toLocaleDateString(),
-      modified: item.modified.toLocaleDateString(),
-    };
-  });
 
   return (
     <DialogContextProvider>
-      <ExercisesDataTable data={parsedData} />
+      <ExercisesDataTable data={data} />
     </DialogContextProvider>
   );
 }

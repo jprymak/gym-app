@@ -1,8 +1,6 @@
-import {
-  ExercisesDataTable,
-  PreparedExercisesData,
-} from "@/app/exercises/exercisesDataTable";
+import { ExercisesDataTable } from "@/app/exercises/exercisesDataTable";
 import { DialogContextProvider } from "@/lib/context/useDialogContext";
+import { ExerciseWithScheduledExercises } from "@/lib/data/types";
 import { render, screen, within } from "@testing-library/react";
 import user from "@testing-library/user-event";
 
@@ -10,14 +8,14 @@ import "@testing-library/jest-dom";
 
 jest.mock("next-auth", () => {});
 
-const mockTableData: PreparedExercisesData[] = [
+const mockTableData: ExerciseWithScheduledExercises[] = [
   {
     id: "6599b7d0ca0bb0ed96b00c59",
     name: "Bench press",
     muscleGroups: ["chest"],
     demoLink: "",
-    created: "6.01.2024",
-    modified: "6.01.2024",
+    created: new Date(),
+    modified: new Date(),
     scheduledExercise: [],
     userId: "12345",
   },
@@ -26,8 +24,8 @@ const mockTableData: PreparedExercisesData[] = [
     name: "Squat",
     muscleGroups: ["quadriceps"],
     demoLink: "",
-    created: "7.01.2024",
-    modified: "7.01.2024",
+    created: new Date(),
+    modified: new Date(),
     scheduledExercise: [],
     userId: "12345",
   },
@@ -36,8 +34,8 @@ const mockTableData: PreparedExercisesData[] = [
     name: "Deadlift",
     muscleGroups: ["quadriceps", "glutes", "hamstrings"],
     demoLink: "",
-    created: "12.01.2024",
-    modified: "12.01.2024",
+    created: new Date(),
+    modified: new Date(),
     scheduledExercise: [{ id: "12345" }],
     userId: "12345",
   },

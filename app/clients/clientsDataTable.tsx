@@ -1,9 +1,9 @@
 "use client";
 
 import { DataTable } from "@/components/ui/data-table";
+import { Client } from "@prisma/client";
 
 import { columns } from "./columns";
-import { Client } from "./columns";
 import { EditClientDialog } from "./editClientDialog";
 
 interface ClientDataTableProps {

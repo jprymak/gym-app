@@ -23,8 +23,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { addClient, updateClient } from "@/lib/data/clients";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Client } from "./columns";
+import { Client } from "@prisma/client";
 
 export const clientFormMessages = {
   nameMinError: "Name must be at least 2 characters long.",
