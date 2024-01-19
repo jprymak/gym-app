@@ -63,6 +63,7 @@ export const columns: ColumnDef<Client>[] = [
     header: ({ column }) => {
       return <SortableHeader header="created" column={column} />;
     },
+    cell: ({ row }) => row.original.created.toLocaleDateString(),
   },
   {
     accessorKey: "status",
