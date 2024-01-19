@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { linkOptions } from "@/lib/constants/exercise";
 import { createExercise, updateExercise } from "@/lib/data/exercises";
 import { ExerciseWithScheduledExercises } from "@/lib/data/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,7 +43,14 @@ const formSchema = z.object({
   muscleGroups: z.array(z.string()).min(1, {
     message: "At least one muscle group must be selected",
   }),
-  demoLink: z.string().url().or(z.literal("")),
+  demoLink: z
+    .string()
+    .url()
+    .refine(
+      (string) => linkOptions.some((option) => string.startsWith(option)),
+      `Link has to start with: ${linkOptions.join(" or ")}`
+    )
+    .or(z.literal("")),
 });
 
 interface ExerciseFormProps {
