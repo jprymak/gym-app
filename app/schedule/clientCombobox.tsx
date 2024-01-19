@@ -67,7 +67,14 @@ export function ClientCombobox({ clients }: ClientComboboxProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
-        <Command>
+        <Command
+          filter={(value, search) => {
+            const client = clients.find((client) => client.id === value);
+            return client?.name.toLowerCase().includes(search.toLowerCase())
+              ? 1
+              : 0;
+          }}
+        >
           <CommandInput placeholder="Search clients..." />
           <CommandEmpty>No exercise found.</CommandEmpty>
           <CommandGroup>
