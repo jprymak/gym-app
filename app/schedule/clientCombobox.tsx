@@ -30,13 +30,14 @@ export function ClientCombobox({ clients }: ClientComboboxProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(
     () =>
-      clients.find((client) => client.id === pathname.split("/").pop())?.name ||
+      clients.find((client) => client.id === pathname.split("/").pop())?.id ||
       ""
   );
 
   useEffect(() => {
+    //resets combobox value if schedule in nav is clicked
     setValue(
-      clients.find((client) => client.id === pathname.split("/").pop())?.name ||
+      clients.find((client) => client.id === pathname.split("/").pop())?.id ||
         ""
     );
   }, [pathname, clients]);
@@ -44,24 +45,12 @@ export function ClientCombobox({ clients }: ClientComboboxProps) {
   const onSelect = (currentValue: string) => {
     const valueToSet = currentValue === value ? "" : currentValue;
     setValue(valueToSet);
-
-    const selectedClientId = clients.find(
-      (client) => client.name.toLowerCase() === valueToSet.toLowerCase()
-    )?.id;
-
-    if (selectedClientId) {
-      router.push(`/schedule/${selectedClientId}`);
-    } else {
-      router.push(`/schedule`);
-    }
-
+    router.push(`/schedule/${valueToSet}`);
     setOpen(false);
   };
 
   const label = value
-    ? clients.find(
-        (client) => client.name.toLowerCase() === value.toLowerCase()
-      )?.name
+    ? clients.find((client) => client.id === value)?.name
     : "Select client...";
 
   return (
@@ -82,21 +71,23 @@ export function ClientCombobox({ clients }: ClientComboboxProps) {
           <CommandInput placeholder="Search clients..." />
           <CommandEmpty>No exercise found.</CommandEmpty>
           <CommandGroup>
-            {clients.map((client) => (
-              <CommandItem
-                key={client.id}
-                value={client.name}
-                onSelect={onSelect}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === client.id ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {client.name}
-              </CommandItem>
-            ))}
+            {clients.map((client) => {
+              return (
+                <CommandItem
+                  key={client.id}
+                  value={client.id}
+                  onSelect={onSelect}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === client.id ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {client.name}
+                </CommandItem>
+              );
+            })}
           </CommandGroup>
         </Command>
       </PopoverContent>
