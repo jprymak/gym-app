@@ -29,6 +29,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData & { id: string }, TValue>[];
   data: Array<TData & { id: string }>;
   enableRowSelectionFn?: (row: Row<TData>) => boolean;
+  initialSort?: { id: string; desc: boolean }[];
 }
 
 export function DataTable<TData, TValue>({
@@ -36,13 +37,11 @@ export function DataTable<TData, TValue>({
   data,
   children,
   enableRowSelectionFn,
+  initialSort,
 }: React.PropsWithChildren<DataTableProps<TData, TValue>>) {
-  const [sorting, setSorting] = React.useState<SortingState>([
-    {
-      id: "modified",
-      desc: true,
-    },
-  ]);
+  const [sorting, setSorting] = React.useState<SortingState>(
+    () => initialSort || []
+  );
   const [searchString, setSearchString] = React.useState("");
   const [rowSelection, setRowSelection] = React.useState({});
 

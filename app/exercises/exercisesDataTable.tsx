@@ -30,6 +30,12 @@ export const ExercisesDataTable = ({ data }: ExercisesDataTableProps) => {
       columns={columns}
       data={data}
       enableRowSelectionFn={enableRowSelectionFn}
+      initialSort={[
+        {
+          id: "modified",
+          desc: true,
+        },
+      ]}
     >
       <AddExerciseDialog />
       <ImportExercisesDialog />
