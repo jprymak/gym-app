@@ -67,7 +67,7 @@ export function AppDescription() {
                 You can change the order of days by clicking on the arrow
                 buttons.
               </li>
-              <li>Only 7 days can be created. Days can be deleted.</li>
+              <li>Only 7 days can be created.</li>
               <li>Days can be deleted.</li>
             </ul>
           </section>

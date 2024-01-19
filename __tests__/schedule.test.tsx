@@ -11,6 +11,12 @@ jest.mock("@formkit/auto-animate/react", () => ({
   useAutoAnimate: () => [null],
 }));
 
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
+
 const mockScheduleData: ScheduleWithDaysAndExercises = {
   id: "6595d5ae61c8606677067a28",
   clientId: "6595d5ae61c8606677067a27",

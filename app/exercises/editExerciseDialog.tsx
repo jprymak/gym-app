@@ -1,52 +1,29 @@
-import React, { useState } from "react";
-import { FileEdit, Plus } from "lucide-react";
+import React from "react";
 
-import { IconButton } from "@/components/iconButton";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import { useDialogContext } from "@/lib/context/useDialogContext";
 
 import { ExerciseForm } from "./exerciseForm";
-import { PreparedExercisesData } from "./exercisesDataTable";
 
-interface EditExerciseDialogProps {
-  data?: PreparedExercisesData;
-}
-
-export const EditExerciseDialog = ({ data }: EditExerciseDialogProps) => {
-  const [open, setOpen] = useState(false);
-
-  const editMode = !!data || false;
-
-  const closeDialog = () => {
-    setOpen(false);
-  };
+export const EditExerciseDialog = () => {
+  const { openDialogs, rowData, close } = useDialogContext();
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <IconButton
-          icon={editMode ? <FileEdit /> : <Plus />}
-          variant={editMode ? "ghost" : "default"}
-          tooltip={editMode ? "Edit exercise" : "Add exercise"}
-          {...(!editMode && { label: "Add exercise" })}
-        />
-      </DialogTrigger>
+    <Dialog open={openDialogs.edit} onOpenChange={() => close("edit")}>
       <DialogContent
         onInteractOutside={(e) => {
           e.preventDefault();
         }}
       >
         <DialogHeader>
-          <DialogTitle>
-            {editMode ? "Edit exercise" : "Add exercise"}
-          </DialogTitle>
+          <DialogTitle>Edit exercise</DialogTitle>
         </DialogHeader>
-        <ExerciseForm data={data} closeDialog={closeDialog} />
+        <ExerciseForm data={rowData} closeDialog={() => close("edit")} />
       </DialogContent>
     </Dialog>
   );

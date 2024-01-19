@@ -16,11 +16,14 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   Row,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+
+import { Button } from "./button";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData & { id: string }, TValue>[];
@@ -34,7 +37,12 @@ export function DataTable<TData, TValue>({
   children,
   enableRowSelectionFn,
 }: React.PropsWithChildren<DataTableProps<TData, TValue>>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([
+    {
+      id: "modified",
+      desc: true,
+    },
+  ]);
   const [searchString, setSearchString] = React.useState("");
   const [rowSelection, setRowSelection] = React.useState({});
 
@@ -48,6 +56,7 @@ export function DataTable<TData, TValue>({
     onGlobalFilterChange: setSearchString,
     onRowSelectionChange: setRowSelection,
     enableRowSelection: enableRowSelectionFn,
+    getPaginationRowModel: getPaginationRowModel(),
     getRowId: (originalRow) => originalRow.id,
     state: {
       sorting,
@@ -55,6 +64,14 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   });
+
+  const hasSelectEnabled = React.useMemo(() => {
+    return table
+      .getHeaderGroups()
+      .some((headerGroup) =>
+        headerGroup.headers.some((header) => header.id === "select")
+      );
+  }, [table]);
 
   const renderChildren = () => {
     return React.Children.map(children, (child: React.ReactNode) => {
@@ -130,9 +147,36 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex-1 text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
+      <div className="flex justify-between">
+        <div className="flex-1 text-sm text-muted-foreground mt-1">
+          {hasSelectEnabled &&
+            `${table.getFilteredSelectedRowModel().rows.length} of ${
+              table.getFilteredRowModel().rows.length
+            }  row(s) selected.`}
+        </div>
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <p className=" text-sm">
+            {`Page ${
+              table.getState().pagination.pageIndex + 1
+            }/${table.getPageCount()}`}
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </>
   );

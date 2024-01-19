@@ -1,11 +1,14 @@
 "use client";
 
+import React from "react";
+import { FileEdit, Trash2 } from "lucide-react";
+
+import { IconButton } from "@/components/iconButton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SortableHeader } from "@/components/ui/sortableHeader";
-import { ColumnDef } from "@tanstack/react-table";
+import { useDialogContext } from "@/lib/context/useDialogContext";
+import { CellContext, ColumnDef } from "@tanstack/react-table";
 
-import { DeleteExerciseDialog } from "./deleteExerciseDialog";
-import { EditExerciseDialog } from "./editExerciseDialog";
 import { PreparedExercisesData } from "./exercisesDataTable";
 
 export const MUSCLE_GROUPS = [
@@ -21,6 +24,34 @@ export const MUSCLE_GROUPS = [
   "glutes",
   "forearms",
 ];
+
+const ActionsCell = ({ row }: CellContext<PreparedExercisesData, unknown>) => {
+  const { triggerOpenDialog } = useDialogContext();
+
+  const cantBeDeleted = !!row.original.scheduledExercise.length;
+
+  return (
+    <div className="flex gap-4 items-center justify-center">
+      <IconButton
+        icon={<FileEdit />}
+        variant="ghost"
+        tooltip="Edit exercise"
+        onClick={() => triggerOpenDialog(row.original, "edit")}
+      />
+      <IconButton
+        onClick={() => triggerOpenDialog(row.original, "delete")}
+        disabled={cantBeDeleted}
+        tooltip={
+          cantBeDeleted
+            ? "Delete is not possible if exercise is being used in a schedule."
+            : "Delete exercise"
+        }
+        icon={<Trash2 className="text-destructive" />}
+        variant="ghost"
+      />
+    </div>
+  );
+};
 
 export const columns: ColumnDef<PreparedExercisesData>[] = [
   {
@@ -97,13 +128,6 @@ export const columns: ColumnDef<PreparedExercisesData>[] = [
   {
     accessorKey: "actions",
     header: "Actions",
-    cell: ({ row }) => {
-      return (
-        <div className="flex gap-4 items-center justify-center">
-          <EditExerciseDialog data={row.original} />
-          <DeleteExerciseDialog data={row.original} />
-        </div>
-      );
-    },
+    cell: ActionsCell,
   },
 ];

@@ -1,9 +1,7 @@
 "use client";
-import React, { useState, useTransition } from "react";
-import { Trash2 } from "lucide-react";
+import React, { useTransition } from "react";
 
 import { DeleteBtnWithStatus } from "@/components/deleteBtnWithStatus";
-import { IconButton } from "@/components/iconButton";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,30 +9,18 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
+import { useDialogContext } from "@/lib/context/useDialogContext";
 import { deleteExercise } from "@/lib/data/exercises";
 
-import { PreparedExercisesData } from "./exercisesDataTable";
-
-interface DeleteExerciseDialogProps {
-  data: PreparedExercisesData;
-}
-
-export const DeleteExerciseDialog = ({ data }: DeleteExerciseDialogProps) => {
-  const [open, setOpen] = useState(false);
+export const DeleteExerciseDialog = () => {
+  const { openDialogs, rowData, close } = useDialogContext();
   const [isPending, startTransition] = useTransition();
-
-  const cantBeDeleted = !!data.scheduledExercise.length;
-
-  const closeDialog = () => {
-    setOpen(false);
-  };
 
   const handleDeleteExercise = async () => {
     startTransition(async () => {
-      const result = await deleteExercise(data.id);
+      const result = await deleteExercise(rowData.id);
 
       if ("error" in result) {
         toast({
@@ -46,24 +32,12 @@ export const DeleteExerciseDialog = ({ data }: DeleteExerciseDialogProps) => {
           title: "Exercise was deleted.",
         });
       }
-      closeDialog();
+      close("delete");
     });
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <IconButton
-          disabled={cantBeDeleted}
-          tooltip={
-            cantBeDeleted
-              ? "Delete is not possible if exercise is being used in a schedule."
-              : "Delete exercise"
-          }
-          icon={<Trash2 className="text-destructive" />}
-          variant="ghost"
-        />
-      </DialogTrigger>
+    <Dialog open={openDialogs.delete} onOpenChange={() => close("delete")}>
       <DialogContent
         onInteractOutside={(e) => {
           e.preventDefault();
@@ -73,8 +47,8 @@ export const DeleteExerciseDialog = ({ data }: DeleteExerciseDialogProps) => {
           <DialogTitle>Delete exercise</DialogTitle>
         </DialogHeader>
         <p>
-          Are you sure you want to delete <strong>{data.name}</strong> ? This
-          action cannot be undone.
+          Are you sure you want to delete <strong>{rowData?.name}</strong> ?
+          This action cannot be undone.
         </p>
         <div className="flex gap-2 justify-end">
           <DeleteBtnWithStatus

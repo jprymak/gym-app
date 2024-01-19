@@ -4,9 +4,12 @@ import { DataTable } from "@/components/ui/data-table";
 import { ExerciseWithScheduledExercises } from "@/lib/data/types";
 import { Row } from "@tanstack/react-table";
 
+import { AddExerciseDialog } from "./addExerciseDialog";
 import { BulkDeleteExerciseDialog } from "./bulkDeleteExercise";
 import { columns } from "./columns";
+import { DeleteExerciseDialog } from "./deleteExerciseDialog";
 import { EditExerciseDialog } from "./editExerciseDialog";
+import { ImportExercisesDialog } from "./importExercisesDialog";
 
 export interface PreparedExercisesData
   extends Omit<ExerciseWithScheduledExercises, "created" | "modified"> {
@@ -28,8 +31,11 @@ export const ExercisesDataTable = ({ data }: ExercisesDataTableProps) => {
       data={data}
       enableRowSelectionFn={enableRowSelectionFn}
     >
+      <AddExerciseDialog />
+      <ImportExercisesDialog />
       <BulkDeleteExerciseDialog data={data} />
       <EditExerciseDialog />
+      <DeleteExerciseDialog />
     </DataTable>
   );
 };
