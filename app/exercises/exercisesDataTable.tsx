@@ -11,18 +11,12 @@ import { DeleteExerciseDialog } from "./deleteExerciseDialog";
 import { EditExerciseDialog } from "./editExerciseDialog";
 import { ImportExercisesDialog } from "./importExercisesDialog";
 
-export interface PreparedExercisesData
-  extends Omit<ExerciseWithScheduledExercises, "created" | "modified"> {
-  created: string;
-  modified: string;
-}
-
 interface ExercisesDataTableProps {
-  data: PreparedExercisesData[];
+  data: ExerciseWithScheduledExercises[];
 }
 
 export const ExercisesDataTable = ({ data }: ExercisesDataTableProps) => {
-  const enableRowSelectionFn = (row: Row<PreparedExercisesData>) => {
+  const enableRowSelectionFn = (row: Row<ExerciseWithScheduledExercises>) => {
     return !!!row.original.scheduledExercise.length;
   };
   return (

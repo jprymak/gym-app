@@ -15,10 +15,10 @@ const renderComponent = () => {
 
 const renderComponentWithData = () => {
   const data = {
-    created: "6.01.2024",
+    created: new Date(),
     demoLink: "",
     id: "6599b7d0ca0bb0ed96b00c59",
-    modified: "6.01.2024",
+    modified: new Date(),
     muscleGroups: ["chest"],
     name: "Bench press",
     scheduledExercise: [],

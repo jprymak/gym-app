@@ -19,8 +19,9 @@ const renderComponentWithData = () => {
     surname: "Doe",
     email: "test@exqample.com",
     status: "inactive",
-    created: "3.01.2024",
-    modified: "3.01.2024",
+    created: new Date(),
+    modified: new Date(),
+    userId: "12345",
   };
 
   render(<ClientForm data={data} closeDialog={() => {}} />);

@@ -15,11 +15,10 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
 import { bulkDeleteExercise } from "@/lib/data/exercises";
-
-import { PreparedExercisesData } from "./exercisesDataTable";
+import { ExerciseWithScheduledExercises } from "@/lib/data/types";
 
 interface DeleteExerciseDialogProps {
-  data: PreparedExercisesData[];
+  data: ExerciseWithScheduledExercises[];
   selectedRows?: { [key: string]: boolean };
 }
 

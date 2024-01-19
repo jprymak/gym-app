@@ -13,8 +13,9 @@ const mockTableData = [
     surname: "Doe",
     email: "test1@example.com",
     status: "inactive",
-    created: "3.01.2024",
-    modified: "3.01.2024",
+    created: new Date(),
+    modified: new Date(),
+    userId: "12345",
   },
   {
     id: "6595878d61c86066770679f5",
@@ -22,8 +23,9 @@ const mockTableData = [
     surname: "Uiop",
     email: "test2@example.com",
     status: "injured",
-    created: "3.01.2024",
-    modified: "3.01.2024",
+    created: new Date(),
+    modified: new Date(),
+    userId: "12345",
   },
   {
     id: "6595bda661c8606677067a15",
@@ -31,8 +33,9 @@ const mockTableData = [
     surname: "Ghjkl",
     email: "test3@example.com",
     status: "active",
-    created: "3.01.2024",
-    modified: "3.01.2024",
+    created: new Date(),
+    modified: new Date(),
+    userId: "12345",
   },
 ];
 

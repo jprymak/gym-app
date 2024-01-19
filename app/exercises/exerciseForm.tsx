@@ -19,10 +19,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { createExercise, updateExercise } from "@/lib/data/exercises";
+import { ExerciseWithScheduledExercises } from "@/lib/data/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { MUSCLE_GROUPS } from "./columns";
-import { PreparedExercisesData } from "./exercisesDataTable";
 
 export const exerciseFormMessages = {
   nameMinError: "Exercise name must be at least 4 characters long.",
@@ -46,7 +46,7 @@ const formSchema = z.object({
 });
 
 interface ExerciseFormProps {
-  data?: PreparedExercisesData;
+  data?: ExerciseWithScheduledExercises;
   closeDialog: () => void;
 }
 

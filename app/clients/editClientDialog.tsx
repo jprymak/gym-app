@@ -9,9 +9,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Client } from "@prisma/client";
 
 import { ClientForm } from "./clientForm";
-import { Client } from "./columns";
 
 interface EditClientDialogProps {
   data?: Client;
