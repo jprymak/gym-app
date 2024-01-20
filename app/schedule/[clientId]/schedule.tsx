@@ -181,7 +181,7 @@ export const Schedule = ({
           onClick={addDay}
         />
       </div>
-      <div ref={daysAnimationWrapper} className="flex flex-col gap-8 grow-1">
+      <div ref={daysAnimationWrapper}>
         {dataToDisplay.map((day, index) => {
           return (
             <ScheduledDay

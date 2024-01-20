@@ -19,7 +19,7 @@ const Homepage = async () => {
   return (
     <div className="flex flex-col items-center justify-center">
       {session ? (
-        <Card className="md:w-1/2">
+        <Card className="max-w-5xl">
           <CardHeader>
             <CardTitle>How to start</CardTitle>
             <CardDescription>
@@ -33,7 +33,7 @@ const Homepage = async () => {
       ) : (
         <div className="flex flex-col gap-6">
           <section>
-            <Card>
+            <Card className="max-w-5xl">
               <CardHeader>
                 <CardTitle>Welcome to Gym App!</CardTitle>
               </CardHeader>

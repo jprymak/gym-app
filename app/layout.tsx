@@ -36,7 +36,7 @@ export default function RootLayout({
               <Sidebar />
               <ContextProvider>
                 <MobileNav />
-                <div className="md:border-l-2 flex-1 p-4 flex flex-col f-full">
+                <div className="md:border-l-2 flex-1 p-4 flex flex-col">
                   <Header />
                   {children}
                 </div>
