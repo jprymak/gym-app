@@ -39,13 +39,13 @@ const Homepage = async () => {
               </CardHeader>
               <CardContent>
                 <p className="mb-4">
-                  Application created for those who want to make creating
-                  training plans and monitoring results easier. It is intended
-                  not only for personal trainers and their clients but also for
-                  the ones who want to build their own plans and track progress
-                  individually.
+                  Are you bored of those inflexible Excel sheets when preparing
+                  a training schedule for your client? Worry no more, because
+                  you have the Gym-app. It is intended not only for personal
+                  trainers and their clients but also for the ones who want to
+                  build their own plans and track progress individually.
                 </p>
-                <p>Do not hesitate! Start your Gym Driven Development today!</p>
+                <p>Do not hesitate! Start your journey with Gym-app today!</p>
               </CardContent>
             </Card>
           </section>

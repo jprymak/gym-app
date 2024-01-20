@@ -91,10 +91,7 @@ export function AppDescription() {
                 You can change the order of exercises by dragging and dropping
                 them freely within a day.
               </li>
-              <li>
-                A day can have only 8 exercises. You want to keep your client
-                alive, don&apos;t you?
-              </li>
+              <li>Current limit for a day is 8 exercises.</li>
             </ul>
           </section>
         </AccordionContent>
