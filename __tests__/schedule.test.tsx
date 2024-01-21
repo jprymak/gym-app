@@ -6,6 +6,8 @@ import user from "@testing-library/user-event";
 
 import "@testing-library/jest-dom";
 
+jest.mock("next-auth", () => {});
+
 //disable animations for testing purposes
 jest.mock("@formkit/auto-animate/react", () => ({
   useAutoAnimate: () => [null],

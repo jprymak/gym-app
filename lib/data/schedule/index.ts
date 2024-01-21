@@ -1,7 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { notFound } from "next/navigation";
+import { getServerSession } from "next-auth";
 
+import { options } from "@/app/api/auth/[...nextauth]/options";
 import { db } from "@/lib/db";
 
 import {
@@ -14,6 +17,11 @@ import {
 } from "../types";
 
 export async function fetchSchedule(clientId: string) {
+  const session = await getServerSession(options);
+  const userId = session?.user?.id;
+
+  if (!userId) throw Error;
+
   try {
     const result = await db.schedule.findFirst({
       where: {
@@ -51,11 +59,12 @@ export async function fetchSchedule(clientId: string) {
         },
       },
     });
-    if (!result) throw Error;
+
     revalidatePath("/schedule");
     return result;
   } catch (e) {
     console.error(e);
+    return notFound();
   }
 }
 
