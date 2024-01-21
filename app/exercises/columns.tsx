@@ -119,14 +119,14 @@ export const columns: ColumnDef<ExerciseWithScheduledExercises>[] = [
     header: ({ column }) => {
       return <SortableHeader header="Created" column={column} />;
     },
-    cell: ({ row }) => row.original.created.toLocaleDateString(),
+    cell: ({ row }) => row.original.created.toISOString().split("T")[0],
   },
   {
     accessorKey: "modified",
     header: ({ column }) => {
       return <SortableHeader header="Modified" column={column} />;
     },
-    cell: ({ row }) => row.original.modified.toLocaleDateString(),
+    cell: ({ row }) => row.original.created.toISOString().split("T")[0],
   },
   {
     accessorKey: "actions",

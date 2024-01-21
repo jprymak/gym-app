@@ -61,9 +61,9 @@ export const columns: ColumnDef<Client>[] = [
   {
     accessorKey: "created",
     header: ({ column }) => {
-      return <SortableHeader header="created" column={column} />;
+      return <SortableHeader header="Created" column={column} />;
     },
-    cell: ({ row }) => row.original.created.toLocaleDateString(),
+    cell: ({ row }) => row.original.created.toISOString().split("T")[0],
   },
   {
     accessorKey: "status",
