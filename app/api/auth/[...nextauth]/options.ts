@@ -4,11 +4,32 @@ import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcrypt";
 
+import { initialExercises } from "@/lib/constants/exercise";
 import { db } from "@/lib/db";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
+function CustomPrismaAdapter(p: typeof db) {
+  return {
+    ...PrismaAdapter(p),
+    // eslint-disable-next-line
+    // @ts-ignore
+    createUser: (data) => {
+      return p.user.create({
+        data: {
+          ...data,
+          exercise: {
+            create: initialExercises,
+          },
+        },
+      });
+    },
+  };
+}
+
 export const options: NextAuthOptions = {
-  adapter: PrismaAdapter(db),
+  // eslint-disable-next-line
+  // @ts-ignore
+  adapter: CustomPrismaAdapter(db),
   providers: [
     CredentialsProvider({
       name: "Credentials",

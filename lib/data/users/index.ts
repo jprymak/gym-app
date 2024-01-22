@@ -2,6 +2,7 @@
 
 import bcrypt from "bcrypt";
 
+import { initialExercises } from "@/lib/constants/exercise";
 import { db } from "@/lib/db";
 import { User } from "@prisma/client";
 
@@ -29,13 +30,15 @@ export async function createUser(userData: NewUser) {
         email: userData.email,
         password: hashPassword,
         role: "trainer",
+        exercise: {
+          create: initialExercises,
+        },
       },
     });
     return result;
   } catch (err: unknown) {
     console.log(err);
     if (err instanceof Error) {
-      console.log("lol");
       return { error: err.message };
     }
     return { error: "Something went wrong" };

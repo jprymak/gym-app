@@ -47,8 +47,8 @@ model User {
   role          String
   accounts      Account[]
   sessions      Session[]
-  Exercise      Exercise[]
-  Client        Client[]
+  exercise      Exercise[]
+  client        Client[]
 }
 
 model Exercise {
@@ -59,7 +59,7 @@ model Exercise {
   created           DateTime            @default(now())
   modified          DateTime            @updatedAt
   scheduledExercise ScheduledExercise[]
-  User              User                @relation(fields: [userId], references: [id])
+  user              User                @relation(fields: [userId], references: [id])
   userId            String              @db.ObjectId
 }
 
@@ -72,7 +72,7 @@ model Client {
   created  DateTime  @default(now())
   modified DateTime  @updatedAt
   schedule Schedule?
-  User     User      @relation(fields: [userId], references: [id])
+  user     User      @relation(fields: [userId], references: [id])
   userId   String    @db.ObjectId
 }
 
