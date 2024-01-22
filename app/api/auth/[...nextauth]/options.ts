@@ -1,13 +1,14 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcrypt";
 
 import { db } from "@/lib/db";
-
-const MINUTE = 60;
-const HOUR = 60 * MINUTE;
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 export const options: NextAuthOptions = {
+  adapter: PrismaAdapter(db),
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -26,7 +27,7 @@ export const options: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials) return null;
         try {
-          const foundUser = await db.user.findFirst({
+          const foundUser = await db.user.findUnique({
             where: {
               email: credentials?.email,
             },
@@ -35,7 +36,7 @@ export const options: NextAuthOptions = {
           if (foundUser) {
             const match = await bcrypt.compare(
               credentials?.password,
-              foundUser.password
+              foundUser.password!
             );
 
             if (match) {
@@ -48,10 +49,39 @@ export const options: NextAuthOptions = {
         return null;
       },
     }),
+    GithubProvider({
+      async profile(profile) {
+        const username = profile?.name || "";
+        return {
+          image: profile.avatar_url,
+          id: profile.id,
+          email: undefined,
+          name: username,
+          role: "trainer",
+        };
+      },
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
+    }),
+    GoogleProvider({
+      async profile(profile) {
+        const username = profile?.given_name || "";
+        return {
+          image: profile.picture,
+          name: username,
+          email: undefined,
+          id: profile.sub,
+          role: "trainer",
+        };
+      },
+      clientId: process.env.GOOGLE_ID!,
+      clientSecret: process.env.GOOGLE_SECRET!,
+    }),
   ],
   session: {
-    maxAge: 8 * HOUR,
+    strategy: "jwt",
   },
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

@@ -3,8 +3,13 @@
 import bcrypt from "bcrypt";
 
 import { db } from "@/lib/db";
+import { User } from "@prisma/client";
 
-export async function createUser(userData: any) {
+interface NewUser extends Pick<User, "name" | "email"> {
+  password: string;
+}
+
+export async function createUser(userData: NewUser) {
   try {
     const duplicate = await db.user.findFirst({
       where: {
@@ -13,18 +18,26 @@ export async function createUser(userData: any) {
     });
 
     if (duplicate) {
-      throw Error;
+      throw new Error("Email address is already taken");
     }
 
     const hashPassword = await bcrypt.hash(userData.password, 10);
-    userData.password = hashPassword;
-    await db.user.create({
+
+    const result = await db.user.create({
       data: {
-        ...userData,
+        name: userData.name,
+        email: userData.email,
+        password: hashPassword,
         role: "trainer",
       },
     });
-  } catch (err) {
+    return result;
+  } catch (err: unknown) {
     console.log(err);
+    if (err instanceof Error) {
+      console.log("lol");
+      return { error: err.message };
+    }
+    return { error: "Something went wrong" };
   }
 }

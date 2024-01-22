@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
-import { LogIn } from "lucide-react";
+import { GithubIcon, LogIn, UserPlus } from "lucide-react";
 
 import { AppDescription } from "@/components/appDescription";
+import { GoogleIcon } from "@/components/customIcons/googleIcon";
 import {
   Card,
   CardContent,
@@ -56,7 +57,17 @@ const Homepage = async () => {
                 className="w-full flex p-3 justify-center gap-2 mx-0 my-1 rounded-md hover:bg-muted"
               >
                 <LogIn />
-                Sign in
+                Sign in <GoogleIcon /> <GithubIcon />
+              </Link>
+            </Card>
+            Or
+            <Card className="w-80 flex justify-center px-1">
+              <Link
+                href="signup"
+                className="w-full flex p-3 justify-center gap-2 mx-0 my-1 rounded-md hover:bg-muted"
+              >
+                <UserPlus />
+                Sign up
               </Link>
             </Card>
           </section>

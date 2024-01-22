@@ -3,9 +3,11 @@ import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { Github } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { GoogleIcon } from "@/components/customIcons/googleIcon";
 import { PendingBtn } from "@/components/pendingBtn";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
 import { revalidateServerSide } from "@/lib/helpers/cache";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -99,7 +102,7 @@ function SignInForm() {
         <div className="flex gap-2 self-end">
           <PendingBtn
             pendingLabel="Pending..."
-            label="Log In"
+            label="Sign In"
             isPending={isPending}
           />
           <Button variant="outline" asChild>
@@ -114,6 +117,7 @@ function SignInForm() {
 const SignInPage = () => {
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
+  const { get } = useSearchParams();
 
   useEffect(() => {
     setIsMounted(true);
@@ -122,6 +126,11 @@ const SignInPage = () => {
   if (!isMounted) {
     return null;
   }
+
+  const handleOAuthSignIn = (provider: "github" | "google") => {
+    const callbackUrl = get("callbackUrl");
+    signIn(provider, { callbackUrl: callbackUrl || "/" });
+  };
 
   return (
     <Dialog open onOpenChange={() => router.push("/")}>
@@ -134,6 +143,26 @@ const SignInPage = () => {
           <DialogTitle>Sign In</DialogTitle>
         </DialogHeader>
         <SignInForm />
+        <Separator />
+        <div className="flex justify-around">
+          <Button
+            variant="outline"
+            onClick={() => handleOAuthSignIn("github")}
+            type="button"
+            className="flex gap-1"
+          >
+            <Github /> With Github
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => handleOAuthSignIn("google")}
+            type="button"
+            className="flex gap-1"
+          >
+            <GoogleIcon />
+            With Google
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

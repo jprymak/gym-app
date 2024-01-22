@@ -6,12 +6,15 @@ import { getServerSession } from "next-auth";
 import { LogOut } from "lucide-react";
 
 import { options } from "@/app/api/auth/[...nextauth]/options";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { menuItems } from "@/lib/constants/nav";
 
 import MenuLink from "./menuLink";
 
 export const Sidebar = async () => {
   const session = await getServerSession(options);
+
+  const userImageUrl = session?.user?.image || "";
 
   return (
     <>
@@ -20,13 +23,19 @@ export const Sidebar = async () => {
           <div className=" top-0 sticky pt-4">
             <section className="w-56 p-4 divide-y-2 border-2 rounded-md mb-4 ">
               <div className="flex items-center gap-5 mb-5 mx-2">
-                <Image
-                  className="object-cover rounded-full"
-                  src="/noavatar.png"
-                  alt=""
-                  width="50"
-                  height="50"
-                />
+                <Avatar>
+                  <AvatarImage src={userImageUrl} />
+
+                  <AvatarFallback>
+                    <Image
+                      className="object-cover rounded-full"
+                      src="/noavatar.png"
+                      alt=""
+                      width="50"
+                      height="50"
+                    />
+                  </AvatarFallback>
+                </Avatar>
                 <div className="flex flex-col mr-4">
                   <span className="font-bold">{session?.user?.name}</span>
                   <span className="text-sm">Trainer</span>
