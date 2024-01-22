@@ -103,7 +103,6 @@ Here is what you need to be able to run Gym-app.
 
 2. Click on the `User` model to add a new user record.
 3. Fill out the fields `email`, `name`, `password`, `role`, (remembering to encrypt your password with [BCrypt](https://bcrypt-generator.com/)) and click `Save 1 change` to create your first user.
-   > Users with `admin` role have access to hidden /createUser page
 4. Open a browser to [http://localhost:3000](http://localhost:3000) and login with your just created, first user.
 
 ### Running tests
