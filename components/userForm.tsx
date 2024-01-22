@@ -1,6 +1,7 @@
 "use client";
 import { useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -18,14 +19,38 @@ import { Input } from "@/components/ui/input";
 import { createUser } from "@/lib/data/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const formSchema = z.object({
-  name: z.string(),
-  email: z.string().email(),
-  password: z.string(),
-});
+import { toast } from "./ui/use-toast";
+
+const formSchema = z
+  .object({
+    name: z.string(),
+    email: z.string().email(),
+    password: z
+      .string()
+      .regex(
+        new RegExp(".*[A-Z].*"),
+        "Must contain at least one uppercase character"
+      )
+      .regex(
+        new RegExp(".*[a-z].*"),
+        "Must contain at least one lowercase character"
+      )
+      .regex(new RegExp(".*\\d.*"), "One number")
+      .regex(
+        new RegExp(".*[`~<>?,./!@#$%^&*()\\-_+=\"'|{}\\[\\];:\\\\].*"),
+        "Must contain at least one special character"
+      )
+      .min(8, "Must be at least 8 characters in length"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export function UserForm() {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,7 +58,18 @@ export function UserForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
-      await createUser(values);
+      const result = await createUser(values);
+      if ("error" in result) {
+        toast({
+          variant: "destructive",
+          title: result.error,
+        });
+      } else {
+        toast({
+          title: "User was created.",
+        });
+        router.push("/");
+      }
     });
   }
 
@@ -84,6 +120,25 @@ export function UserForm() {
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm password</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  placeholder="Confirm password"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="flex gap-2 self-end">
           <PendingBtn
             pendingLabel="Submitting..."
