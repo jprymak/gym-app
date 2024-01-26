@@ -19,6 +19,7 @@ export const MobileNav = () => {
       }`}
     >
       <Button
+        aria-label="close-menu"
         variant="ghost"
         className="self-end"
         onClick={toggleOpenMobileNav}

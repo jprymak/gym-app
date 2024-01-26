@@ -54,6 +54,7 @@ function Header() {
       <ModeToggle />
       {session && (
         <Button
+          aria-label="open-menu"
           variant="outline"
           type="button"
           className="md:hidden"
@@ -64,11 +65,11 @@ function Header() {
       )}
       <Button asChild variant="outline" type="button" className="md:hidden">
         {session ? (
-          <Link href="/api/auth/signout?callbackUrl=/">
+          <Link href="/api/auth/signout?callbackUrl=/" aria-label="sign-out">
             <LogOut />
           </Link>
         ) : (
-          <Link href="/api/auth/signin">
+          <Link href="/api/auth/signin" aria-label="sign-in">
             <LogIn />
           </Link>
         )}

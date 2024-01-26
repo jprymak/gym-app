@@ -53,6 +53,7 @@ export function ExerciseCombobox({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          aria-label="exercise-combobox"
           variant="outline"
           role="combobox"
           aria-expanded={open}

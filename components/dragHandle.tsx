@@ -13,6 +13,7 @@ export const DragHandle = (props: DragHandleProps) => {
   return (
     <div
       className={`${props.isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+      aria-label="drag-handle"
       {...props}
     >
       <GripVertical />

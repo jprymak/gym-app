@@ -57,6 +57,7 @@ export function ClientCombobox({ clients }: ClientComboboxProps) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger className="mb-5" asChild>
         <Button
+          aria-label="client-combobox"
           variant="outline"
           role="combobox"
           aria-expanded={open}
