@@ -10,6 +10,8 @@ import { useDialogContext } from "@/lib/context/useDialogContext";
 import { ExerciseWithScheduledExercises } from "@/lib/data/types";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 
+import { ExerciseDemoDialog } from "./exerciseDemoDialog";
+
 export const MUSCLE_GROUPS = [
   "chest",
   "back",
@@ -95,9 +97,7 @@ export const columns: ColumnDef<ExerciseWithScheduledExercises>[] = [
     header: "Demo",
     cell: ({ row }) => {
       return row.original.demoLink ? (
-        <a target="blank" href={row.original.demoLink}>
-          Link
-        </a>
+        <ExerciseDemoDialog url={row.original.demoLink} />
       ) : (
         "-"
       );
