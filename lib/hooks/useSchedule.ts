@@ -16,10 +16,10 @@ import {
 import {
   PreparedScheduledDay,
   PreparedScheduledExercise,
-  ScheduleItems,
+  ScheduleItem,
 } from "../types/schedule";
 
-const filterDeletedItems = <T>(items: ScheduleItems<T>[]) => {
+const filterDeletedItems = <T extends ScheduleItem>(items: T[]) => {
   return items.filter((currentItem) => !currentItem.taggedForDelete);
 };
 

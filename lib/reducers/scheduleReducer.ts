@@ -11,7 +11,7 @@ import {
 import {
   PreparedScheduledDay,
   PreparedScheduledExercise,
-  ScheduleItems,
+  ScheduleItem,
 } from "../types/schedule";
 
 export enum ScheduleActionKind {
@@ -77,7 +77,7 @@ type ScheduleAction =
       payload: { array: PreparedScheduledExercise[]; scheduledDayId: string };
     };
 
-const applyOrdinalNumbers = <T>(items: ScheduleItems<T>[]) => {
+const applyOrdinalNumbers = <T extends ScheduleItem>(items: T[]) => {
   let counter = 1;
   return items.map((item) => {
     if (!item.taggedForDelete) {
@@ -94,7 +94,7 @@ const findDayById = (state: ScheduleWithDaysAndExercises, dayId: string) => {
   return state.days.find((day) => day.id === dayId);
 };
 
-const findItemIndex = <T>(items: ScheduleItems<T>[], itemId: string) => {
+const findItemIndex = <T extends ScheduleItem>(items: T[], itemId: string) => {
   return items.findIndex((item) => item.id === itemId);
 };
 
@@ -265,7 +265,7 @@ export function scheduleReducer(
 
       const updatedDay = {
         ...dayToUpdate,
-        exercises: applyOrdinalNumbers(newExercises),
+        exercises: applyOrdinalNumbers<ScheduledExercise>(newExercises),
       };
 
       const indexOfDayToUpdate = findItemIndex<ScheduledDayWithExercises>(

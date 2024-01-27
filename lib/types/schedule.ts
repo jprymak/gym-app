@@ -8,6 +8,4 @@ export interface PreparedScheduledExercise extends ScheduledExercise {
   taggedForDelete?: boolean;
 }
 
-export type ScheduleItems<T> = T extends PreparedScheduledDay
-  ? PreparedScheduledDay
-  : PreparedScheduledExercise;
+export type ScheduleItem = PreparedScheduledDay | PreparedScheduledExercise;
