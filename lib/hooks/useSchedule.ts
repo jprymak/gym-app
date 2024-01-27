@@ -84,7 +84,7 @@ export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
   useBeforeunload(hasChanges ? (event) => event.preventDefault() : undefined);
 
   const addDay = () => {
-    dispatch({ type: ScheduleActionKind.ADD_DAY, payload: null });
+    dispatch({ type: ScheduleActionKind.ADD_DAY });
   };
 
   const deleteDay = (idToDelete: string) => {

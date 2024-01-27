@@ -33,7 +33,6 @@ type ScheduleAction =
     }
   | {
       type: ScheduleActionKind.ADD_DAY;
-      payload: null;
     }
   | {
       type: ScheduleActionKind.MOVE_DAY;
@@ -103,10 +102,10 @@ export function scheduleReducer(
   state: ScheduleWithDaysAndExercises,
   action: ScheduleAction
 ): ScheduleWithDaysAndExercises {
-  const { type, payload } = action;
+  const { type } = action;
   switch (type) {
     case ScheduleActionKind.INITIAL_SETUP: {
-      return payload;
+      return action.payload;
     }
     case ScheduleActionKind.ADD_DAY: {
       return {
@@ -115,7 +114,7 @@ export function scheduleReducer(
       };
     }
     case ScheduleActionKind.MOVE_DAY: {
-      const { scheduledDayId, direction } = payload;
+      const { scheduledDayId, direction } = action.payload;
       const updatedDays = [...state.days];
 
       const oldIndex = findItemIndex<ScheduledDayWithExercises>(
@@ -136,7 +135,7 @@ export function scheduleReducer(
       };
     }
     case ScheduleActionKind.DELETE_DAY: {
-      const { idToDelete } = payload;
+      const { idToDelete } = action.payload;
       const updatedDays = state.days.reduce<PreparedScheduledDay[]>(
         (result, current) => {
           if (current.id === idToDelete && current.id.startsWith("temp")) {
@@ -161,7 +160,7 @@ export function scheduleReducer(
       };
     }
     case ScheduleActionKind.ADD_EXERCISE: {
-      const { scheduledDayId } = payload;
+      const { scheduledDayId } = action.payload;
       const newRow = createInitialExerciseRow(scheduledDayId);
       const dayToUpdate = findDayById(state, scheduledDayId);
       if (!dayToUpdate) {
@@ -190,7 +189,7 @@ export function scheduleReducer(
       };
     }
     case ScheduleActionKind.COPY_EXERCISE: {
-      const { scheduledExerciseToCopy } = payload;
+      const { scheduledExerciseToCopy } = action.payload;
 
       const dayToUpdate = findDayById(
         state,
@@ -239,7 +238,7 @@ export function scheduleReducer(
       };
     }
     case ScheduleActionKind.DELETE_EXERCISE: {
-      const { scheduledDayId, rowToDeleteId } = payload;
+      const { scheduledDayId, rowToDeleteId } = action.payload;
 
       const dayToUpdate = findDayById(state, scheduledDayId);
 
@@ -284,7 +283,7 @@ export function scheduleReducer(
       };
     }
     case ScheduleActionKind.UPDATE_EXERCISE: {
-      const { columnId, scheduledDayId, rowId, value } = payload;
+      const { columnId, scheduledDayId, rowId, value } = action.payload;
 
       const dayToUpdate = findDayById(state, scheduledDayId);
 
@@ -321,7 +320,7 @@ export function scheduleReducer(
       };
     }
     case ScheduleActionKind.REORDER_EXERCISES: {
-      const { array, scheduledDayId } = payload;
+      const { array, scheduledDayId } = action.payload;
 
       const dayToUpdate = findDayById(state, scheduledDayId);
 
