@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
 import { bulkDeleteExercise } from "@/lib/data/exercises";
-import { ExerciseWithScheduledExercises } from "@/lib/data/types";
+import type { ExerciseWithScheduledExercises } from "@/lib/data/types";
 
 interface DeleteExerciseDialogProps {
   data: ExerciseWithScheduledExercises[];

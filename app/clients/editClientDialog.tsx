@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Client } from "@prisma/client";
+import type { Client } from "@prisma/client";
 
 import { ClientForm } from "./clientForm";
 

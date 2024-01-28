@@ -2,18 +2,15 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { useBeforeunload } from "react-beforeunload";
 
-import {
-  Direction,
-  MARGINAL_VALUES,
-  SCHEDULE_WEEK_LIMIT,
-} from "@/lib/constants/schedule";
+import type { Direction } from "@/lib/constants/schedule";
+import { MARGINAL_VALUES, SCHEDULE_WEEK_LIMIT } from "@/lib/constants/schedule";
 
-import { ScheduleWithDaysAndExercises } from "../data/types";
+import type { ScheduleWithDaysAndExercises } from "../data/types";
 import {
   ScheduleActionKind,
   scheduleReducer,
 } from "../reducers/scheduleReducer";
-import {
+import type {
   PreparedScheduledDay,
   PreparedScheduledExercise,
   ScheduleItem,

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
 import { options } from "@/app/api/auth/[...nextauth]/options";
-import { ClientPartial } from "@/app/clients/columns";
+import type { ClientPartial } from "@/app/clients/columns";
 import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 

@@ -18,7 +18,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Client } from "@prisma/client";
+import type { Client } from "@prisma/client";
 
 interface ClientComboboxProps {
   clients: Client[];

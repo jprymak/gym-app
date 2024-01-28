@@ -1,4 +1,4 @@
-import { DefaultUser } from "next-auth";
+import type { DefaultUser } from "next-auth";
 
 interface IUser extends DefaultUser {
   role: Role;

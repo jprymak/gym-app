@@ -1,6 +1,6 @@
 import { ExercisesDataTable } from "@/app/exercises/exercisesDataTable";
 import { DialogContextProvider } from "@/lib/context/useDialogContext";
-import { ExerciseWithScheduledExercises } from "@/lib/data/types";
+import type { ExerciseWithScheduledExercises } from "@/lib/data/types";
 import { render, screen, within } from "@testing-library/react";
 import user from "@testing-library/user-event";
 

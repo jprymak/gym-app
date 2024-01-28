@@ -1,6 +1,6 @@
 import { Schedule } from "@/app/schedule/[clientId]/schedule";
-import { ScheduleWithDaysAndExercises } from "@/lib/data/types";
-import { Exercise } from "@prisma/client";
+import type { ScheduleWithDaysAndExercises } from "@/lib/data/types";
+import type { Exercise } from "@prisma/client";
 import { render, screen, within } from "@testing-library/react";
 import user from "@testing-library/user-event";
 

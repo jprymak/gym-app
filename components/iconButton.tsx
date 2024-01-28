@@ -2,7 +2,8 @@ import React from "react";
 
 import { useWindowSize } from "@/lib/hooks/useWindowSize";
 
-import { Button, ButtonProps } from "./ui/button";
+import type { ButtonProps } from "./ui/button";
+import { Button } from "./ui/button";
 import {
   Tooltip,
   TooltipContent,

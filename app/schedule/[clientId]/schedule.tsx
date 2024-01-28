@@ -14,12 +14,12 @@ import { IconButton } from "@/components/iconButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "@/components/ui/use-toast";
 import { prepareScheduleForExport, updateSchedule } from "@/lib/data/schedule";
-import { ScheduleWithDaysAndExercises } from "@/lib/data/types";
+import type { ScheduleWithDaysAndExercises } from "@/lib/data/types";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useSchedule } from "@/lib/hooks/useSchedule";
 import { createWorksheetFromData } from "@/lib/worksheet/helpers";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { Exercise } from "@prisma/client";
+import type { Exercise } from "@prisma/client";
 
 import { AvailableStoredDataDialog } from "./availableStoredDataDialog";
 import { columns } from "./columns";

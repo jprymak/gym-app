@@ -1,8 +1,8 @@
 "use client";
 
 import { SortableHeader } from "@/components/ui/sortableHeader";
-import { Client } from "@prisma/client";
-import { ColumnDef } from "@tanstack/react-table";
+import type { Client } from "@prisma/client";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import { DeleteClientDialog } from "./deleteClientDialog";
 import { EditClientDialog } from "./editClientDialog";

@@ -18,7 +18,7 @@ import {
   Direction,
   SCHEDULED_EXERCISE_DAY_LIMIT,
 } from "@/lib/constants/schedule";
-import { PreparedScheduledExercise } from "@/lib/types/schedule";
+import type { PreparedScheduledExercise } from "@/lib/types/schedule";
 import {
   closestCenter,
   DndContext,
@@ -35,12 +35,13 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Exercise } from "@prisma/client";
-import {
+import type { Exercise } from "@prisma/client";
+import type {
   ColumnDef,
+  RowData} from "@tanstack/react-table";
+import {
   flexRender,
   getCoreRowModel,
-  RowData,
   useReactTable,
 } from "@tanstack/react-table";
 

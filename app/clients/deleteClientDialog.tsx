@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
 import { deleteClient } from "@/lib/data/clients";
-import { Client } from "@prisma/client";
+import type { Client } from "@prisma/client";
 
 interface DeleteClientDialogProps {
   data: Client;

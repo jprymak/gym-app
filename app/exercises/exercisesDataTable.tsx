@@ -1,8 +1,8 @@
 "use client";
 
 import { DataTable } from "@/components/ui/data-table";
-import { ExerciseWithScheduledExercises } from "@/lib/data/types";
-import { Row } from "@tanstack/react-table";
+import type { ExerciseWithScheduledExercises } from "@/lib/data/types";
+import type { Row } from "@tanstack/react-table";
 
 import { AddExerciseDialog } from "./addExerciseDialog";
 import { BulkDeleteExerciseDialog } from "./bulkDeleteExercise";

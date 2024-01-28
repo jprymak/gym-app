@@ -7,7 +7,7 @@ import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { db } from "@/lib/db";
 
-import {
+import type {
   ScheduledDay,
   ScheduledDayPreparedForExport,
   ScheduledDayWithExercises,

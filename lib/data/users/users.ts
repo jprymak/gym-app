@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 import { initialExercises } from "@/lib/constants/exercise";
 import { db } from "@/lib/db";
-import { User } from "@prisma/client";
+import type { User } from "@prisma/client";
 
 interface NewUser extends Pick<User, "name" | "email"> {
   password: string;

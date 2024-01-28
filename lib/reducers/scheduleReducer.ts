@@ -1,5 +1,5 @@
 import { Direction } from "../constants/schedule";
-import {
+import type {
   ScheduledDayWithExercises,
   ScheduledExercise,
   ScheduleWithDaysAndExercises,
@@ -8,7 +8,7 @@ import {
   createInitialDay,
   createInitialExerciseRow,
 } from "../helpers/initialData";
-import {
+import type {
   PreparedScheduledDay,
   PreparedScheduledExercise,
   ScheduleItem,

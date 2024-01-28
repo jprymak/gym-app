@@ -3,7 +3,7 @@
 import { ArrowDown, ArrowUp,ArrowUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Column } from "@tanstack/react-table";
+import type { Column } from "@tanstack/react-table";
 
 export type SortableHeaderProps = {
   header: string;

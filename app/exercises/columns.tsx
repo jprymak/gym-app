@@ -7,8 +7,8 @@ import { IconButton } from "@/components/iconButton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SortableHeader } from "@/components/ui/sortableHeader";
 import { useDialogContext } from "@/lib/context/useDialogContext";
-import { ExerciseWithScheduledExercises } from "@/lib/data/types";
-import { CellContext, ColumnDef } from "@tanstack/react-table";
+import type { ExerciseWithScheduledExercises } from "@/lib/data/types";
+import type { CellContext, ColumnDef } from "@tanstack/react-table";
 
 import { ExerciseDemoDialog } from "./exerciseDemoDialog";
 

@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { linkOptions } from "@/lib/constants/exercise";
 import { createExercise, updateExercise } from "@/lib/data/exercises";
-import { ExerciseWithScheduledExercises } from "@/lib/data/types";
+import type { ExerciseWithScheduledExercises } from "@/lib/data/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { MUSCLE_GROUPS } from "./columns";

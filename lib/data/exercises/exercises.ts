@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { linkOptions } from "@/lib/constants/exercise";
 import { db } from "@/lib/db";
-import { ExercisePartial } from "@/lib/types/exercise";
+import type { ExercisePartial } from "@/lib/types/exercise";
 import { Prisma } from "@prisma/client";
 
 export async function fetchExercises() {

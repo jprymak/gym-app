@@ -1,4 +1,4 @@
-import { ScheduledDayWithExercises, ScheduledExercise } from "../data/types";
+import type { ScheduledDayWithExercises, ScheduledExercise } from "../data/types";
 
 export interface PreparedScheduledDay extends ScheduledDayWithExercises {
   taggedForDelete?: boolean;

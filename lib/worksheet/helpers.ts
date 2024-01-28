@@ -1,6 +1,6 @@
 import { utils } from "xlsx";
 
-import {
+import type {
   ScheduledExercisePreparedForExport,
   SchedulePreparedForExport,
 } from "../data/types";
