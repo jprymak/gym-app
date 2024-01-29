@@ -6,15 +6,170 @@ import { getServerSession } from "next-auth";
 
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { db } from "@/lib/db";
+import type { Schedule } from "@prisma/client";
 
 import type {
-  ScheduledDay,
+  ScheduleChanges,
   ScheduledDayPreparedForExport,
-  ScheduledDayWithExercises,
-  ScheduledExercise,
   SchedulePreparedForExport,
   ScheduleWithDaysAndExercises,
 } from "../types";
+
+function prepareScheduleChanges(
+  schedule: ScheduleWithDaysAndExercises
+): ScheduleChanges {
+  const changes: ScheduleChanges = {
+    daysToAdd: [],
+    daysToUpdate: [],
+    daysToDelete: [],
+    scheduledExercisesToCreate: [],
+    scheduledExercisesToUpdate: [],
+    scheduledExercisesToCreateInExistingScheduledDay: [],
+    scheduledExercisesToDelete: [],
+  };
+
+  for (const day of schedule.days) {
+    if (day.id.startsWith("temp")) {
+      changes.daysToAdd.push(day);
+    } else if ("taggedForDelete" in day) {
+      changes.daysToDelete.push(day.id);
+    } else {
+      changes.daysToUpdate.push(day);
+    }
+
+    for (const exercise of day.exercises) {
+      if ("taggedForDelete" in exercise) {
+        changes.scheduledExercisesToDelete.push(exercise.id);
+      } else if (exercise.id.startsWith("temp")) {
+        if (exercise.scheduledDayId?.startsWith("temp")) {
+          changes.scheduledExercisesToCreate.push(exercise);
+        } else {
+          changes.scheduledExercisesToCreateInExistingScheduledDay.push(
+            exercise
+          );
+        }
+      } else {
+        changes.scheduledExercisesToUpdate.push({
+          ...exercise,
+          scheduledDayId: day.id,
+        });
+      }
+    }
+  }
+  return changes;
+}
+
+async function applyScheduleChanges(
+  schedule: Schedule,
+  changes: ScheduleChanges
+) {
+  const transaction = await db.$transaction([
+    ...changes.daysToAdd.map((day) =>
+      db.scheduledDay.create({
+        data: {
+          ordinalNum: day.ordinalNum,
+          schedule: {
+            connect: { id: schedule.id },
+          },
+          exercises: {
+            create: [
+              ...day.exercises.map((ex) => ({
+                sets: ex.sets,
+                reps: ex.reps,
+                rpe: ex.rpe,
+                comment: ex.comment,
+                ordinalNum: ex.ordinalNum,
+                ...(ex.exerciseId && {
+                  exercise: {
+                    connect: {
+                      id: ex.exerciseId,
+                    },
+                  },
+                }),
+              })),
+            ],
+          },
+        },
+        include: {
+          exercises: true,
+        },
+      })
+    ),
+    ...changes.daysToUpdate.map((day) =>
+      db.scheduledDay.update({
+        where: {
+          id: day.id,
+        },
+        data: {
+          ordinalNum: day.ordinalNum,
+        },
+      })
+    ),
+    ...changes.scheduledExercisesToUpdate.map((ex) =>
+      db.scheduledExercise.update({
+        where: {
+          id: ex.id,
+        },
+        data: {
+          sets: ex.sets,
+          reps: ex.reps,
+          rpe: ex.rpe,
+          comment: ex.comment,
+          ordinalNum: ex.ordinalNum,
+          ...(ex.exerciseId && {
+            exercise: {
+              connect: {
+                id: ex.exerciseId,
+              },
+            },
+          }),
+        },
+      })
+    ),
+    ...changes.scheduledExercisesToCreateInExistingScheduledDay.map((ex) =>
+      db.scheduledExercise.create({
+        data: {
+          sets: ex.sets,
+          reps: ex.reps,
+          rpe: ex.rpe,
+          comment: ex.comment,
+          ordinalNum: ex.ordinalNum,
+          ...(ex.scheduledDayId && {
+            scheduledDay: {
+              connect: {
+                id: ex.scheduledDayId,
+              },
+            },
+          }),
+          ...(ex.exerciseId && {
+            exercise: {
+              connect: {
+                id: ex.exerciseId,
+              },
+            },
+          }),
+        },
+      })
+    ),
+    db.scheduledExercise.deleteMany({
+      where: {
+        id: {
+          in: changes.scheduledExercisesToDelete,
+        },
+      },
+    }),
+    db.scheduledDay.deleteMany({
+      where: {
+        id: {
+          in: changes.daysToDelete,
+        },
+      },
+    }),
+  ]);
+
+  revalidatePath(`/schedule/${schedule.clientId}`);
+  return { data: transaction };
+}
 
 export async function fetchSchedule(clientId: string) {
   const session = await getServerSession(options);
@@ -69,160 +224,8 @@ export async function fetchSchedule(clientId: string) {
 }
 
 export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
-  const daysToAdd: ScheduledDayWithExercises[] = [];
-  const daysToUpdate: ScheduledDay[] = [];
-  const daysToDelete: string[] = [];
-
-  const scheduledExercisesToCreate: ScheduledExercise[] = [];
-  const scheduledExercisesToUpdate: ScheduledExercise[] = [];
-  const scheduledExercisesToCreateInExistingScheduledDay: ScheduledExercise[] =
-    [];
-  const scheduledExercisesToDelete: string[] = [];
-
-  schedule.days.forEach((day) => {
-    if (day.id.startsWith("temp")) {
-      daysToAdd.push(day);
-    } else if ("taggedForDelete" in day) {
-      daysToDelete.push(day.id);
-    } else {
-      daysToUpdate.push(day);
-    }
-  });
-
-  const preparedExercises = schedule.days.reduce<ScheduledExercise[]>(
-    (total, curr) => {
-      const exercisesWithDayId = curr.exercises.map((ex) => ({
-        ...ex,
-        scheduledDayId: curr.id,
-      }));
-
-      return [...total, ...exercisesWithDayId];
-    },
-    []
-  );
-
-  preparedExercises.forEach((ex) => {
-    if ("taggedForDelete" in ex) {
-      scheduledExercisesToDelete.push(ex.id);
-    } else if (
-      ex.id.startsWith("temp") &&
-      !ex.scheduledDayId?.startsWith("temp")
-    ) {
-      scheduledExercisesToCreateInExistingScheduledDay.push(ex);
-    } else if (ex.id.startsWith("temp")) {
-      scheduledExercisesToCreate.push(ex);
-    } else {
-      scheduledExercisesToUpdate.push(ex);
-    }
-  });
-
   try {
-    const transaction = await db.$transaction([
-      ...daysToAdd.map((day) =>
-        db.scheduledDay.create({
-          data: {
-            ordinalNum: day.ordinalNum,
-            schedule: {
-              connect: { id: schedule.id },
-            },
-            exercises: {
-              create: [
-                ...day.exercises.map((ex) => ({
-                  sets: ex.sets,
-                  reps: ex.reps,
-                  rpe: ex.rpe,
-                  comment: ex.comment,
-                  ordinalNum: ex.ordinalNum,
-                  ...(ex.exerciseId && {
-                    exercise: {
-                      connect: {
-                        id: ex.exerciseId,
-                      },
-                    },
-                  }),
-                })),
-              ],
-            },
-          },
-          include: {
-            exercises: true,
-          },
-        })
-      ),
-      ...daysToUpdate.map((day) =>
-        db.scheduledDay.update({
-          where: {
-            id: day.id,
-          },
-          data: {
-            ordinalNum: day.ordinalNum,
-          },
-        })
-      ),
-      ...scheduledExercisesToUpdate.map((ex) =>
-        db.scheduledExercise.update({
-          where: {
-            id: ex.id,
-          },
-          data: {
-            sets: ex.sets,
-            reps: ex.reps,
-            rpe: ex.rpe,
-            comment: ex.comment,
-            ordinalNum: ex.ordinalNum,
-            ...(ex.exerciseId && {
-              exercise: {
-                connect: {
-                  id: ex.exerciseId,
-                },
-              },
-            }),
-          },
-        })
-      ),
-      ...scheduledExercisesToCreateInExistingScheduledDay.map((ex) =>
-        db.scheduledExercise.create({
-          data: {
-            sets: ex.sets,
-            reps: ex.reps,
-            rpe: ex.rpe,
-            comment: ex.comment,
-            ordinalNum: ex.ordinalNum,
-            ...(ex.scheduledDayId && {
-              scheduledDay: {
-                connect: {
-                  id: ex.scheduledDayId,
-                },
-              },
-            }),
-            ...(ex.exerciseId && {
-              exercise: {
-                connect: {
-                  id: ex.exerciseId,
-                },
-              },
-            }),
-          },
-        })
-      ),
-      db.scheduledExercise.deleteMany({
-        where: {
-          id: {
-            in: scheduledExercisesToDelete,
-          },
-        },
-      }),
-      db.scheduledDay.deleteMany({
-        where: {
-          id: {
-            in: daysToDelete,
-          },
-        },
-      }),
-    ]);
-
-    revalidatePath(`/schedule/${schedule.clientId}`);
-    return { data: transaction };
+    return applyScheduleChanges(schedule, prepareScheduleChanges(schedule));
   } catch (e) {
     console.log(e);
     const result = {

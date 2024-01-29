@@ -97,3 +97,13 @@ export type ExerciseWithScheduledExercises = Prisma.ExerciseGetPayload<{
     };
   };
 }>;
+
+export interface ScheduleChanges {
+  daysToAdd: ScheduledDayWithExercises[];
+  daysToUpdate: ScheduledDayWithExercises[];
+  daysToDelete: string[];
+  scheduledExercisesToCreate: ScheduledExercise[];
+  scheduledExercisesToUpdate: ScheduledExercise[];
+  scheduledExercisesToCreateInExistingScheduledDay: ScheduledExercise[];
+  scheduledExercisesToDelete: string[];
+}

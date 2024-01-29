@@ -81,22 +81,19 @@ const applyOrdinalNumbers = <T extends ScheduleItem>(items: T[]) => {
   let counter = 1;
   return items.map((item) => {
     if (!item.taggedForDelete) {
-      const itemWithNum = { ...item, ordinalNum: counter };
-      counter++;
-      return itemWithNum;
+      return { ...item, ordinalNum: counter++ };
     } else {
       return item;
     }
   });
 };
 
-const findDayById = (state: ScheduleWithDaysAndExercises, dayId: string) => {
-  return state.days.find((day) => day.id === dayId);
+const findDayById = (schedule: ScheduleWithDaysAndExercises, id: string) => {
+  return schedule.days.find((day) => day.id === id);
 };
 
-const findItemIndex = <T extends ScheduleItem>(items: T[], itemId: string) => {
-  return items.findIndex((item) => item.id === itemId);
-};
+const findItemIndex = <T extends ScheduleItem>(items: T[], itemId: string) =>
+  items.findIndex((item) => item.id === itemId);
 
 export function scheduleReducer(
   state: ScheduleWithDaysAndExercises,

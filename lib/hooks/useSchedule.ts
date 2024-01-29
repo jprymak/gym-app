@@ -16,9 +16,8 @@ import type {
   ScheduleItem,
 } from "../types/schedule";
 
-const filterDeletedItems = <T extends ScheduleItem>(items: T[]) => {
-  return items.filter((currentItem) => !currentItem.taggedForDelete);
-};
+const filterDeletedItems = <T extends ScheduleItem>(items: T[]) =>
+  items.filter((item) => !item.taggedForDelete);
 
 export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
   const [state, dispatch] = useReducer(scheduleReducer, initialData);
@@ -36,14 +35,13 @@ export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
   }, [initialData]);
 
   const validateSchedule = useCallback(() => {
-    let valid = true;
     for (const day of state.days as PreparedScheduledDay[]) {
       if (day.taggedForDelete) {
         continue;
       }
-      const exercises = day.exercises as PreparedScheduledExercise[];
+      const exercises = day.exercises;
 
-      valid = exercises.every((exercise) => {
+      const isExerciseValid = (exercise: PreparedScheduledExercise) => {
         if (exercise.taggedForDelete) {
           return true;
         }
@@ -66,13 +64,14 @@ export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
             +value <= MARGINAL_VALUES[key].max
           );
         });
-      });
-      if (!valid) {
+      };
+
+      if (!exercises.every(isExerciseValid)) {
         return false;
       }
     }
 
-    return valid;
+    return true;
   }, [state.days]);
 
   useEffect(() => {
