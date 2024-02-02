@@ -86,7 +86,7 @@ export function DataTable<TData, TValue>({
   };
 
   return (
-    <>
+    <div className="md:mx-auto">
       <div className="flex items-start py-4 flex-col md:flex-row md:items-center gap-2">
         <Input
           placeholder="Filter rows..."
@@ -178,6 +178,6 @@ export function DataTable<TData, TValue>({
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
