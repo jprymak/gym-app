@@ -7,3 +7,5 @@ export default async function Clients() {
 
   return <ClientDataTable data={data} />;
 }
+
+export const dynamic = "force-dynamic";

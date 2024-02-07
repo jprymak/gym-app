@@ -7,3 +7,5 @@ const Denied = () => {
 };
 
 export default Denied;
+
+export const dynamic = "force-static";

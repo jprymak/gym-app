@@ -12,3 +12,5 @@ export default async function DemoPage() {
     </DialogContextProvider>
   );
 }
+
+export const dynamic = "force-dynamic";
