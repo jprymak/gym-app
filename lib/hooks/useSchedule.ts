@@ -10,6 +10,7 @@ import {
   ScheduleActionKind,
   scheduleReducer,
 } from "../reducers/scheduleReducer";
+import type { DateRangeOptions } from "../types/date";
 import type {
   PreparedScheduledDay,
   PreparedScheduledExercise,
@@ -24,8 +25,7 @@ export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
 
   const [scheduleIsValid, setScheduleIsValid] = useState(true);
 
-  const hasChanges =
-    JSON.stringify(initialData.days) !== JSON.stringify(state.days);
+  const hasChanges = JSON.stringify(initialData) !== JSON.stringify(state);
 
   useEffect(() => {
     dispatch({
@@ -70,9 +70,14 @@ export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
         return false;
       }
     }
+    const isDateValid = state.startDate < state.endDate;
+
+    if (!isDateValid) {
+      return false;
+    }
 
     return true;
-  }, [state.days]);
+  }, [state]);
 
   useEffect(() => {
     setScheduleIsValid(validateSchedule());
@@ -137,6 +142,13 @@ export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
     });
   };
 
+  const setDateRange = (value: Date, type: DateRangeOptions) => {
+    dispatch({
+      type: ScheduleActionKind.SET_DATE_RANGE,
+      payload: { value, type },
+    });
+  };
+
   const handleSetData = (data: ScheduleWithDaysAndExercises) => {
     dispatch({
       type: ScheduleActionKind.INITIAL_SETUP,
@@ -172,5 +184,6 @@ export const useSchedule = (initialData: ScheduleWithDaysAndExercises) => {
     addDay,
     handleSetData,
     reachedWeekLimit,
+    setDateRange,
   };
 };

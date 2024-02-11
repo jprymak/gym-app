@@ -2,18 +2,20 @@ import { Loader2 } from "lucide-react";
 
 import { Button } from "./ui/button";
 
-interface DeleteBtnProps {
-  onClick: () => Promise<void>;
+interface DeleteBtnProps extends React.HTMLAttributes<HTMLButtonElement> {
   isPending: boolean;
 }
 
-export const DeleteBtnWithStatus = ({ onClick, isPending }: DeleteBtnProps) => {
+export const DeleteBtnWithStatus = ({
+  isPending,
+  ...props
+}: DeleteBtnProps) => {
   return (
     <Button
-      onClick={onClick}
       disabled={isPending}
       variant="destructive"
       className=" flex gap-2"
+      {...props}
     >
       {isPending ? (
         <>

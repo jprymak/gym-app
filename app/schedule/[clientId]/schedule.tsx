@@ -10,6 +10,7 @@ import {
 import { useBeforeunload } from "react-beforeunload";
 import { utils, writeFileXLSX } from "xlsx";
 
+import { DateRange } from "@/components/dateRange";
 import { IconButton } from "@/components/iconButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "@/components/ui/use-toast";
@@ -49,6 +50,7 @@ export const Schedule = ({
     deleteDay,
     scheduleIsValid,
     reachedWeekLimit,
+    setDateRange,
   } = useSchedule(initialData);
 
   const [open, setOpen] = useState(false);
@@ -82,7 +84,7 @@ export const Schedule = ({
 
   const saveChanges = () => {
     startTransition(async () => {
-      const result = await updateSchedule(scheduleData);
+      const result = await updateSchedule(initialData, scheduleData);
 
       if ("error" in result) {
         toast({
@@ -157,29 +159,35 @@ export const Schedule = ({
           </Alert>
         )}
       </div>
-      <div className="flex gap-2 mb-5">
-        <IconButton
-          tooltip="Save changes"
-          icon={isPending ? <Loader2 className="animate-spin" /> : <Save />}
-          disabled={cannotSaveChanges}
-          onClick={saveChanges}
-          {...(isPending && { label: "Saving..." })}
-          {...(hasChanges &&
-            !cannotSaveChanges && { className: "animate-bounce" })}
-        />
-        <IconButton
-          tooltip="Export"
-          icon={<Download />}
-          disabled={hasChanges}
-          onClick={exportData}
-        />
-        <IconButton
-          tooltip="Add Day"
-          icon={<CalendarPlus />}
-          disabled={reachedWeekLimit}
-          className=""
-          onClick={addDay}
-        />
+      <div>
+        <div className="flex flex-wrap gap-3 mb-5">
+          <IconButton
+            tooltip="Save changes"
+            icon={isPending ? <Loader2 className="animate-spin" /> : <Save />}
+            disabled={cannotSaveChanges}
+            onClick={saveChanges}
+            {...(isPending && { label: "Saving..." })}
+            {...(hasChanges &&
+              !cannotSaveChanges && { className: "animate-bounce" })}
+          />
+          <IconButton
+            tooltip="Export"
+            icon={<Download />}
+            disabled={hasChanges}
+            onClick={exportData}
+          />
+          <IconButton
+            tooltip="Add Day"
+            icon={<CalendarPlus />}
+            disabled={reachedWeekLimit}
+            onClick={addDay}
+          />
+          <DateRange
+            setDateRange={setDateRange}
+            startDate={scheduleData.startDate}
+            endDate={scheduleData.endDate}
+          />
+        </div>
       </div>
       <div ref={daysAnimationWrapper}>
         {dataToDisplay.map((day, index) => {

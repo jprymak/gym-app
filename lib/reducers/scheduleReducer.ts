@@ -8,6 +8,7 @@ import {
   createInitialDay,
   createInitialExerciseRow,
 } from "../helpers/initialData";
+import type { DateRangeOptions } from "../types/date";
 import type {
   PreparedScheduledDay,
   PreparedScheduledExercise,
@@ -24,6 +25,7 @@ export enum ScheduleActionKind {
   DELETE_EXERCISE = "DELETE_EXERCISE",
   UPDATE_EXERCISE = "UPDATE_EXERCISE",
   REORDER_EXERCISES = "REORDER_EXERCISES",
+  SET_DATE_RANGE = "SET_DATE_RANGE",
 }
 
 type ScheduleAction =
@@ -75,6 +77,10 @@ type ScheduleAction =
   | {
       type: ScheduleActionKind.REORDER_EXERCISES;
       payload: { array: PreparedScheduledExercise[]; scheduledDayId: string };
+    }
+  | {
+      type: ScheduleActionKind.SET_DATE_RANGE;
+      payload: { value: Date; type: DateRangeOptions };
     };
 
 const applyOrdinalNumbers = <T extends ScheduleItem>(items: T[]) => {
@@ -343,6 +349,23 @@ export function scheduleReducer(
         ...state,
         days: newDays,
       };
+    }
+    case ScheduleActionKind.SET_DATE_RANGE: {
+      const { value, type } = action.payload;
+
+      if (type === "start") {
+        return {
+          ...state,
+          startDate: value,
+        };
+      } else if (type === "end") {
+        return {
+          ...state,
+          endDate: value,
+        };
+      } else {
+        return state;
+      }
     }
     default:
       return state;
