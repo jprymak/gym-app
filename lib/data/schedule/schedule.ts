@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
+import isEqual from "lodash.isequal";
 
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { db } from "@/lib/db";
@@ -11,12 +12,14 @@ import type { Schedule } from "@prisma/client";
 import type {
   ScheduleChanges,
   ScheduledDayPreparedForExport,
+  ScheduledDayWithExercises,
   SchedulePreparedForExport,
   ScheduleWithDaysAndExercises,
 } from "../types";
 
 function prepareScheduleChanges(
-  schedule: ScheduleWithDaysAndExercises
+  initialData: ScheduleWithDaysAndExercises,
+  updatedData: ScheduleWithDaysAndExercises
 ): ScheduleChanges {
   const changes: ScheduleChanges = {
     daysToAdd: [],
@@ -26,33 +29,80 @@ function prepareScheduleChanges(
     scheduledExercisesToUpdate: [],
     scheduledExercisesToCreateInExistingScheduledDay: [],
     scheduledExercisesToDelete: [],
+    scheduleUpdates: {},
   };
 
-  for (const day of schedule.days) {
-    if (day.id.startsWith("temp")) {
-      changes.daysToAdd.push(day);
-    } else if ("taggedForDelete" in day) {
-      changes.daysToDelete.push(day.id);
-    } else {
-      changes.daysToUpdate.push(day);
-    }
+  const findMatchingDayById = (
+    updated: ScheduledDayWithExercises[],
+    id: string
+  ) => {
+    return updated.find((day) => day.id === id);
+  };
 
-    for (const exercise of day.exercises) {
-      if ("taggedForDelete" in exercise) {
-        changes.scheduledExercisesToDelete.push(exercise.id);
-      } else if (exercise.id.startsWith("temp")) {
-        if (exercise.scheduledDayId?.startsWith("temp")) {
-          changes.scheduledExercisesToCreate.push(exercise);
+  const findMatchingExerciseById = (
+    initial: ScheduledDayWithExercises[],
+    id: string
+  ) => {
+    for (const day of initial) {
+      const match = day.exercises.find((exercise) => exercise.id === id);
+      if (match) {
+        return match;
+      }
+    }
+  };
+
+  for (const key in updatedData) {
+    if (key === "days") {
+      const days = updatedData[key];
+      if (!days) continue;
+      for (const day of days) {
+        if (day.id.startsWith("temp")) {
+          changes.daysToAdd.push(day);
+        } else if ("taggedForDelete" in day) {
+          changes.daysToDelete.push(day.id);
         } else {
-          changes.scheduledExercisesToCreateInExistingScheduledDay.push(
-            exercise
-          );
+          const match = findMatchingDayById(initialData.days, day.id);
+          if (!match) continue;
+          const {
+            exercises: [],
+            ...strippedDay
+          } = day;
+          const {
+            exercises: [],
+            ...strippedMatch
+          } = match;
+
+          if (!isEqual(strippedDay, strippedMatch)) {
+            changes.daysToUpdate.push(strippedDay);
+          }
         }
-      } else {
-        changes.scheduledExercisesToUpdate.push({
-          ...exercise,
-          scheduledDayId: day.id,
-        });
+
+        for (const exercise of day.exercises) {
+          if ("taggedForDelete" in exercise) {
+            changes.scheduledExercisesToDelete.push(exercise.id);
+          } else if (exercise.id.startsWith("temp")) {
+            if (exercise.scheduledDayId?.startsWith("temp")) {
+              //We continue the loop because this case is handled together with new day creation
+              continue;
+            } else {
+              changes.scheduledExercisesToCreateInExistingScheduledDay.push(
+                exercise
+              );
+            }
+          } else {
+            const match = findMatchingExerciseById(
+              initialData.days,
+              exercise.id
+            );
+            if (match && !isEqual(exercise, match)) {
+              changes.scheduledExercisesToUpdate.push(exercise);
+            }
+          }
+        }
+      }
+    } else if (key === "startDate" || key === "endDate") {
+      if (!isEqual(initialData[key], updatedData[key])) {
+        changes.scheduleUpdates[key] = updatedData[key];
       }
     }
   }
@@ -64,6 +114,12 @@ async function applyScheduleChanges(
   changes: ScheduleChanges
 ) {
   const transaction = await db.$transaction([
+    db.schedule.update({
+      where: {
+        id: schedule.id,
+      },
+      data: changes.scheduleUpdates,
+    }),
     ...changes.daysToAdd.map((day) =>
       db.scheduledDay.create({
         data: {
@@ -166,7 +222,6 @@ async function applyScheduleChanges(
       },
     }),
   ]);
-
   revalidatePath(`/schedule/${schedule.clientId}`);
   return { data: transaction };
 }
@@ -223,9 +278,15 @@ export async function fetchSchedule(clientId: string) {
   }
 }
 
-export async function updateSchedule(schedule: ScheduleWithDaysAndExercises) {
+export async function updateSchedule(
+  initialData: ScheduleWithDaysAndExercises,
+  updatedData: ScheduleWithDaysAndExercises
+) {
   try {
-    return applyScheduleChanges(schedule, prepareScheduleChanges(schedule));
+    return applyScheduleChanges(
+      updatedData,
+      prepareScheduleChanges(initialData, updatedData)
+    );
   } catch (e) {
     console.log(e);
     const result = {
