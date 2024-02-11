@@ -24,6 +24,8 @@ const mockScheduleData: ScheduleWithDaysAndExercises = {
   clientId: "6595d5ae61c8606677067a27",
   created: new Date("2024-01-03T21:46:22.000Z"),
   modified: new Date("2024-01-03T21:46:22.000Z"),
+  startDate: new Date("2024-01-03T21:46:22.000Z"),
+  endDate: new Date("2024-01-06T20:28:00.000Z"),
   days: [
     {
       id: "65a155075002e91c35f2f623",
@@ -314,5 +316,29 @@ describe("Schedule", () => {
     });
 
     expect(moveDown).toBeDisabled();
+  });
+
+  it("disables save button if date range is invalid", async () => {
+    renderComponent();
+
+    const startDateBtn = screen.getByRole("button", {
+      name: /start\-date/i,
+    });
+    await user.click(startDateBtn);
+
+    const row = screen.getByRole("row", {
+      name: /4 5 6 7 8 9 10/i,
+    });
+
+    const daySeven = within(row).getByRole("gridcell", {
+      name: /7/i,
+    });
+
+    await user.click(daySeven);
+    await user.click(document.body);
+
+    const saveChanges = screen.getByRole("button", { name: /save changes/i });
+
+    expect(saveChanges).toBeDisabled();
   });
 });
